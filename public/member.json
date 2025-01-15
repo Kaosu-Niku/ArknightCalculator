@@ -1,0 +1,752 @@
+[
+  {
+    "name": "桃金娘",
+    "type": "執旗手",
+    "hp": 1142,
+    "attackType": "物傷",
+    "attack": 436,
+    "def": 327,
+    "res": 0,
+    "spd": 1.3
+  },
+  {
+    "name": "芬",
+    "type": "尖兵",
+    "hp": 1325,
+    "attackType": "物傷",
+    "attack": 325,
+    "def": 330,
+    "res": 0,
+    "spd": 1.05
+  },
+  {
+    "name": "香草",
+    "type": "尖兵",
+    "hp": 1270,
+    "attackType": "物傷",
+    "attack": 459,
+    "def": 240,
+    "res": 0,
+    "spd": 1.05
+  },
+  {
+    "name": "清道夫",
+    "type": "尖兵",
+    "hp": 1284,
+    "attackType": "物傷",
+    "attack": 470,
+    "def": 255,
+    "res": 0,
+    "spd": 1.05
+  },
+  {
+    "name": "訊使",
+    "type": "尖兵",
+    "hp": 1389,
+    "attackType": "物傷",
+    "attack": 348,
+    "def": 356,
+    "res": 0,
+    "spd": 1.05
+  },
+  {
+    "name": "翎羽",
+    "type": "沖鋒手",
+    "hp": 1226,
+    "attackType": "物傷",
+    "attack": 557,
+    "def": 279,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "紅豆",
+    "type": "沖鋒手",
+    "hp": 1291,
+    "attackType": "物傷",
+    "attack": 552,
+    "def": 287,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "豆苗",
+    "type": "戰術家",
+    "hp": 1286,
+    "attackType": "物傷",
+    "attack": 382,
+    "def": 105,
+    "res": 0,
+    "spd": 1.2
+  },
+  {
+    "name": "幕斯",
+    "type": "術戰者",
+    "hp": 1782,
+    "attackType": "法傷",
+    "attack": 576,
+    "def": 331,
+    "res": 10,
+    "spd": 1.25
+  },
+  {
+    "name": "宴",
+    "type": "武者",
+    "hp": 2583,
+    "attackType": "法傷",
+    "attack": 628,
+    "def": 305,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "玫蘭莎",
+    "type": "無畏者",
+    "hp": 2745,
+    "attackType": "物傷",
+    "attack": 894,
+    "def": 155,
+    "res": 0,
+    "spd": 1.5
+  },
+  {
+    "name": "纏丸",
+    "type": "無畏者",
+    "hp": 3323,
+    "attackType": "物傷",
+    "attack": 760,
+    "def": 131,
+    "res": 0,
+    "spd": 1.5
+  },
+  {
+    "name": "杰克",
+    "type": "鬥士",
+    "hp": 1949,
+    "attackType": "物傷",
+    "attack": 509,
+    "def": 258,
+    "res": 0,
+    "spd": 0.8
+  },
+  {
+    "name": "獵蜂",
+    "type": "鬥士",
+    "hp": 2176,
+    "attackType": "物傷",
+    "attack": 475,
+    "def": 262,
+    "res": 0,
+    "spd": 0.8
+  },
+  {
+    "name": "泡普卡",
+    "type": "強攻手",
+    "hp": 2007,
+    "attackType": "物傷",
+    "attack": 613,
+    "def": 245,
+    "res": 0,
+    "spd": 2
+  },
+  {
+    "name": "艾絲黛爾",
+    "type": "強攻手",
+    "hp": 2425,
+    "attackType": "物傷",
+    "attack": 524,
+    "def": 258,
+    "res": 0,
+    "spd": 1.2
+  },
+  {
+    "name": "休莫斯",
+    "type": "收割者",
+    "hp": 1612,
+    "attackType": "物傷",
+    "attack": 576,
+    "def": 372,
+    "res": 0,
+    "spd": 1.3
+  },
+  {
+    "name": "石英",
+    "type": "重劍手",
+    "hp": 4593,
+    "attackType": "物傷",
+    "attack": 1298,
+    "def": 0,
+    "res": 0,
+    "spd": 2.5
+  },
+  {
+    "name": "月見夜",
+    "type": "領主",
+    "hp": 1653,
+    "attackType": "物傷",
+    "attack": 569,
+    "def": 282,
+    "res": 10,
+    "spd": 1.3
+  },
+  {
+    "name": "芳汀",
+    "type": "領主",
+    "hp": 1777,
+    "attackType": "物傷",
+    "attack": 591,
+    "def": 282,
+    "res": 10,
+    "spd": 1.3
+  },
+  {
+    "name": "霜葉",
+    "type": "領主",
+    "hp": 1785,
+    "attackType": "物傷",
+    "attack": 534,
+    "def": 323,
+    "res": 10,
+    "spd": 1.3
+  },
+  {
+    "name": "羅小黑",
+    "type": "領主",
+    "hp": 1611,
+    "attackType": "物傷",
+    "attack": 595,
+    "def": 294,
+    "res": 10,
+    "spd": 1.3
+  },
+  {
+    "name": "刻刀",
+    "type": "劍豪",
+    "hp": 1763,
+    "attackType": "物傷",
+    "attack": 530,
+    "def": 266,
+    "res": 0,
+    "spd": 1.3
+  },
+  {
+    "name": "杜賓",
+    "type": "教官",
+    "hp": 1607,
+    "attackType": "物傷",
+    "attack": 535,
+    "def": 350,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "卡緹",
+    "type": "鐵衛",
+    "hp": 2946,
+    "attackType": "物傷",
+    "attack": 305,
+    "def": 475,
+    "res": 0,
+    "spd": 1.2
+  },
+  {
+    "name": "米格魯",
+    "type": "鐵衛",
+    "hp": 2035,
+    "attackType": "物傷",
+    "attack": 295,
+    "def": 636,
+    "res": 0,
+    "spd": 1.2
+  },
+  {
+    "name": "泡泡",
+    "type": "鐵衛",
+    "hp": 2391,
+    "attackType": "物傷",
+    "attack": 314,
+    "def": 570,
+    "res": 0,
+    "spd": 1.2
+  },
+  {
+    "name": "蛇屠箱",
+    "type": "鐵衛",
+    "hp": 2173,
+    "attackType": "物傷",
+    "attack": 310,
+    "def": 641,
+    "res": 0,
+    "spd": 1.2
+  },
+  {
+    "name": "角峰",
+    "type": "鐵衛",
+    "hp": 2899,
+    "attackType": "物傷",
+    "attack": 318,
+    "def": 489,
+    "res": 12,
+    "spd": 1.2
+  },
+  {
+    "name": "斑點",
+    "type": "守護者",
+    "hp": 1833,
+    "attackType": "物傷",
+    "attack": 350,
+    "def": 496,
+    "res": 10,
+    "spd": 1.2
+  },
+  {
+    "name": "古米",
+    "type": "守護者",
+    "hp": 2236,
+    "attackType": "物傷",
+    "attack": 369,
+    "def": 460,
+    "res": 10,
+    "spd": 1.2
+  },
+  {
+    "name": "堅雷",
+    "type": "馭法鐵衛",
+    "hp": 2165,
+    "attackType": "物傷",
+    "attack": 576,
+    "def": 476,
+    "res": 10,
+    "spd": 1.6
+  },
+  {
+    "name": "露托",
+    "type": "不屈者",
+    "hp": 2991,
+    "attackType": "物傷",
+    "attack": 616,
+    "def": 456,
+    "res": 10,
+    "spd": 1.6
+  },
+  {
+    "name": "克洛絲",
+    "type": "速射手",
+    "hp": 1060,
+    "attackType": "物傷",
+    "attack": 446,
+    "def": 126,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "安德切爾",
+    "type": "速射手",
+    "hp": 1080,
+    "attackType": "物傷",
+    "attack": 438,
+    "def": 134,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "紅雲",
+    "type": "速射手",
+    "hp": 1008,
+    "attackType": "物傷",
+    "attack": 486,
+    "def": 136,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "杰西卡",
+    "type": "速射手",
+    "hp": 1108,
+    "attackType": "物傷",
+    "attack": 478,
+    "def": 130,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "流星",
+    "type": "速射手",
+    "hp": 1123,
+    "attackType": "物傷",
+    "attack": 469,
+    "def": 139,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "梅",
+    "type": "速射手",
+    "hp": 1338,
+    "attackType": "物傷",
+    "attack": 503,
+    "def": 88,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "躍躍",
+    "type": "回環射手",
+    "hp": 1804,
+    "attackType": "物傷",
+    "attack": 580,
+    "def": 135,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "酸糖",
+    "type": "重射手",
+    "hp": 1197,
+    "attackType": "物傷",
+    "attack": 675,
+    "def": 152,
+    "res": 0,
+    "spd": 1.6
+  },
+  {
+    "name": "鉛踝",
+    "type": "攻城手",
+    "hp": 1193,
+    "attackType": "物傷",
+    "attack": 845,
+    "def": 126,
+    "res": 0,
+    "spd": 2.4
+  }, 
+  {
+    "name": "安比爾",
+    "type": "神射手",
+    "hp": 1276,
+    "attackType": "物傷",
+    "attack": 876,
+    "def": 100,
+    "res": 0,
+    "spd": 2.7
+  },
+  {
+    "name": "松果",
+    "type": "散射手",
+    "hp": 1650,
+    "attackType": "物傷",
+    "attack": 643,
+    "def": 150,
+    "res": 0,
+    "spd": 2.3
+  },
+  {
+    "name": "空爆",
+    "type": "炮手",
+    "hp": 1150,
+    "attackType": "物傷",
+    "attack": 699,
+    "def": 85,
+    "res": 0,
+    "spd": 2.8
+  },
+  {
+    "name": "白雪",
+    "type": "炮手",
+    "hp": 1304,
+    "attackType": "物傷",
+    "attack": 721,
+    "def": 84,
+    "res": 0,
+    "spd": 2.8
+  },
+  {
+    "name": "史都華德",
+    "type": "中堅術師",
+    "hp": 1100,
+    "attackType": "法傷",
+    "attack": 576,
+    "def": 90,
+    "res": 15,
+    "spd": 1.6
+  },
+  {
+    "name": "夜煙",
+    "type": "中堅術師",
+    "hp": 1250,
+    "attackType": "法傷",
+    "attack": 543,
+    "def": 98,
+    "res": 15,
+    "spd": 1.6
+  },
+  {
+    "name": "卡達",
+    "type": "御械術師",
+    "hp": 1094,
+    "attackType": "法傷",
+    "attack": 324,
+    "def": 100,
+    "res": 15,
+    "spd": 1.3
+  },
+  {
+    "name": "深靛",
+    "type": "秘術師",
+    "hp": 1162,
+    "attackType": "法傷",
+    "attack": 1039,
+    "def": 104,
+    "res": 20,
+    "spd": 3
+  },
+  {
+    "name": "布丁",
+    "type": "鍊術師",
+    "hp": 1007,
+    "attackType": "法傷",
+    "attack": 585,
+    "def": 91,
+    "res": 20,
+    "spd": 2.3
+  },
+  {
+    "name": "炎熔",
+    "type": "擴散術師",
+    "hp": 1141,
+    "attackType": "法傷",
+    "attack": 642,
+    "def": 95,
+    "res": 15,
+    "spd": 2.9
+  },
+  {
+    "name": "遠山",
+    "type": "擴散術師",
+    "hp": 1214,
+    "attackType": "法傷",
+    "attack": 697,
+    "def": 99,
+    "res": 15,
+    "spd": 2.9
+  },
+  {
+    "name": "格雷伊",
+    "type": "擴散術師",
+    "hp": 1469,
+    "attackType": "法傷",
+    "attack": 587,
+    "def": 109,
+    "res": 15,
+    "spd": 2.9
+  },
+  {
+    "name": "安賽爾",
+    "type": "醫師",
+    "hp": 1135,
+    "attackType": "治療",
+    "attack": 427,
+    "def": 109,
+    "res": 0,
+    "spd": 2.85
+  },
+  {
+    "name": "芙蓉",
+    "type": "醫師",
+    "hp": 1220,
+    "attackType": "治療",
+    "attack": 441,
+    "def": 110,
+    "res": 0,
+    "spd": 2.85
+  },  
+  {
+    "name": "蘇蘇洛",
+    "type": "醫師",
+    "hp": 1170,
+    "attackType": "治療",
+    "attack": 478,
+    "def": 97,
+    "res": 0,
+    "spd": 2.85
+  },
+  {
+    "name": "嘉維爾",
+    "type": "醫師",
+    "hp": 1374,
+    "attackType": "治療",
+    "attack": 417,
+    "def": 151,
+    "res": 0,
+    "spd": 2.85
+  },
+  {
+    "name": "末藥",
+    "type": "醫師",
+    "hp": 1278,
+    "attackType": "治療",
+    "attack": 455,
+    "def": 104,
+    "res": 0,
+    "spd": 2.85
+  },
+  {
+    "name": "清流",
+    "type": "療養師",
+    "hp": 1323,
+    "attackType": "治療",
+    "attack": 421,
+    "def": 94,
+    "res": 10,
+    "spd": 2.85
+  },
+  {
+    "name": "褐果",
+    "type": "行醫",
+    "hp": 1077,
+    "attackType": "治療",
+    "attack": 361,
+    "def": 80,
+    "res": 10,
+    "spd": 2.85
+  },
+  {
+    "name": "調香師",
+    "type": "群癒師",
+    "hp": 1382,
+    "attackType": "治療",
+    "attack": 300,
+    "def": 120,
+    "res": 0,
+    "spd": 2.85
+  },
+  {
+    "name": "巫役小車",
+    "type": "巫役",
+    "hp": 520,
+    "attackType": "法傷",
+    "attack": 235,
+    "def": 30,
+    "res": 5,
+    "spd": 1.6
+  },
+  {
+    "name": "梓蘭",
+    "type": "凝滯師",
+    "hp": 935,
+    "attackType": "法傷",
+    "attack": 437,
+    "def": 83,
+    "res": 15,
+    "spd": 1.9
+  },
+  {
+    "name": "波登可",
+    "type": "凝滯師",
+    "hp": 930,
+    "attackType": "法傷",
+    "attack": 513,
+    "def": 80,
+    "res": 15,
+    "spd": 1.9
+  },
+  {
+    "name": "地靈",
+    "type": "凝滯師",
+    "hp": 964,
+    "attackType": "法傷",
+    "attack": 469,
+    "def": 85,
+    "res": 15,
+    "spd": 1.9
+  },
+  {
+    "name": "深海色",
+    "type": "召喚師",
+    "hp": 1129,
+    "attackType": "法傷",
+    "attack": 346,
+    "def": 103,
+    "res": 10,
+    "spd": 1.6
+  },
+  {
+    "name": "羅比菈塔",
+    "type": "工匠",
+    "hp": 1976,
+    "attackType": "物傷",
+    "attack": 479,
+    "def": 419,
+    "res": 0,
+    "spd": 1.5
+  },
+  {
+    "name": "阿消",
+    "type": "推擊手",
+    "hp": 1732,
+    "attackType": "物傷",
+    "attack": 504,
+    "def": 302,
+    "res": 7,
+    "spd": 1.2
+  },
+  {
+    "name": "暗索",
+    "type": "鉤索師",
+    "hp": 1307,
+    "attackType": "物傷",
+    "attack": 582,
+    "def": 358,
+    "res": 0,
+    "spd": 1.8
+  },
+  {
+    "name": "礫",
+    "type": "處決者",
+    "hp": 1567,
+    "attackType": "物傷",
+    "attack": 352,
+    "def": 281,
+    "res": 0,
+    "spd": 0.9
+  },
+  {
+    "name": "孑",
+    "type": "行商",
+    "hp": 2004,
+    "attackType": "物傷",
+    "attack": 622,
+    "def": 321,
+    "res": 0,
+    "spd": 1
+  },
+  {
+    "name": "伊桑",
+    "type": "伏擊客",
+    "hp": 1900,
+    "attackType": "物傷",
+    "attack": 601,
+    "def": 279,
+    "res": 20,
+    "spd": 3.5
+  },
+  {
+    "name": "維荻",
+    "type": "傀儡師",
+    "hp": 2050,
+    "attackType": "物傷",
+    "attack": 611,
+    "def": 214,
+    "res": 0,
+    "spd": 1.2
+  },
+  {
+    "name": "雲跡",
+    "type": "巡空者",
+    "hp": 1781,
+    "attackType": "物傷",
+    "attack": 606,
+    "def": 345,
+    "res": 0,
+    "spd": 1.5
+  }
+]
