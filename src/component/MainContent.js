@@ -1,4 +1,7 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
+import $ from "jquery";
+import "datatables.net";
+import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import MemberSpecial from '../model/MemberSpecial';
 
 function MainContent() {
@@ -9,6 +12,33 @@ function MainContent() {
   const [enemyRes, setEnemyRes] = useState(0);
   const [enemySpd, setEnemySpd] = useState(0);
   const [memberJsonData, setMemberJsonData] = useState([]);
+
+  const tableRef = useRef(null);
+  useEffect(() => {
+    if (memberJsonData.length > 0) {
+      // 使用DataTable套件來製作表格
+      $(tableRef.current).DataTable({
+        destroy: true,  // 使表格可以重新初始化
+        data: memberJsonData, //表格使用的資料
+        pageLength: 100, // 每頁顯示100筆資料
+        columns: [
+          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
+          { title: "名稱", data: "name" },
+          { title: "職業", data: "type" },
+          { title: "生命", data: "hp" },
+          { title: "傷害類型", data: "attackType" },
+          { title: "攻擊", data: "attack" },
+          { title: "防禦", data: "def" },
+          { title: "法抗", data: "res" },
+          { title: "攻速", data: "spd" },
+          { title: "我方DPS", data: null, render: function(data, type, row) {return memberDps(row);} },
+          { title: "我方HPS", data: null, render: function(data, type, row) {return memberHps(row);} },
+          { title: "我方擊殺所需時間", data: null, render: function(data, type, row) {return memberKillTime(row);} },
+          { title: "敵方DPS", data: null, render: function(data, type, row) {return enemyDps(row);} },
+        ],
+      });
+    }
+  }, [enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd, memberJsonData]); // 每次這些state變數的值改變時就重新初始化表格
 
   // 我方數據的JSON檔案上傳時執行
   const uploadMemberData = (event) => {
@@ -87,7 +117,7 @@ function MainContent() {
         dpsStr = trueDps.replace(/\D/g, '');
       return (Math.ceil(enemyHp / parseInt(dpsStr)));
       default:
-      return "NO";
+      return Infinity; //Infinity屬於number的一個值，此值必定會被視為最大值
     }
   }
 
@@ -153,50 +183,9 @@ function MainContent() {
         <p>(ex: 酸糖天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
         <p>我方DPS和HPS帶有+表示其數值可能受職業特性或天賦影響，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常結果</p>
         <p>(幹員頭像取自PRTS)</p>
-        <table id="member_table" className="table table-bordered table-hover">
-          <thead>
-            <tr className='table-secondary'>
-              <th rowSpan='1' colSpan='12'>我方數據</th>
-              <th rowSpan='1' colSpan='3'>敵人數據</th>
-            </tr>
-            <tr className='table-secondary'>
-                <th></th>
-                <th>名稱</th>
-                <th>職業</th>
-                <th>生命</th>
-                <th>傷害類型</th>
-                <th>攻擊</th>
-                <th>防禦</th>
-                <th>法抗</th>
-                <th>攻速</th>
-                <th>我方DPS</th>
-                <th>我方HPS</th>
-                <th>我方擊殺所需時間</th>
-                <th>敵方DPS</th>
-            </tr>
-          </thead>
-          <tbody>
-            {memberJsonData.map((row, index) => (
-              <tr key={index}>
-                <td className="text-center"><img src={row.icon} alt='member_icon' width='50' height='50' /></td>
-                <td>{row.name}</td>
-                <td>{row.type}</td>
-                <td>{row.hp}</td>
-                <td>{row.attackType}</td>
-                <td>{row.attack}</td>
-                <td>{row.def}</td>
-                <td>{row.res}</td>
-                <td>{row.spd}</td>
-                <td>{memberDps(row)}</td>
-                <td>{memberHps(row)}</td>
-                <td>{memberKillTime(row)}</td>
-                <td>{enemyDps(row)}</td>
-              </tr>
-            ))}
-          </tbody>
-        </table>
+        <table id='member_table' ref={tableRef} className="table table-bordered table-hover display"></table>
       </div>
-    </div>
+    </div> 
   );
 }
 

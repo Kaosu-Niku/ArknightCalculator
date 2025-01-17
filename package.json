@@ -5,6 +5,9 @@
   "dependencies": {
     "bootstrap": "^5.3.3",
     "cra-template": "1.2.0",
+    "datatables.net": "^2.2.1",
+    "datatables.net-dt": "^2.2.1",
+    "jquery": "^3.7.1",
     "nth-check": "^2.1.1",
     "postcss": "^8.5.0",
     "react": "^19.0.0",
