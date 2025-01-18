@@ -13,13 +13,16 @@ function MainContent() {
   const [enemySpd, setEnemySpd] = useState(0);
   const [memberJsonData, setMemberJsonData] = useState([]);
 
-  const tableRef = useRef(null);
+  const memberTableRef = useRef(null);
+  const attackSkillTableRef = useRef(null);
   useEffect(() => {
-    if (memberJsonData.length > 0) {
+    if (memberJsonData.Basic != undefined) {
       // 使用DataTable套件來製作表格
-      $(tableRef.current).DataTable({
+
+      //基本數值表格
+      $(memberTableRef.current).DataTable({
         destroy: true,  // 使表格可以重新初始化
-        data: memberJsonData, //表格使用的資料
+        data: memberJsonData.Basic, //表格使用的資料
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
           { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
@@ -35,6 +38,28 @@ function MainContent() {
           { title: "我方HPS", data: null, render: function(data, type, row) {return memberHps(row);} },
           { title: "我方擊殺所需時間", data: null, render: function(data, type, row) {return memberKillTime(row);} },
           { title: "敵方DPS", data: null, render: function(data, type, row) {return enemyDps(row);} },
+        ],
+      });
+
+      //攻擊技能表格
+      $(attackSkillTableRef.current).DataTable({
+        destroy: true,  // 使表格可以重新初始化
+        data: memberJsonData.AttackSkill, //表格使用的資料
+        pageLength: 100, // 每頁顯示100筆資料
+        columns: [
+          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
+          { title: "名稱", data: "name" },
+          { title: "技能", data: "whichSkill" },
+          { title: "傷害類型", data: "attackType" },
+          { title: "冷卻時間", data: "waitTime" },
+          { title: "持續時間", data: "skillTime" },
+          { title: "直接固定加算", data: "attackFirstAdd" },
+          { title: "直接倍率乘算", data: "attackFirtsMultiply" },
+          { title: "最終固定加算", data: "attackLastAdd" },
+          { title: "最終倍率乘算", data: "attackLastMultiply" },
+          { title: "攻擊間隔縮減", data: "spdAdd" },
+          { title: "攻速提升", data: "spdMultiply" },
+          { title: "技能DPS", data: null, render: function(data, type, row) {return attackSkillDps(memberJsonData.Basic, row);} },
         ],
       });
     }
@@ -141,6 +166,38 @@ function MainContent() {
     }
   }
 
+  const attackSkillDps = (memberJsonData, skillRow) => {
+    let memberRow = memberJsonData.find(item => item.name === skillRow.name);
+    let finalAttack = 0;
+    let finalDamage = 0;
+    let finalSpd = 0;
+    let finalDps = 0;
+
+    // 最終攻擊力 = (((原始攻擊力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
+    finalAttack = (((memberRow.attack + skillRow.attackFirstAdd) * skillRow.attackFirtsMultiply) + skillRow.attackLastAdd) * skillRow.attackLastMultiply;
+    // 最終攻速 = (原始攻擊間隔 - 攻擊間隔縮短時間) / ((100 + 攻速提升) / 100)
+    // 需注意(100 + 攻速提升)的最終值最小不低於20，最大不高於600
+    finalSpd = (memberRow.spd - skillRow.spdAdd) / ((100 + Math.max(-80, Math.min(500, skillRow.spdMultiply))) / 100)
+    switch(skillRow.attackType){
+      case "物傷":
+        finalDamage = finalAttack - enemyDef;
+        if(finalDamage < finalAttack / 20){
+          finalDamage = finalAttack / 20;
+        }
+        finalDps = (Math.floor(finalDamage / finalSpd));        
+      return MemberSpecial.memberDpsSpecial(memberRow, finalDps, {enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd });
+      case "法傷":
+        finalDamage = finalAttack * ((100 - enemyRes) / 100);
+        if(finalDamage < finalAttack / 20){
+          finalDamage = finalAttack / 20;
+        }
+        finalDps = (Math.floor(finalDamage / finalSpd));
+      return MemberSpecial.memberDpsSpecial(memberRow, finalDps, {enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd });
+      default:
+      return 0;
+    }
+  }
+
   return (
     <div className='container'>
       <div className='d-flex flex-column'>
@@ -183,7 +240,8 @@ function MainContent() {
         <p>(ex: 酸糖天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
         <p>我方DPS和HPS帶有+表示其數值可能受職業特性或天賦影響，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常結果</p>
         <p>(幹員頭像取自PRTS)</p>
-        <table id='member_table' ref={tableRef} className="table table-bordered table-hover display"></table>
+        <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
+        <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
       </div>
     </div> 
   );

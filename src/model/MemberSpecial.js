@@ -16,7 +16,11 @@ const MemberSpecial = {
       return `${originalDps}+`;
       case "刻刀":
         // 職業特性為攻擊皆是二連擊
-      return `${originalDps * 2}*`;
+        finalDamage = row.attack - emenyData.enemyDef;
+        if(finalDamage < row.attack / 20){
+          finalDamage = row.attack / 20;
+        }
+      return `${(Math.floor((finalDamage * 2) / row.spd))}*`;
       case "克洛絲":
       return `${originalDps}+`;
       case "流星":
@@ -43,7 +47,16 @@ const MemberSpecial = {
         }
       return `${(Math.floor(finalDamage / row.spd))}*`;
       case "卡達":
-      return `${originalDps}+`;
+        // 職業特性為攻擊皆是自身與浮游單元的獨立攻擊，且浮游單元攻擊同個單位還會有最高疊層造成110%攻擊力的傷害
+        finalDamage = row.attack * ((100 - emenyData.enemyRes) / 100);
+        if(finalDamage < row.attack / 20){
+          finalDamage = row.attack / 20;
+        }
+        let otherDamage = row.attack * 1.1 * ((100 - emenyData.enemyRes) / 100);
+        if(otherDamage < row.attack * 1.1 / 20){
+          otherDamage = row.attack * 1.1 / 20;
+        }
+      return `${(Math.floor((finalDamage + otherDamage) / row.spd))}*`;
       case "古米":
       return `${originalDps}+`;
       case "巫役小車":
