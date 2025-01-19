@@ -1,5 +1,6 @@
 const MemberSpecial = {
-  memberDpsSpecial: (row, originalDps, emenyData) => {
+  // 一些特定幹員因職業特性或天賦影響，DPS需另外獨立計算和標記
+  memberDpsSpecial: (row, emenyData, originalDps) => {
     let finalDamage = 0;
     switch(row.name){
       case "紅豆":
@@ -29,7 +30,6 @@ const MemberSpecial = {
       return `${originalDps}+`;
       case "酸糖":
         // 天賦為至少保底20%傷害
-        finalDamage = 0;
         finalDamage = row.attack - emenyData.enemyDef;
         if(finalDamage < row.attack / 5){
           finalDamage = row.attack / 5;
@@ -64,7 +64,7 @@ const MemberSpecial = {
         // (所以實際上應該是每次攻擊附帶66凋亡損傷，而小車40秒內可以打25下，所以造成凋亡損傷的總值為1650)        
         finalDamage = row.attack * ((100 - emenyData.enemyRes) / 100) * 1.1;
         if(finalDamage < row.attack / 20){
-          finalDamage = row.attack / 20;
+          finalDamage = row.attack / 20 * 1.1;
         }
         // (普通與精英敵人的損傷累計值為1000，BOSS敵人的損傷累計值為2000)
         // (對普通與精英敵人來說，小車可於第16下打爆條，也就是部屬後約25秒)
@@ -78,6 +78,7 @@ const MemberSpecial = {
       return `${originalDps}`;
     }
   },
+  // 一些特定幹員因職業特性或天賦影響，HPS需另外獨立計算和標記
   memberHpsSpecial: (row, originalHps) => {
     switch(row.name){
       case "安賽爾":
