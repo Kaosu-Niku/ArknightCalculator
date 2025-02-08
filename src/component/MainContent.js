@@ -18,13 +18,19 @@ function MainContent() {
   const memberTableRef = useRef(null);
   const attackSkillTableRef = useRef(null);
   useEffect(() => {
+    // 使用HTTP請求專案內的public/member.json檔案
+    fetch('/member.json')
+    .then(response => response.json())
+    .then(json => setMemberJsonData(json))
+    .catch(error => console.log('Error loading JSON:', error));
+
     if (memberJsonData.Basic !== undefined) {
       // 使用DataTable套件來製作表格
 
-      //基本數值表格
+      // 基本數值表格
       $(memberTableRef.current).DataTable({
         destroy: true,  // 使表格可以重新初始化
-        data: memberJsonData.Basic, //表格使用的資料
+        data: memberJsonData.Basic, // 表格使用的資料
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
           { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
@@ -43,10 +49,10 @@ function MainContent() {
         ],
       });
 
-      //攻擊技能表格
+      // 攻擊技能表格
       $(attackSkillTableRef.current).DataTable({
         destroy: true,  // 使表格可以重新初始化
-        data: memberJsonData.AttackSkill, //表格使用的資料
+        data: memberJsonData.AttackSkill, // 表格使用的資料
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
           { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
@@ -68,24 +74,6 @@ function MainContent() {
       });
     }
   }, [memberJsonData, enemyData]); // 每次這些state變數的值改變時就更新網頁，並重新初始化表格
-
-  // JSON檔案上傳時執行
-  const uploadMemberData = (event) => {
-    console.log('JSON檔案上傳成功');
-    const file = event.target.files[0];
-    if (file) {
-      const reader = new FileReader();
-      reader.onload = () => {
-        try {
-          const jsonData = JSON.parse(reader.result);
-          setMemberJsonData(jsonData);
-        } catch (e) {
-          console.error('Invalid JSON file');
-        }
-      };
-      reader.readAsText(file); // 讀取檔案內容
-    }
-  };
 
   return (
     <div className='container'>
@@ -115,11 +103,6 @@ function MainContent() {
             <input type="number" id="enemySpd" value={enemySpd} onChange={(e) => setEnemySpd(e.target.value)} min="0" step="0.01" required />
             <br></br>        
           </form>          
-        </div>
-        <hr></hr>
-        <div>
-          <h1>請選擇JSON檔:</h1>
-          <input type="file" accept=".json" onChange={uploadMemberData} />
         </div>
         <hr></hr>
         <p>以下我方面板數值皆以精1滿級滿潛能滿信賴為準</p>

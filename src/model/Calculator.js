@@ -1,7 +1,7 @@
 import MemberSpecial from './MemberSpecial';
 
 const Calculator = {
-  //我方DPS
+  // 我方DPS
   memberDps: (memberRow, enemyData) => {
     let finalDamage = 0;
     let finalDps = 0;
@@ -25,7 +25,7 @@ const Calculator = {
       return 0;
     }
   },
-  //我方HPS
+  // 我方HPS
   memberHps: (memberRow) => {
     let finalHps = 0;
 
@@ -37,7 +37,7 @@ const Calculator = {
       return 0;
     }
   },
-  //擊殺所需時間
+  // 擊殺所需時間
   memberKillTime: (memberRow, enemyData) => {
     let dpsStr = '';
 
@@ -48,10 +48,10 @@ const Calculator = {
       case "法傷":
       return (Math.ceil(enemyData.enemyHp / parseFloat(dpsStr.replace(/[^0-9.]/g, ""))));
       default:
-      return Infinity; //Infinity屬於number的一個值，此值必定會被視為最大值
+      return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
     }
   },
-  //敵方DPS
+  // 敵方DPS
   enemyDps: (memberRow, enemyData) => {
     let finalDamage = 0;
 
@@ -72,7 +72,7 @@ const Calculator = {
       return 0;
     }
   },
-  //技能期間DPS
+  // 技能期間DPS
   attackSkillDps: (skillRow, memberJsonData, enemyData) => {
     let memberRow = memberJsonData.find(item => item.name === skillRow.name);
     let finalAttack = 0;
@@ -112,7 +112,7 @@ const Calculator = {
       return 0;
     }
   },
-  //擊殺所需時間
+  // 擊殺所需時間
   attackSkillKillTime: (skillRow, memberJsonData, enemyData) => {
     let memberRow = memberJsonData.find(item => item.name === skillRow.name);
     let dpsStr = '';
@@ -124,10 +124,10 @@ const Calculator = {
       case "法傷":
       return (Math.ceil(enemyData.enemyHp / parseFloat(dpsStr.replace(/[^0-9.]/g, ""))));
       default:
-      return Infinity; //Infinity屬於number的一個值，此值必定會被視為最大值
+      return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
     }
   },
-  //技能總傷
+  // 技能總傷
   attackSkillTotal: (skillRow, memberJsonData, enemyData) => {
     let dpsStr = '';
 
@@ -138,7 +138,7 @@ const Calculator = {
       case "法傷":
       return parseInt(parseFloat(dpsStr.replace(/[^0-9.]/g, "")) * skillRow.skillTime);
       default:
-      return Infinity; //Infinity屬於number的一個值，此值必定會被視為最大值
+      return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
     }
   }
 }
