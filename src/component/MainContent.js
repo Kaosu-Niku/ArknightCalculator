@@ -5,12 +5,12 @@ import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import Calculator from '../model/Calculator';
 
 function MainContent() {
-  const [enemyHp, setEnemyHp] = useState(0);
-  const [enemyAttackType, setEnemyAttackType] = useState();
-  const [enemyAttack, setEnemyAttack] = useState(0);
+  const [enemyHp, setEnemyHp] = useState(10000);
+  const [enemyAttackType, setEnemyAttackType] = useState('物傷');
+  const [enemyAttack, setEnemyAttack] = useState(500);
   const [enemyDef, setEnemyDef] = useState(0);
   const [enemyRes, setEnemyRes] = useState(0);
-  const [enemySpd, setEnemySpd] = useState(0);
+  const [enemySpd, setEnemySpd] = useState(2);
   const [memberJsonData, setMemberJsonData] = useState([]);
 
   const enemyData = {enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd }
@@ -38,7 +38,7 @@ function MainContent() {
           { title: "攻速", data: "spd" },
           { title: "我方DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(row, enemyData);} },
           { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.memberHps(row);} },
-          { title: "我方擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(row, enemyData);} },
+          { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(row, enemyData);} },
           { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
         ],
       });
@@ -61,7 +61,8 @@ function MainContent() {
           { title: "最終倍率乘算", data: "attackLastMultiply" },
           { title: "攻擊間隔縮減", data: "spdAdd" },
           { title: "攻速提升", data: "spdMultiply" },
-          { title: "技能DPS", data: null, render: function(data, type, row) {return Calculator.attackSkillDps(row, memberJsonData.Basic, enemyData);} },
+          { title: "技能期間DPS", data: null, render: function(data, type, row) {return Calculator.attackSkillDps(row, memberJsonData.Basic, enemyData);} },
+          { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.attackSkillKillTime(row, memberJsonData.Basic, enemyData);} },
           { title: "技能總傷", data: null, render: function(data, type, row) {return Calculator.attackSkillTotal(row, memberJsonData.Basic, enemyData);} },
         ],
       });
@@ -111,7 +112,7 @@ function MainContent() {
             <input type="number" id="enemyRes" value={enemyRes} onChange={(e) => setEnemyRes(e.target.value)} min="0" max="100" required />
             <br></br>
             <label htmlFor="enemySpd">攻速:</label>
-            <input type="number" id="enemySpd" value={enemySpd} onChange={(e) => setEnemySpd(e.target.value)} min="0" step="0.1" required />
+            <input type="number" id="enemySpd" value={enemySpd} onChange={(e) => setEnemySpd(e.target.value)} min="0" step="0.01" required />
             <br></br>        
           </form>          
         </div>
@@ -121,8 +122,8 @@ function MainContent() {
           <input type="file" accept=".json" onChange={uploadMemberData} />
         </div>
         <hr></hr>
-        <p>以下我方數據皆以精1滿級滿潛能滿信賴及天賦加成為準</p>
-        <p>我方名稱帶有*表示其面板數值為經天賦加成後的最終結果</p>
+        <p>以下我方面板數值皆以精1滿級滿潛能滿信賴為準</p>
+        <p>名稱帶有*表示其面板數值為經天賦加成後的最終結果</p>
         <p>(ex: 波登可天賦為在場時輔助幹員加攻擊力，由於波登可自身就為輔助幹員，基本等同於永久加成，因此帶入計算)</p>
         <p>我方DPS和HPS帶有*表示其數值為受職業特性或天賦影響後的最終結果</p>
         <p>(ex: 酸糖天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>

@@ -956,7 +956,7 @@
     {
       "icon": "https://media.prts.wiki/1/16/%E5%A4%B4%E5%83%8F_%E6%B3%A1%E6%99%AE%E5%8D%A1.png",
       "name": "泡普卡*",
-      "whichSkill": "一技能",
+      "whichSkill": "一技能(全程打1)",
       "attackType": "物傷",
       "waitTime":40,
       "skillTime": 20,    
@@ -970,7 +970,7 @@
     {
       "icon": "https://media.prts.wiki/5/57/%E5%A4%B4%E5%83%8F_%E8%89%BE%E4%B8%9D%E9%BB%9B%E5%B0%94.png",
       "name": "艾絲黛爾",
-      "whichSkill": "一技能",
+      "whichSkill": "一技能(全程打1)",
       "attackType": "物傷",
       "waitTime":37,
       "skillTime": 25,    
@@ -984,7 +984,7 @@
     {
       "icon": "https://media.prts.wiki/e/e0/%E5%A4%B4%E5%83%8F_%E4%BC%91%E8%B0%9F%E6%96%AF.png",
       "name": "休莫斯",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(全程打1)",
       "attackType": "物傷",
       "waitTime":45,
       "skillTime": 25,    
@@ -998,7 +998,7 @@
     {
       "icon": "https://media.prts.wiki/b/bc/%E5%A4%B4%E5%83%8F_%E7%9F%B3%E8%8B%B1.png",
       "name": "石英*",
-      "whichSkill": "一技能",
+      "whichSkill": "一技能(全程打1)",
       "attackType": "物傷",
       "waitTime":37,
       "skillTime": 25,    
@@ -1012,7 +1012,7 @@
     {
       "icon": "https://media.prts.wiki/b/bc/%E5%A4%B4%E5%83%8F_%E7%9F%B3%E8%8B%B1.png",
       "name": "石英*",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(全程打1)",
       "attackType": "物傷",
       "waitTime":45,
       "skillTime": 20,    
@@ -1040,7 +1040,7 @@
     {
       "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%8A%B3%E6%B1%80.png",
       "name": "芳汀",
-      "whichSkill": "一技能",
+      "whichSkill": "一技能(二連擊)",
       "attackType": "物傷",
       "waitTime":31,
       "skillTime": 15,    
@@ -1048,7 +1048,7 @@
       "attackFirtsMultiply": 1,
       "attackLastAdd": 0,
       "attackLastMultiply": 1.3,
-      "spdAdd": 0,
+      "spdAdd": 0.65,
       "spdMultiply": 0
     },
     {
@@ -1138,7 +1138,7 @@
     {
       "icon": "https://media.prts.wiki/a/aa/%E5%A4%B4%E5%83%8F_%E8%B7%83%E8%B7%83.png",
       "name": "躍躍",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(二連擊)",
       "attackType": "物傷",
       "waitTime":29,
       "skillTime": 17,    
@@ -1146,7 +1146,7 @@
       "attackFirtsMultiply": 1.4,
       "attackLastAdd": 0,
       "attackLastMultiply": 1,
-      "spdAdd": 0,
+      "spdAdd": 0.5,
       "spdMultiply": 0
     },
     {
@@ -1166,7 +1166,7 @@
     {
       "icon": "https://media.prts.wiki/e/e9/%E5%A4%B4%E5%83%8F_%E9%85%B8%E7%B3%96.png",
       "name": "酸糖",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(二連擊)",
       "attackType": "物傷",
       "waitTime":58,
       "skillTime": 25,    
@@ -1174,8 +1174,8 @@
       "attackFirtsMultiply": 1.32,
       "attackLastAdd": 0,
       "attackLastMultiply": 1,
-      "spdAdd": 0,
-      "spdMultiply": 50
+      "spdAdd": 0.8,
+      "spdMultiply": 0
     },
     {
       "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E9%93%85%E8%B8%9D.png",
@@ -1222,7 +1222,7 @@
     {
       "icon": "https://media.prts.wiki/5/5e/%E5%A4%B4%E5%83%8F_%E6%9D%BE%E6%9E%9C.png",
       "name": "松果",
-      "whichSkill": "二技能(滿疊層)",
+      "whichSkill": "二技能(全程打1)(滿疊層)",
       "attackType": "物傷",
       "waitTime":30,
       "skillTime": 20,    
@@ -1236,7 +1236,7 @@
     {
       "icon": "https://media.prts.wiki/b/b4/%E5%A4%B4%E5%83%8F_%E7%99%BD%E9%9B%AA.png",
       "name": "白雪",
-      "whichSkill": "二技能(只算平A傷害)",
+      "whichSkill": "二技能(全程打1)(只算平A傷害)",
       "attackType": "物傷",
       "waitTime":29,
       "skillTime": 25,    
@@ -1250,7 +1250,7 @@
     {
       "icon": "https://media.prts.wiki/b/b4/%E5%A4%B4%E5%83%8F_%E7%99%BD%E9%9B%AA.png",
       "name": "白雪",
-      "whichSkill": "二技能(只算額外法傷)",
+      "whichSkill": "二技能(全程打1)(只算額外法傷)",
       "attackType": "法傷",
       "waitTime":29,
       "skillTime": 25,    
@@ -1320,7 +1320,7 @@
     {
       "icon": "https://media.prts.wiki/b/b0/%E5%A4%B4%E5%83%8F_%E5%B8%83%E4%B8%81.png",
       "name": "布丁*",
-      "whichSkill": "一技能",
+      "whichSkill": "一技能(全程打1)",
       "attackType": "法傷",
       "waitTime":37,
       "skillTime": 25,    
@@ -1334,7 +1334,7 @@
     {
       "icon": "https://media.prts.wiki/b/b0/%E5%A4%B4%E5%83%8F_%E5%B8%83%E4%B8%81.png",
       "name": "布丁*",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(全程打1)",
       "attackType": "法傷",
       "waitTime":39,
       "skillTime": 20,    
@@ -1348,7 +1348,7 @@
     {
       "icon": "https://media.prts.wiki/f/fb/%E5%A4%B4%E5%83%8F_%E7%82%8E%E7%86%94.png",
       "name": "炎熔",
-      "whichSkill": "一技能",
+      "whichSkill": "一技能(全程打1)",
       "attackType": "法傷",
       "waitTime":40,
       "skillTime": 20,    
@@ -1362,7 +1362,7 @@
     {
       "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%BF%9C%E5%B1%B1.png",
       "name": "遠山",
-      "whichSkill": "一技能",
+      "whichSkill": "一技能(全程打1)",
       "attackType": "法傷",
       "waitTime":37,
       "skillTime": 25,    
@@ -1376,7 +1376,7 @@
     {
       "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%BF%9C%E5%B1%B1.png",
       "name": "遠山",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(全程打1)",
       "attackType": "法傷",
       "waitTime":90,
       "skillTime": 30,    
@@ -1390,7 +1390,7 @@
     {
       "icon": "https://media.prts.wiki/f/fe/%E5%A4%B4%E5%83%8F_%E6%A0%BC%E9%9B%B7%E4%BC%8A.png",
       "name": "格雷伊",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(全程打1)",
       "attackType": "法傷",
       "waitTime":60,
       "skillTime": 26,    
@@ -1474,7 +1474,7 @@
     {
       "icon": "https://media.prts.wiki/c/c1/%E5%A4%B4%E5%83%8F_%E4%BC%8A%E6%A1%91.png",
       "name": "伊桑",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(全程打1)",
       "attackType": "物傷",
       "waitTime":25,
       "skillTime": 24,    
