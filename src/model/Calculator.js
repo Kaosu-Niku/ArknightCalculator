@@ -53,24 +53,65 @@ const Calculator = {
   },
   // 敵方DPS
   enemyDps: (memberRow, enemyData) => {
-    let finalDamage = 0;
-
+    // 計算平A的DPS
+    let attackDamage = 0;
+    let attackDps = 0;      
     switch(enemyData.enemyAttackType){
       case "物傷":
-        finalDamage = enemyData.enemyAttack - memberRow.def;
-        if(finalDamage < enemyData.enemyAttack / 20){
-          finalDamage = enemyData.enemyAttack / 20;
+        attackDamage = enemyData.enemyAttack - memberRow.def;
+        if(attackDamage < enemyData.enemyAttack / 20){
+          attackDamage = enemyData.enemyAttack / 20;
         }
-      return (finalDamage / enemyData.enemySpd).toFixed(2);
+        attackDps = (attackDamage / enemyData.enemySpd);
+        break;
       case "法傷":
-        finalDamage = enemyData.enemyAttack * ((100 - memberRow.res) / 100);
-        if(finalDamage < enemyData.enemyAttack / 20){
-          finalDamage = enemyData.enemyAttack / 20;
-        }
-      return (finalDamage / enemyData.enemySpd).toFixed(2);
+        attackDamage = enemyData.enemyAttack * ((100 - memberRow.res) / 100);
+        if(attackDamage < enemyData.enemyAttack / 20){
+          attackDamage = enemyData.enemyAttack / 20;
+        } 
+        attackDps = (attackDamage / enemyData.enemySpd);
+        break;
+      case "真傷":
+        attackDps = (enemyData.enemyAttack / enemyData.enemySpd);
+        break;
       default:
-      return 0;
+        attackDps = 0;
+        break;
+    }   
+    // 計算技能的DPS
+    let skillDamage = 0;
+    let skillDps = 0;
+    let skillDpsTotal = 0;
+    if(enemyData.enemySkill.length > 0){
+      enemyData.enemySkill.forEach((item) => {
+        switch(item.enemySkillType){
+          case "物傷":
+              skillDamage = item.enemySkillDamage - memberRow.def;console.log(skillDamage);
+              if(skillDamage < item.enemySkillDamage / 20){
+                skillDamage = item.enemySkillDamage / 20;              
+              }
+              skillDps = ((skillDamage * item.enemySkillCount) / item.enemySkillWaitTime);
+              skillDpsTotal += skillDps;     
+          break;
+          case "法傷":
+              skillDamage = item.enemySkillDamage * ((100 - memberRow.res) / 100);
+              if(skillDamage < item.enemySkillDamage / 20){
+                skillDamage = item.enemySkillDamage / 20;              
+              }
+              skillDps = ((skillDamage * item.enemySkillCount) / item.enemySkillWaitTime);
+              skillDpsTotal += skillDps;    
+              break;
+          case "真傷":
+              skillDps = ((item.enemySkillDamage * item.enemySkillCount) / item.enemySkillWaitTime);
+              skillDpsTotal += skillDps;
+              break;
+          default:
+            skillDpsTotal += 0;
+            break;
+        }
+      });
     }
+    return (attackDps + skillDpsTotal).toFixed(2);
   },
   // 技能期間DPS
   attackSkillDps: (skillRow, memberJsonData, enemyData) => {

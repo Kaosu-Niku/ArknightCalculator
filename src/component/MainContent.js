@@ -5,25 +5,27 @@ import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import Calculator from '../model/Calculator';
 
 function MainContent() {
+  const [memberJsonData, setMemberJsonData] = useState(() => {
+    return fetch('/member.json')
+    .then(response => response.json())
+    .then(json => setMemberJsonData(json))
+    .catch(error => console.log('Error loading JSON:', error));
+  });
+
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
   const [enemyAttack, setEnemyAttack] = useState(500);
   const [enemyDef, setEnemyDef] = useState(0);
   const [enemyRes, setEnemyRes] = useState(0);
   const [enemySpd, setEnemySpd] = useState(2);
-  const [memberJsonData, setMemberJsonData] = useState([]);
-
-  const enemyData = {enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd }
+  const [enemySkill, setEnemySkill] = useState([]);
+  const enemyData = {enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd, enemySkill }
 
   const memberTableRef = useRef(null);
-  const attackSkillTableRef = useRef(null);
-  useEffect(() => {
-    // 使用HTTP請求專案內的public/member.json檔案
-    fetch('/member.json')
-    .then(response => response.json())
-    .then(json => setMemberJsonData(json))
-    .catch(error => console.log('Error loading JSON:', error));
+  const attackSkillTableRef = useRef(null); 
+  const defSkillTableRef = useRef(null); 
 
+  useEffect(() => {
     if (memberJsonData.Basic !== undefined) {
       // 使用DataTable套件來製作表格
 
@@ -72,8 +74,31 @@ function MainContent() {
           { title: "技能總傷", data: null, render: function(data, type, row) {return Calculator.attackSkillTotal(row, memberJsonData.Basic, enemyData);} },
         ],
       });
+
+      // 防禦技能表格
+      // $(defSkillTableRef.current).DataTable({
+      //   destroy: true,  // 使表格可以重新初始化
+      //   data: memberJsonData.DefSkill, // 表格使用的資料
+      //   pageLength: 100, // 每頁顯示100筆資料
+      //   columns: [
+      //     { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
+      //     { title: "名稱", data: "name" },
+      //     { title: "技能", data: "whichSkill" },
+      //     { title: "技能類型", data: "skillType" },
+      //     { title: "冷卻時間", data: "waitTime" },
+      //     { title: "持續時間", data: "skillTime" },
+      //     { title: "直接固定加算", data: "skillFirstAdd" },
+      //     { title: "直接倍率乘算", data: "skillFirtsMultiply" },
+      //     { title: "最終固定加算", data: "skillLastAdd" },
+      //     { title: "最終倍率乘算", data: "skillLastMultiply" },
+      //     { title: "攻擊間隔縮減", data: "spdAdd" },
+      //     { title: "攻速提升", data: "spdMultiply" },
+      //     { title: "技能期間HPS", data: null, render: function(data, type, row) {return Calculator.attackSkillDps(row, memberJsonData.Basic, enemyData);} },
+      //     { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
+      //   ],
+      // });
     }
-  }, [memberJsonData, enemyData]); // 每次這些state變數的值改變時就更新網頁，並重新初始化表格
+  }, [enemyData]); // 每次敵人數值改變時就更新網頁並重新初始化表格
 
   return (
     <div className='container'>
@@ -89,6 +114,8 @@ function MainContent() {
             <input type="radio" name="enemyAttackType" value="物傷" checked={enemyAttackType === '物傷'} onChange={(e) => setEnemyAttackType(e.target.value)} required />
             <label htmlFor="enemyAttackType2">法傷</label>
             <input type="radio" name="enemyAttackType" value="法傷" checked={enemyAttackType === '法傷'} onChange={(e) => setEnemyAttackType(e.target.value)} />
+            <label htmlFor="enemyAttackType3">真傷</label>
+            <input type="radio" name="enemyAttackType" value="真傷" checked={enemyAttackType === '真傷'} onChange={(e) => setEnemyAttackType(e.target.value)} />
             <br></br>
             <label htmlFor="enemyAttack">攻擊:</label>
             <input type="number" id="enemyAttack" value={enemyAttack} onChange={(e) => setEnemyAttack(e.target.value)} min="0" required />
@@ -101,19 +128,71 @@ function MainContent() {
             <br></br>
             <label htmlFor="enemySpd">攻速:</label>
             <input type="number" id="enemySpd" value={enemySpd} onChange={(e) => setEnemySpd(e.target.value)} min="0" step="0.01" required />
-            <br></br>        
-          </form>          
+          </form> 
+          <form onSubmit={(e) => {
+              e.preventDefault()
+              const formElements = e.target.elements;
+              const formData = {
+                enemySkillType: formElements.enemySkillType.value,
+                enemySkillDamage: formElements.enemySkillDamage.value,
+                enemySkillCount: formElements.enemySkillCount.value,
+                enemySkillWaitTime: formElements.enemySkillWaitTime.value,
+              };
+              setEnemySkill((prevSkills) => [...prevSkills, formData]);  
+            }}>
+              <h3>技能:</h3>              
+              <small className="mx-3">{`*若技能屬於一次性傷害，填寫 (技能傷害=總傷) (技能造成傷害次數=1)*`}</small>
+              <br></br>
+              <small className="mx-3">{`*若技能屬於持續性傷害，填寫 (技能傷害=每次造成的傷害) (技能造成傷害次數=傷害次數)*`}</small>
+              <br></br>
+              <label htmlFor="enemySkillType">技能傷害類型:</label>
+              <label htmlFor="enemySkillType1">物傷</label>
+              <input type="radio" name="enemySkillType" value="物傷" required />
+              <label htmlFor="enemySkillType2">法傷</label>
+              <input type="radio" name="enemySkillType" value="法傷" />
+              <label htmlFor="enemySkillType3">真傷</label>
+              <input type="radio" name="enemySkillType" value="真傷" />
+              <br></br>
+              <label htmlFor="enemySkillDamage">技能傷害:</label>
+              <input type="number" id="enemySkillDamage" name="enemySkillDamage" min="0" required />         
+              <br></br>
+              <label htmlFor="enemySkillCount">技能造成傷害次數:</label>
+              <input type="number" id="enemySkillCount" name="enemySkillCount" min="1" required />
+              <br></br>
+              <label htmlFor="enemySkillWaitTime">技能冷卻時間:</label>
+              <input type="number" id="enemySkillWaitTime" name="enemySkillWaitTime" min="1" required />
+              <br></br>
+              <button type="submit">新增技能</button>
+            </form>
+            <div className="container">          
+              <div className="d-flex">
+              {
+                enemySkill.map((group, index) => (
+                  <div className="border border-1 p-2 m-2">
+                    <button type='button' onClick={() => {
+                      const newItems = enemySkill.filter((item, i) => i !== index); 
+                      setEnemySkill(newItems);
+                      }}>刪除</button>
+                    <p>{`技能${index}`}</p>
+                    <p>{`技能傷害類型: ${group.enemySkillType}`}</p>
+                    <p>{`技能傷害: ${group.enemySkillDamage}`}</p>
+                    <p>{`技能造成傷害次數: ${group.enemySkillCount}`}</p>
+                    <p>{`技能冷卻時間: ${group.enemySkillWaitTime}`}</p>
+                  </div>
+                ))
+              }
+              </div> 
+            </div>              
         </div>
         <hr></hr>
         <p>以下我方面板數值皆以精1滿級滿潛能滿信賴為準</p>
-        <p>名稱帶有*表示其面板數值為經天賦加成後的最終結果</p>
-        <p>(ex: 波登可天賦為在場時輔助幹員加攻擊力，由於波登可自身就為輔助幹員，基本等同於永久加成，因此帶入計算)</p>
-        <p>我方DPS和HPS帶有*表示其數值為受職業特性或天賦影響後的最終結果</p>
-        <p>(ex: 酸糖天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
-        <p>我方DPS和HPS帶有+表示其數值可能受職業特性或天賦影響，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常結果</p>
+        <p>名稱帶有*表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
+        <p>我方DPS和HPS帶有*表示其數值為受職業特性或天賦影響後的最終結果 (ex: 酸糖的天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
+        <p>我方DPS和HPS帶有+表示其數值可能受職業特性或天賦影響導致傷害可能更高，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常數值</p>
         <p>(幹員頭像取自PRTS)</p>
         <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
         <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
+        <table id='DefSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display"></table>
       </div>
     </div> 
   );
