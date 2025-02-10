@@ -11,6 +11,18 @@ function MainContent() {
     .then(json => setMemberJsonData(json))
     .catch(error => console.log('Error loading JSON:', error));
   });
+  const [attackSkillJsonData, setAttackSkillJsonData] = useState(() => {
+    return fetch('/attackSkill.json')
+    .then(response => response.json())
+    .then(json => setAttackSkillJsonData(json))
+    .catch(error => console.log('Error loading JSON:', error));
+  });
+  const [defSkillJsonData, setDefSkillJsonData] = useState(() => {
+    return fetch('/defSkill.json')
+    .then(response => response.json())
+    .then(json => setDefSkillJsonData(json))
+    .catch(error => console.log('Error loading JSON:', error));
+  });
 
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
@@ -54,7 +66,7 @@ function MainContent() {
       // 攻擊技能表格
       $(attackSkillTableRef.current).DataTable({
         destroy: true,  // 使表格可以重新初始化
-        data: memberJsonData.AttackSkill, // 表格使用的資料
+        data: attackSkillJsonData.Basic, // 表格使用的資料
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
           { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
@@ -75,28 +87,28 @@ function MainContent() {
         ],
       });
 
-      // 防禦技能表格
-      // $(defSkillTableRef.current).DataTable({
-      //   destroy: true,  // 使表格可以重新初始化
-      //   data: memberJsonData.DefSkill, // 表格使用的資料
-      //   pageLength: 100, // 每頁顯示100筆資料
-      //   columns: [
-      //     { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
-      //     { title: "名稱", data: "name" },
-      //     { title: "技能", data: "whichSkill" },
-      //     { title: "技能類型", data: "skillType" },
-      //     { title: "冷卻時間", data: "waitTime" },
-      //     { title: "持續時間", data: "skillTime" },
-      //     { title: "直接固定加算", data: "skillFirstAdd" },
-      //     { title: "直接倍率乘算", data: "skillFirtsMultiply" },
-      //     { title: "最終固定加算", data: "skillLastAdd" },
-      //     { title: "最終倍率乘算", data: "skillLastMultiply" },
-      //     { title: "攻擊間隔縮減", data: "spdAdd" },
-      //     { title: "攻速提升", data: "spdMultiply" },
-      //     { title: "技能期間HPS", data: null, render: function(data, type, row) {return Calculator.attackSkillDps(row, memberJsonData.Basic, enemyData);} },
-      //     { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
-      //   ],
-      // });
+      //防禦技能表格
+      $(defSkillTableRef.current).DataTable({
+        destroy: true,  // 使表格可以重新初始化
+        data: defSkillJsonData.Basic, // 表格使用的資料
+        pageLength: 100, // 每頁顯示100筆資料
+        columns: [
+          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
+          { title: "名稱", data: "name" },
+          { title: "技能", data: "whichSkill" },
+          { title: "技能類型", data: "skillType" },
+          { title: "冷卻時間", data: "waitTime" },
+          { title: "持續時間", data: "skillTime" },
+          { title: "直接固定加算", data: "skillFirstAdd" },
+          { title: "直接倍率乘算", data: "skillFirtsMultiply" },
+          { title: "最終固定加算", data: "skillLastAdd" },
+          { title: "最終倍率乘算", data: "skillLastMultiply" },
+          { title: "攻擊間隔縮減", data: "spdAdd" },
+          { title: "攻速提升", data: "spdMultiply" },
+          { title: "技能期間HPS", data: null, render: function(data, type, row) {return Calculator.defSkillDps(row, memberJsonData.Basic);} },
+          // { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
+        ],
+      });
     }
   }, [enemyData]); // 每次敵人數值改變時就更新網頁並重新初始化表格
 
@@ -192,7 +204,8 @@ function MainContent() {
         <p>(幹員頭像取自PRTS)</p>
         <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
         <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
-        <table id='DefSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display"></table>
+        <p>持續時間為-1表示此技能為強力擊類型，此類技能的HPS不用常規方式計算(攻擊力/攻速)，而是改為以(攻擊力/冷卻時間)計算</p>
+        <table id='defSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display"></table>
       </div>
     </div> 
   );
