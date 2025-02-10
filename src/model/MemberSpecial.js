@@ -80,6 +80,7 @@ const MemberSpecial = {
   },
   // 一些特定幹員因職業特性或天賦影響，HPS需另外獨立計算和標記
   memberHpsSpecial: (row, originalHps) => {
+    let otherHps = 0;
     switch(row.name){
       case "安賽爾":
       return `${originalHps}+`;
@@ -88,8 +89,21 @@ const MemberSpecial = {
       case "褐果":
       return `${originalHps}+`;
       case "調香師":
-        let otherHps = (row.attack / 100 * 3).toFixed(2);
+        // 天賦為每秒額外為所有幹員緩回調香師攻擊力3%的回復量
+        otherHps = (row.attack / 100 * 3).toFixed(2);
       return `${parseFloat(originalHps) + parseFloat(otherHps)}*`;
+      // 以下幹員只在防禦技能表格中計算HPS時調用
+      case "卡緹*":
+        //技能為回復40%生命上限的血量(技能冷卻時間20秒)
+        otherHps = (row.hp * 0.4) / 20
+      return `${otherHps}`;
+      case "蛇屠箱*":
+        //技能為每秒回復2%生命上限的血量
+        otherHps = (row.hp * 0.02)
+      return `${otherHps}`;
+      case "角峰*":
+        //技能為每秒回復30固定血量
+      return `${30}.00`;
       default:
       return `${originalHps}`;
     }

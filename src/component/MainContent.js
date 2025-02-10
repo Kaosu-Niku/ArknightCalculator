@@ -57,9 +57,9 @@ function MainContent() {
           { title: "法抗", data: "res" },
           { title: "攻速", data: "spd" },
           { title: "我方DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(row, enemyData);} },
-          { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.memberHps(row);} },
+          // { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.memberHps(row);} },
           { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(row, enemyData);} },
-          { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
+          // { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
         ],
       });
 
@@ -105,8 +105,9 @@ function MainContent() {
           { title: "最終倍率乘算", data: "skillLastMultiply" },
           { title: "攻擊間隔縮減", data: "spdAdd" },
           { title: "攻速提升", data: "spdMultiply" },
-          { title: "技能期間HPS", data: null, render: function(data, type, row) {return Calculator.defSkillDps(row, memberJsonData.Basic);} },
-          // { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
+          { title: "我方DEF", data: null, render: function(data, type, row) {return Calculator.defSkillDef(row, memberJsonData.Basic);} },
+          { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.defSkillHps(row, memberJsonData.Basic);} },         
+          { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.defSkillEnemyDps(row, memberJsonData.Basic, enemyData);} },
         ],
       });
     }
