@@ -2,7 +2,7 @@
   "Basic" :[
     {
       "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E7%BC%87.png",
-      "name": "卡緹*",
+      "name": "卡緹",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -16,7 +16,7 @@
     },
     {
       "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E7%BC%87.png",
-      "name": "卡緹*",
+      "name": "卡緹",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":20,
@@ -30,7 +30,7 @@
     },
     {
       "icon": "https://media.prts.wiki/3/32/%E5%A4%B4%E5%83%8F_%E7%B1%B3%E6%A0%BC%E9%B2%81.png",
-      "name": "米格魯*",
+      "name": "米格魯",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -44,7 +44,7 @@
     },
     {
       "icon": "https://media.prts.wiki/3/32/%E5%A4%B4%E5%83%8F_%E7%B1%B3%E6%A0%BC%E9%B2%81.png",
-      "name": "米格魯*",
+      "name": "米格魯",
       "whichSkill": "一技能",
       "skillType": "防禦",
       "waitTime":40,
@@ -100,7 +100,7 @@
     },
     {
       "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
-      "name": "蛇屠箱*",
+      "name": "蛇屠箱",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -114,7 +114,7 @@
     },
     {
       "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
-      "name": "蛇屠箱*",
+      "name": "蛇屠箱",
       "whichSkill": "一技能",
       "skillType": "防禦",
       "waitTime":38,
@@ -128,7 +128,7 @@
     },
     {
       "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
-      "name": "蛇屠箱*",
+      "name": "蛇屠箱",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":40,
@@ -142,7 +142,7 @@
     },
     {
       "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
-      "name": "蛇屠箱*",
+      "name": "蛇屠箱",
       "whichSkill": "二技能",
       "skillType": "治療",
       "waitTime":40,
@@ -156,7 +156,7 @@
     },
     {
       "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
-      "name": "角峰*",
+      "name": "角峰",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -170,7 +170,7 @@
     },
     {
       "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
-      "name": "角峰*",
+      "name": "角峰",
       "whichSkill": "一技能",
       "skillType": "防禦",
       "waitTime":39,
@@ -184,7 +184,7 @@
     },
     {
       "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
-      "name": "角峰*",
+      "name": "角峰",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":39,
@@ -198,7 +198,7 @@
     },
     {
       "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
-      "name": "角峰*",
+      "name": "角峰",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":44,
@@ -296,7 +296,7 @@
     },
     {
       "icon": "https://media.prts.wiki/a/ab/%E5%A4%B4%E5%83%8F_%E5%9D%9A%E9%9B%B7.png",
-      "name": "堅雷*",
+      "name": "堅雷",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -366,7 +366,7 @@
     },
     {
       "icon": "https://media.prts.wiki/d/d3/%E5%A4%B4%E5%83%8F_%E8%8A%99%E8%93%89.png",
-      "name": "芙蓉*",
+      "name": "芙蓉",
       "whichSkill": "無技能",
       "skillType": "治療",
       "waitTime":0,
@@ -380,7 +380,7 @@
     },  
     {
       "icon": "https://media.prts.wiki/d/d3/%E5%A4%B4%E5%83%8F_%E8%8A%99%E8%93%89.png",
-      "name": "芙蓉*",
+      "name": "芙蓉",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":30,

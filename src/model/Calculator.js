@@ -21,7 +21,7 @@ const Calculator = {
         finalDps = (finalDamage / memberRow.spd).toFixed(2);
       return MemberSpecial.memberDpsSpecial(memberRow, enemyData, finalDps);
       default:
-      return `0`;
+      return 0;
     }
   },
   // 我方HPS
@@ -31,17 +31,17 @@ const Calculator = {
         let finalHps = (memberRow.attack / memberRow.spd).toFixed(2);
       return MemberSpecial.memberHpsSpecial(memberRow, finalHps);
       default:
-      return `0`;
+      return 0;
     }
   },
   // 擊殺所需時間
   memberKillTime: (memberRow, enemyData) => {
-    let dpsStr = Calculator.memberDps(memberRow, enemyData);  
+    let dps = Calculator.memberDps(memberRow, enemyData);  
     switch(memberRow.attackType){
       case "物傷":       
-      return (Math.ceil(enemyData.enemyHp / parseFloat(dpsStr.replace(/[^0-9.]/g, ""))));
+      return (Math.ceil(enemyData.enemyHp / dps));
       case "法傷":
-      return (Math.ceil(enemyData.enemyHp / parseFloat(dpsStr.replace(/[^0-9.]/g, ""))));
+      return (Math.ceil(enemyData.enemyHp / dps));
       default:
       return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
     }
@@ -126,24 +126,24 @@ const Calculator = {
   // 擊殺所需時間
   attackSkillKillTime: (attackSkillRow, memberJsonData, enemyData) => {
     let memberRow = memberJsonData.find(item => item.name === attackSkillRow.name);
-    let dpsStr = Calculator.attackSkillDps(attackSkillRow, memberJsonData, enemyData);  
+    let dps = Calculator.attackSkillDps(attackSkillRow, memberJsonData, enemyData);  
     switch(memberRow.attackType){
       case "物傷":       
-      return (Math.ceil(enemyData.enemyHp / parseFloat(dpsStr.replace(/[^0-9.]/g, ""))));
+      return (Math.ceil(enemyData.enemyHp / dps));
       case "法傷":
-      return (Math.ceil(enemyData.enemyHp / parseFloat(dpsStr.replace(/[^0-9.]/g, ""))));
+      return (Math.ceil(enemyData.enemyHp / dps));
       default:
       return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
     }
   },
   // 攻擊技能總傷
   attackSkillTotal: (attackSkillRow, memberJsonData, enemyData) => {
-    let dpsStr = Calculator.attackSkillDps(attackSkillRow, memberJsonData, enemyData);  
+    let dps = Calculator.attackSkillDps(attackSkillRow, memberJsonData, enemyData);  
     switch(attackSkillRow.attackType){
       case "物傷":        
-      return parseInt(parseFloat(dpsStr.replace(/[^0-9.]/g, "")) * attackSkillRow.skillTime);
+      return parseInt(dps * attackSkillRow.skillTime);
       case "法傷":
-      return parseInt(parseFloat(dpsStr.replace(/[^0-9.]/g, "")) * attackSkillRow.skillTime);
+      return parseInt(dps * attackSkillRow.skillTime);
       default:
       return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
     }
@@ -155,7 +155,13 @@ const Calculator = {
     let finalDef = (((memberRow.def + defSkillRow.skillFirstAdd) * defSkillRow.skillFirtsMultiply) + defSkillRow.skillLastAdd) * defSkillRow.skillLastMultiply;
     // 改變後的防禦力可能不是整數，防禦力直接取至小數點後兩位
     finalDef = finalDef.toFixed(2);
-    return `${finalDef}`;
+    switch(defSkillRow.skillType){
+      case "防禦":   
+      return finalDef;
+      default:
+      return memberRow.def;
+    }
+    
   },
   // 防禦技能期間HPS
   defSkillHps: (defSkillRow, memberJsonData) => {
@@ -182,7 +188,7 @@ const Calculator = {
         }         
       return MemberSpecial.memberHpsSpecial(copyMemberRow, finalHps);
       default:
-      return `0`;
+      return 0;
     }
   },
   defSkillEnemyDps (defSkillRow, memberJsonData, enemyData){
@@ -194,6 +200,5 @@ const Calculator = {
     return Calculator.enemyDps(copyMemberRow, enemyData);
   }
 }
-
 
 export default Calculator;

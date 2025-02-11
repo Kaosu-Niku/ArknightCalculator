@@ -5,6 +5,12 @@ import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import Calculator from '../model/Calculator';
 
 function MainContent() {
+  const [specialJsonData, setSpecialJsonData] = useState(() => {
+    return fetch('/special.json')
+    .then(response => response.json())
+    .then(json => setSpecialJsonData(json))
+    .catch(error => console.log('Error loading JSON:', error));
+  });
   const [memberJsonData, setMemberJsonData] = useState(() => {
     return fetch('/member.json')
     .then(response => response.json())
@@ -23,7 +29,7 @@ function MainContent() {
     .then(json => setDefSkillJsonData(json))
     .catch(error => console.log('Error loading JSON:', error));
   });
-
+  
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
   const [enemyAttack, setEnemyAttack] = useState(500);
@@ -37,6 +43,20 @@ function MainContent() {
   const attackSkillTableRef = useRef(null); 
   const defSkillTableRef = useRef(null); 
 
+  function memberNameRender(data){
+    let newData = data; 
+    if(specialJsonData.Add.find((e) => e == data) != undefined){
+      newData += '+';//其面板數值為經天賦加成後的最終結果
+    } 
+    if(specialJsonData.Spc.find((e) => e == data) != undefined){
+      newData += '*';//其打出的數值為受職業特性或天賦影響後的最終結果
+    } 
+    if(specialJsonData.Pbb.find((e) => e == data) != undefined){
+      newData += '%';//其打出的數值可能受職業特性或天賦影響而打的更高，但是概率或必須滿足特定條件才觸發
+    } 
+    return newData; 
+  }
+
   useEffect(() => {
     if (memberJsonData.Basic !== undefined) {
       // 使用DataTable套件來製作表格
@@ -48,7 +68,7 @@ function MainContent() {
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
           { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
-          { title: "名稱", data: "name" },
+          { title: "名稱", data: "name", render: function(data, type, row) {return memberNameRender(data);}},
           { title: "職業", data: "type" },
           { title: "生命", data: "hp" },
           { title: "傷害類型", data: "attackType" },
@@ -70,7 +90,7 @@ function MainContent() {
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
           { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
-          { title: "名稱", data: "name" },
+          { title: "名稱", data: "name", render: function(data, type, row) {return memberNameRender(data);}},
           { title: "技能", data: "whichSkill" },
           { title: "傷害類型", data: "attackType" },
           { title: "冷卻時間", data: "waitTime" },
@@ -94,7 +114,7 @@ function MainContent() {
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
           { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
-          { title: "名稱", data: "name" },
+          { title: "名稱", data: "name", render: function(data, type, row) {return memberNameRender(data);}},
           { title: "技能", data: "whichSkill" },
           { title: "技能類型", data: "skillType" },
           { title: "冷卻時間", data: "waitTime" },
@@ -199,9 +219,9 @@ function MainContent() {
         </div>
         <hr></hr>
         <p>以下我方面板數值皆以精1滿級滿潛能滿信賴為準</p>
-        <p>名稱帶有*表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
-        <p>我方DPS和HPS帶有*表示其數值為受職業特性或天賦影響後的最終結果 (ex: 酸糖的天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
-        <p>我方DPS和HPS帶有+表示其數值可能受職業特性或天賦影響導致傷害可能更高，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常數值</p>
+        <p>名稱帶有+表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
+        <p>名稱帶有*表示其打出的數值為受職業特性或天賦影響後的最終結果 (ex: 酸糖的天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
+        <p>名稱帶有%表示其打出的數值可能受職業特性或天賦影響而打的更高，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常數值</p>
         <p>(幹員頭像取自PRTS)</p>
         <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
         <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
