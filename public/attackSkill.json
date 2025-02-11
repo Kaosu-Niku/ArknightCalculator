@@ -353,7 +353,7 @@
     {
       "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E9%93%85%E8%B8%9D.png",
       "name": "鉛踝",
-      "whichSkill": "二技能(全程打3，只算對1個的傷害)",
+      "whichSkill": "二技能(全程打3)(只算對1個的傷害)",
       "attackType": "物傷",
       "waitTime":45,
       "skillTime": 25,    
@@ -591,7 +591,7 @@
     {
       "icon": "https://media.prts.wiki/3/3d/%E5%A4%B4%E5%83%8F_PhonoR-0.png",
       "name": "巫役小車",
-      "whichSkill": "天賦(含凋亡損傷爆條)",
+      "whichSkill": "天賦(含凋亡損傷)",
       "attackType": "法傷",
       "waitTime":1,
       "skillTime": 40,    

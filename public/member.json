@@ -89,6 +89,17 @@
       "spd": 1.2
     },
     {
+      "icon": "",
+      "name": "磐蟹",
+      "type": "召喚物",
+      "hp": 1440,
+      "attackType": "物傷",
+      "attack": 321,
+      "def": 323,
+      "res": 0,
+      "spd": 1.25
+    },
+    {
       "icon": "https://media.prts.wiki/f/fc/%E5%A4%B4%E5%83%8F_%E6%85%95%E6%96%AF.png",
       "name": "幕斯",
       "type": "術戰者",
@@ -736,6 +747,17 @@
       "def": 103,
       "res": 10,
       "spd": 1.6
+    },
+    {
+      "icon": "",
+      "name": "觸手",
+      "type": "召喚物",
+      "hp": 1480,
+      "attackType": "物傷",
+      "attack": 348,
+      "def": 275,
+      "res": 0,
+      "spd": 1.25
     },
     {
       "icon": "https://media.prts.wiki/5/52/%E5%A4%B4%E5%83%8F_%E7%BD%97%E6%AF%94%E8%8F%88%E5%A1%94.png",

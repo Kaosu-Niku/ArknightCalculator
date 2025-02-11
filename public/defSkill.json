@@ -451,7 +451,7 @@
     {
       "icon": "https://media.prts.wiki/c/cc/%E5%A4%B4%E5%83%8F_%E5%98%89%E7%BB%B4%E5%B0%94.png",
       "name": "嘉維爾",
-      "whichSkill": "一技能(治療對象半血以上)",
+      "whichSkill": "一技能(半血以上)",
       "skillType": "治療",
       "waitTime":9,
       "skillTime": -1,    
@@ -465,7 +465,7 @@
     {
       "icon": "https://media.prts.wiki/c/cc/%E5%A4%B4%E5%83%8F_%E5%98%89%E7%BB%B4%E5%B0%94.png",
       "name": "嘉維爾",
-      "whichSkill": "一技能(治療對象半血以下)",
+      "whichSkill": "一技能(半血以下)",
       "skillType": "治療",
       "waitTime":9,
       "skillTime": -1,    

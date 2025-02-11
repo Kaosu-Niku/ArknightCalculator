@@ -67,7 +67,7 @@ function MainContent() {
         data: memberJsonData.Basic, // 表格使用的資料
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
-          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
+          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='40' height='40' />`} },
           { title: "名稱", data: "name", render: function(data, type, row) {return memberNameRender(data);}},
           { title: "職業", data: "type" },
           { title: "生命", data: "hp" },
@@ -76,7 +76,7 @@ function MainContent() {
           { title: "防禦", data: "def" },
           { title: "法抗", data: "res" },
           { title: "攻速", data: "spd" },
-          { title: "我方DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(row, enemyData);} },
+          { title: "DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(row, enemyData);} },
           // { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.memberHps(row);} },
           { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(row, enemyData);} },
           // { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
@@ -89,9 +89,9 @@ function MainContent() {
         data: attackSkillJsonData.Basic, // 表格使用的資料
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
-          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
-          { title: "名稱", data: "name", render: function(data, type, row) {return memberNameRender(data);}},
-          { title: "技能", data: "whichSkill" },
+          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='40' height='40' />`} },
+          { title: "名稱", width: '8%', data: "name", render: function(data, type, row) {return memberNameRender(data);}},
+          { title: "技能", width: '12%', data: "whichSkill" },
           { title: "傷害類型", data: "attackType" },
           { title: "冷卻時間", data: "waitTime" },
           { title: "持續時間", data: "skillTime" },
@@ -101,9 +101,9 @@ function MainContent() {
           { title: "最終倍率乘算", data: "attackLastMultiply" },
           { title: "攻擊間隔縮減", data: "spdAdd" },
           { title: "攻速提升", data: "spdMultiply" },
-          { title: "技能期間DPS", data: null, render: function(data, type, row) {return Calculator.attackSkillDps(row, memberJsonData.Basic, enemyData);} },
+          { title: "DPS", data: null, render: function(data, type, row) {return Calculator.attackSkillDps(row, memberJsonData.Basic, enemyData);} },
           { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.attackSkillKillTime(row, memberJsonData.Basic, enemyData);} },
-          { title: "技能總傷", data: null, render: function(data, type, row) {return Calculator.attackSkillTotal(row, memberJsonData.Basic, enemyData);} },
+          { title: "總傷", data: null, render: function(data, type, row) {return Calculator.attackSkillTotal(row, memberJsonData.Basic, enemyData);} },
         ],
       });
 
@@ -113,9 +113,9 @@ function MainContent() {
         data: defSkillJsonData.Basic, // 表格使用的資料
         pageLength: 100, // 每頁顯示100筆資料
         columns: [
-          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='50' height='50' />`} },
-          { title: "名稱", data: "name", render: function(data, type, row) {return memberNameRender(data);}},
-          { title: "技能", data: "whichSkill" },
+          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='40' height='40' />`} },
+          { title: "名稱", width: '8%', data: "name", render: function(data, type, row) {return memberNameRender(data);}},
+          { title: "技能", width: '12%', data: "whichSkill" },
           { title: "技能類型", data: "skillType" },
           { title: "冷卻時間", data: "waitTime" },
           { title: "持續時間", data: "skillTime" },
@@ -218,14 +218,16 @@ function MainContent() {
             </div>              
         </div>
         <hr></hr>
-        <p>以下我方面板數值皆以精1滿級滿潛能滿信賴為準</p>
+        <p>以下表格的我方面板數值皆以精1滿級滿潛能滿信賴為準</p>
         <p>名稱帶有+表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
         <p>名稱帶有*表示其打出的數值為受職業特性或天賦影響後的最終結果 (ex: 酸糖的天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
         <p>名稱帶有%表示其打出的數值可能受職業特性或天賦影響而打的更高，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常數值</p>
         <p>(幹員頭像取自PRTS)</p>
         <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
+        <hr></hr>
         <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
-        <p>持續時間為-1表示此技能為強力擊類型，此類技能的HPS不用常規方式計算(攻擊力/攻速)，而是改為以(攻擊力/冷卻時間)計算</p>
+        <hr></hr>
+        <p>以下表格的持續時間為-1表示此技能為強力擊類型，此類技能的HPS不用常規方式計算(攻擊力/攻速)，而是改以(攻擊力/冷卻時間)計算</p>
         <table id='defSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display"></table>
       </div>
     </div> 
