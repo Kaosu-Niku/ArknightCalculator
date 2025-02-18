@@ -60,24 +60,42 @@ const MemberSpecial = {
     switch(row.name){
       case "調香師":
         // 天賦為每秒額外為所有幹員緩回調香師攻擊力3%的回復量
-        otherHps = (row.attack / 100 * 3).toFixed(2);
-      return parseFloat(originalHps) + parseFloat(otherHps);
-      // 以下幹員只在防禦技能表格中計算HPS時調用
-      case "卡緹":
-        //技能為回復40%生命上限的血量(技能冷卻時間20秒)
-        otherHps = (row.hp * 0.4) / 20
-      return otherHps;
-      case "蛇屠箱":
-        //技能為每秒回復2%生命上限的血量
-        otherHps = (row.hp * 0.02)
-      return otherHps;
-      case "角峰":
-        //技能為每秒回復30固定血量
-      return 30.00;
+        otherHps = row.attack / 100 * 3;
+      return (parseFloat(originalHps) + parseFloat(otherHps)).toFixed(2);
       default:
       return originalHps;
     }
   },
+  // 一些特定幹員因技能較為特殊，在技能期間的HPS需另外獨立計算
+  defSkillHpsSpecial: (skillRow, originalHps) => {
+    if(skillRow.skillType == "治療"){
+      switch(skillRow.name){
+        case "卡緹":
+          if(skillRow.whichSkill == "一技能"){
+            //技能為回復40%生命上限的血量(技能冷卻時間20秒)
+            originalHps = (2946 * 0.4) / 20;
+          }      
+        return originalHps.toFixed(2);
+        case "蛇屠箱":
+          if(skillRow.whichSkill == "二技能"){
+            //技能為每秒回復2%生命上限的血量
+            originalHps = (2173 * 0.02);
+          }          
+        return originalHps.toFixed(2);
+        case "角峰":
+          if(skillRow.whichSkill == "一技能"){
+            //技能為每秒回復30固定血量
+            originalHps = 30;
+          }         
+        return originalHps.toFixed(2);
+        default:
+        return originalHps;
+      }
+    }
+    else{
+      return 0;
+    }
+  }
 }
 
 export default MemberSpecial;

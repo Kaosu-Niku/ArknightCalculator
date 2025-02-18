@@ -108,96 +108,59 @@ const Calculator = {
     }
     return (attackDps + skillDpsTotal).toFixed(2);
   },
-  // 攻擊技能期間DPS
-  attackSkillDps: (attackSkillRow, memberJsonData, enemyData) => {
-    let memberRow = memberJsonData.find(item => item.name === attackSkillRow.name);
-    // 最終攻擊力 = (((原始攻擊力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
-    let finalAttack = (((memberRow.attack + attackSkillRow.attackFirstAdd) * attackSkillRow.attackFirtsMultiply) + attackSkillRow.attackLastAdd) * attackSkillRow.attackLastMultiply; 
-    // 最終攻速 = (原始攻擊間隔 - 攻擊間隔縮短時間) / ((100 + 攻速提升) / 100)
-    // 需注意(100 + 攻速提升)的最終值最小不低於20，最大不高於600
-    let finalSpd = (memberRow.spd - attackSkillRow.spdAdd) / ((100 + Math.max(-80, Math.min(500, attackSkillRow.spdMultiply))) / 100)
-    // 由於攻擊力和攻擊間隔已發生改變，因此需將新的數值蓋掉原數值，這樣在memberDpsSpecial()計算DPS時才不會出錯
+  // 技能期間我方數值
+  skillMemberRow: (skillRow, memberJsonData) => {
+    let memberRow = memberJsonData.find(item => item.name === skillRow.name);
     let copyMemberRow = JSON.parse(JSON.stringify(memberRow));
-    // 改變後的攻擊力和攻擊間隔可能不是整數，攻擊力和攻擊間隔直接取至小數點後兩位
-    copyMemberRow.attack = finalAttack.toFixed(2);
-    copyMemberRow.spd = finalSpd.toFixed(2);
-    return Calculator.memberDps(copyMemberRow, enemyData);
-  },
-  // 擊殺所需時間
-  attackSkillKillTime: (attackSkillRow, memberJsonData, enemyData) => {
-    let memberRow = memberJsonData.find(item => item.name === attackSkillRow.name);
-    let dps = Calculator.attackSkillDps(attackSkillRow, memberJsonData, enemyData);  
-    switch(memberRow.attackType){
-      case "物傷":       
-      return (Math.ceil(enemyData.enemyHp / dps));
-      case "法傷":
-      return (Math.ceil(enemyData.enemyHp / dps));
+    switch(skillRow.skillType){
+      case "攻擊":   
+        // 最終攻擊力 = (((原始攻擊力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
+        let finalAttack = (((memberRow.attack + skillRow.skillFirstAdd) * skillRow.skillFirtsMultiply) + skillRow.skillLastAdd) * skillRow.skillLastMultiply; 
+        // 最終攻速 = (原始攻擊間隔 - 攻擊間隔縮短時間) / ((100 + 攻速提升) / 100)
+        // 需注意(100 + 攻速提升)的最終值最小不低於20，最大不高於600
+        let finalSpd = (memberRow.spd - skillRow.spdAdd) / ((100 + Math.max(-80, Math.min(500, skillRow.spdMultiply))) / 100);
+        // 改變後的攻擊力和攻擊間隔可能不是整數，攻擊力和攻擊間隔直接取至小數點後兩位
+        copyMemberRow.attack = finalAttack.toFixed(2);
+        copyMemberRow.spd = finalSpd.toFixed(2);
+      break;
+      case "防禦":  
+        // 最終防禦力 = (((原始防禦力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
+        let finalDef = (((memberRow.def + skillRow.skillFirstAdd) * skillRow.skillFirtsMultiply) + skillRow.skillLastAdd) * skillRow.skillLastMultiply;
+        // 改變後的防禦力可能不是整數，防禦力直接取至小數點後兩位
+        copyMemberRow.def = finalDef.toFixed(2);
+      break;
+      case "治療":  
+        // 最終攻擊力 = (((原始攻擊力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
+        let finalAttackH = (((memberRow.attack + skillRow.skillFirstAdd) * skillRow.skillFirtsMultiply) + skillRow.skillLastAdd) * skillRow.skillLastMultiply; 
+        // 最終攻速 = (原始攻擊間隔 - 攻擊間隔縮短時間) / ((100 + 攻速提升) / 100)
+        // 需注意(100 + 攻速提升)的最終值最小不低於20，最大不高於600
+        let finalSpdH = (memberRow.spd - skillRow.spdAdd) / ((100 + Math.max(-80, Math.min(500, skillRow.spdMultiply))) / 100);
+        // 改變後的攻擊力和攻擊間隔可能不是整數，攻擊力和攻擊間隔直接取至小數點後兩位
+        copyMemberRow.attack = finalAttackH.toFixed(2);
+        copyMemberRow.spd = finalSpdH.toFixed(2); 
+        // 由於有些技能期間屬於治療技能的幹員其本身不屬於奶媽，因此需要修改特定資料後才能使得後續能計算出HPS
+        copyMemberRow.attackType = "治療";
+      break;
       default:
-      return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
+      break;
     }
+    return copyMemberRow;
   },
-  // 攻擊技能總傷
-  attackSkillTotal: (attackSkillRow, memberJsonData, enemyData) => {
-    let dps = Calculator.attackSkillDps(attackSkillRow, memberJsonData, enemyData);  
-    switch(attackSkillRow.attackType){
-      case "物傷":        
-      return parseInt(dps * attackSkillRow.skillTime);
-      case "法傷":
-      return parseInt(dps * attackSkillRow.skillTime);
-      default:
-      return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
-    }
-  },
-  // 防禦技能期間DEF
-  defSkillDef: (defSkillRow, memberJsonData) => {
-    let memberRow = memberJsonData.find(item => item.name === defSkillRow.name);
-    // 最終防禦力 = (((原始防禦力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
-    let finalDef = (((memberRow.def + defSkillRow.skillFirstAdd) * defSkillRow.skillFirtsMultiply) + defSkillRow.skillLastAdd) * defSkillRow.skillLastMultiply;
-    // 改變後的防禦力可能不是整數，防禦力直接取至小數點後兩位
-    finalDef = finalDef.toFixed(2);
-    switch(defSkillRow.skillType){
-      case "防禦":   
-      return finalDef;
-      default:
-      return memberRow.def;
-    }
-    
-  },
-  // 防禦技能期間HPS
-  defSkillHps: (defSkillRow, memberJsonData) => {
-    let memberRow = memberJsonData.find(item => item.name === defSkillRow.name);   
-    // 最終攻擊力 = (((原始攻擊力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
-    let finalAttack = (((memberRow.attack + defSkillRow.skillFirstAdd) * defSkillRow.skillFirtsMultiply) + defSkillRow.skillLastAdd) * defSkillRow.skillLastMultiply; 
-    // 最終攻速 = (原始攻擊間隔 - 攻擊間隔縮短時間) / ((100 + 攻速提升) / 100)
-    // 需注意(100 + 攻速提升)的最終值最小不低於20，最大不高於600
-    let finalSpd = (memberRow.spd - defSkillRow.spdAdd) / ((100 + Math.max(-80, Math.min(500, defSkillRow.spdMultiply))) / 100)
-    // 由於攻擊力和攻擊間隔已發生改變，因此需將新的數值蓋掉原數值，這樣在memberHpsSpecial()計算HPS時才不會出錯
-    let copyMemberRow = JSON.parse(JSON.stringify(memberRow));
-    // 改變後的攻擊力和攻擊間隔可能不是整數，攻擊力和攻擊間隔直接取至小數點後兩位
-    copyMemberRow.attack = finalAttack.toFixed(2);
-    copyMemberRow.spd = finalSpd.toFixed(2);
+  // 技能期間我方HPS
+  skillMemberHps: (skillRow, memberJsonData) => {
+    const newMemberRow = Calculator.skillMemberRow(skillRow, memberJsonData);
     let finalHps = 0;
-    switch(defSkillRow.skillType){
-      case "治療":
-        if(defSkillRow.skillTime != -1){
-          finalHps = (finalAttack / finalSpd).toFixed(2);  
-        }
-        else{
-          // 技能時間 = -1 表示此為強力擊，則HPS的算法應該改為以技能等待時間作為HPS的計算時間
-          finalHps = (finalAttack / defSkillRow.waitTime).toFixed(2);  
-        }         
-      return MemberSpecial.memberHpsSpecial(copyMemberRow, finalHps);
-      default:
-      return 0;
+    let specialHps = 0;
+    if(skillRow.skillTime != -1){
+      // 正常類型技能
+      finalHps = Calculator.memberHps(newMemberRow);      
     }
-  },
-  defSkillEnemyDps (defSkillRow, memberJsonData, enemyData){
-    let memberRow = memberJsonData.find(item => item.name === defSkillRow.name);
-    let finalDef = Calculator.defSkillDef(defSkillRow, memberJsonData);
-    // 由於防禦力已發生改變，因此需將新的數值蓋掉原數值，這樣在enemyDps()計算敵方DPS時才不會出錯
-    let copyMemberRow = JSON.parse(JSON.stringify(memberRow));
-    copyMemberRow.def = finalDef;
-    return Calculator.enemyDps(copyMemberRow, enemyData);
+    else{
+      // 強力擊類型技能
+      finalHps = (newMemberRow.attack / skillRow.waitTime).toFixed(2);
+    }
+    specialHps = MemberSpecial.memberHpsSpecial(newMemberRow, finalHps);
+    return MemberSpecial.defSkillHpsSpecial(skillRow, specialHps);
   }
 }
 

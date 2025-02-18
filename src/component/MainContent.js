@@ -35,7 +35,7 @@ function MainContent() {
   const [enemyAttack, setEnemyAttack] = useState(500);
   const [enemyDef, setEnemyDef] = useState(0);
   const [enemyRes, setEnemyRes] = useState(0);
-  const [enemySpd, setEnemySpd] = useState(2);
+  const [enemySpd, setEnemySpd] = useState(1);
   const [enemySkill, setEnemySkill] = useState([]);
   const enemyData = {enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd, enemySkill }
 
@@ -77,9 +77,8 @@ function MainContent() {
           { title: "法抗", data: "res" },
           { title: "攻速", data: "spd" },
           { title: "DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(row, enemyData);} },
-          // { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.memberHps(row);} },
           { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(row, enemyData);} },
-          // { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
+          { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
         ],
       });
 
@@ -101,9 +100,9 @@ function MainContent() {
           // { title: "最終倍率乘算", data: "attackLastMultiply" },
           // { title: "攻擊間隔縮減", data: "spdAdd" },
           // { title: "攻速提升", data: "spdMultiply" },
-          { title: "DPS", data: null, render: function(data, type, row) {return Calculator.attackSkillDps(row, memberJsonData.Basic, enemyData);} },
-          { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.attackSkillKillTime(row, memberJsonData.Basic, enemyData);} },
-          { title: "總傷", data: null, render: function(data, type, row) {return Calculator.attackSkillTotal(row, memberJsonData.Basic, enemyData);} },
+          { title: "DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData);} },
+          //{ title: "總傷", data: null, render: function(data, type, row) {return (Calculator.memberDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData) * row.skillTime).toFixed(2);} },
+          { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData);} },
         ],
       });
 
@@ -125,9 +124,9 @@ function MainContent() {
           // { title: "最終倍率乘算", data: "skillLastMultiply" },
           // { title: "攻擊間隔縮減", data: "spdAdd" },
           // { title: "攻速提升", data: "spdMultiply" },
-          { title: "我方DEF", data: null, render: function(data, type, row) {return Calculator.defSkillDef(row, memberJsonData.Basic);} },
-          { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.defSkillHps(row, memberJsonData.Basic);} },         
-          { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.defSkillEnemyDps(row, memberJsonData.Basic, enemyData);} },
+          { title: "我方DEF", data: null, render: function(data, type, row) {return Calculator.skillMemberRow(row, memberJsonData.Basic).def;} },
+          { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.skillMemberHps(row, memberJsonData.Basic);} },         
+          { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData);} },
         ],
       });
     }
@@ -173,7 +172,7 @@ function MainContent() {
               };
               setEnemySkill((prevSkills) => [...prevSkills, formData]);  
             }}>
-              <h3>技能:</h3>              
+              <h1>敵人技能</h1>            
               <small className="mx-3">{`*若技能屬於一次性傷害，填寫 (技能傷害=總傷) (技能造成傷害次數=1)*`}</small>
               <br></br>
               <small className="mx-3">{`*若技能屬於持續性傷害，填寫 (技能傷害=每次造成的傷害) (技能造成傷害次數=傷害次數)*`}</small>
@@ -227,7 +226,7 @@ function MainContent() {
         <hr></hr>
         <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
         <hr></hr>
-        <p>以下表格的持續時間為-1表示此技能為強力擊類型，此類技能的HPS不用常規方式計算(攻擊力/攻速)，而是改以(攻擊力/冷卻時間)計算</p>
+        <p>以下表格的持續時間為-1表示其為強力擊類型的技能，此類技能的HPS計算方式不屬於通常算法(攻擊力/攻速)，而是改用(攻擊力/冷卻時間)的方式計算</p>
         <table id='defSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display"></table>
       </div>
     </div> 
