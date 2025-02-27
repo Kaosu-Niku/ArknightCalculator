@@ -1,7 +1,6 @@
 {
   "Basic" :[
-    {
-      "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E7%BC%87.png",
+    {       
       "name": "卡緹",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -14,8 +13,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E7%BC%87.png",
+    {      
       "name": "卡緹",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -28,8 +26,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/3/32/%E5%A4%B4%E5%83%8F_%E7%B1%B3%E6%A0%BC%E9%B2%81.png",
+    {       
       "name": "米格魯",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -42,8 +39,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/3/32/%E5%A4%B4%E5%83%8F_%E7%B1%B3%E6%A0%BC%E9%B2%81.png",
+    {      
       "name": "米格魯",
       "whichSkill": "一技能",
       "skillType": "防禦",
@@ -56,8 +52,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/2/28/%E5%A4%B4%E5%83%8F_%E6%B3%A1%E6%B3%A1.png",
+    {       
       "name": "泡泡",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -70,8 +65,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/2/28/%E5%A4%B4%E5%83%8F_%E6%B3%A1%E6%B3%A1.png",
+    {       
       "name": "泡泡",
       "whichSkill": "一技能",
       "skillType": "防禦",
@@ -84,8 +78,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/2/28/%E5%A4%B4%E5%83%8F_%E6%B3%A1%E6%B3%A1.png",
+    {       
       "name": "泡泡",
       "whichSkill": "二技能",
       "skillType": "防禦",
@@ -98,8 +91,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
+    {       
       "name": "蛇屠箱",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -112,8 +104,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
+    {       
       "name": "蛇屠箱",
       "whichSkill": "一技能",
       "skillType": "防禦",
@@ -126,8 +117,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
+    {      
       "name": "蛇屠箱",
       "whichSkill": "二技能",
       "skillType": "防禦",
@@ -140,8 +130,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
+    {       
       "name": "蛇屠箱",
       "whichSkill": "二技能",
       "skillType": "治療",
@@ -154,8 +143,7 @@
       "spdAdd": 0.2,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
+    {       
       "name": "角峰",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -168,8 +156,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
+    {      
       "name": "角峰",
       "whichSkill": "一技能",
       "skillType": "防禦",
@@ -182,8 +169,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
+    {       
       "name": "角峰",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -196,8 +182,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
+    {       
       "name": "角峰",
       "whichSkill": "二技能",
       "skillType": "防禦",
@@ -210,8 +195,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/3/30/%E5%A4%B4%E5%83%8F_%E6%96%91%E7%82%B9.png",
+    {       
       "name": "斑點",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -224,8 +208,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/3/30/%E5%A4%B4%E5%83%8F_%E6%96%91%E7%82%B9.png",
+    {      
       "name": "斑點",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -238,8 +221,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/07/%E5%A4%B4%E5%83%8F_%E5%8F%A4%E7%B1%B3.png",
+    {      
       "name": "古米",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -252,8 +234,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/07/%E5%A4%B4%E5%83%8F_%E5%8F%A4%E7%B1%B3.png",
+    {       
       "name": "古米",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -266,8 +247,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/07/%E5%A4%B4%E5%83%8F_%E5%8F%A4%E7%B1%B3.png",
+    {      
       "name": "古米",
       "whichSkill": "二技能",
       "skillType": "防禦",
@@ -280,8 +260,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/0/07/%E5%A4%B4%E5%83%8F_%E5%8F%A4%E7%B1%B3.png",
+    {       
       "name": "古米",
       "whichSkill": "二技能",
       "skillType": "治療",
@@ -294,8 +273,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/a/ab/%E5%A4%B4%E5%83%8F_%E5%9D%9A%E9%9B%B7.png",
+    {       
       "name": "堅雷",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -308,8 +286,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/7/77/%E5%A4%B4%E5%83%8F_%E9%9C%B2%E6%89%98.png",
+    {       
       "name": "露托",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -322,8 +299,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/7/77/%E5%A4%B4%E5%83%8F_%E9%9C%B2%E6%89%98.png",
+    {       
       "name": "露托",
       "whichSkill": "二技能",
       "skillType": "防禦",
@@ -336,8 +312,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/5/52/%E5%A4%B4%E5%83%8F_%E7%BD%97%E6%AF%94%E8%8F%88%E5%A1%94.png",
+    {       
       "name": "羅比菈塔",
       "whichSkill": "無技能",
       "skillType": "防禦",
@@ -350,8 +325,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/5/52/%E5%A4%B4%E5%83%8F_%E7%BD%97%E6%AF%94%E8%8F%88%E5%A1%94.png",
+    {      
       "name": "羅比菈塔",
       "whichSkill": "一技能",
       "skillType": "防禦",
@@ -364,8 +338,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/5/52/%E5%A4%B4%E5%83%8F_%E7%BD%97%E6%AF%94%E8%8F%88%E5%A1%94.png",
+    {       
       "name": "羅比菈塔",
       "whichSkill": "二技能",
       "skillType": "防禦",
@@ -378,8 +351,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/9/94/%E5%A4%B4%E5%83%8F_%E5%AE%89%E8%B5%9B%E5%B0%94.png",
+    {      
       "name": "安賽爾",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -392,8 +364,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/9/94/%E5%A4%B4%E5%83%8F_%E5%AE%89%E8%B5%9B%E5%B0%94.png",
+    {       
       "name": "安賽爾",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -406,8 +377,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/d/d3/%E5%A4%B4%E5%83%8F_%E8%8A%99%E8%93%89.png",
+    {       
       "name": "芙蓉",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -420,8 +390,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },  
-    {
-      "icon": "https://media.prts.wiki/d/d3/%E5%A4%B4%E5%83%8F_%E8%8A%99%E8%93%89.png",
+    {      
       "name": "芙蓉",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -434,8 +403,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },  
-    {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%8B%8F%E8%8B%8F%E6%B4%9B.png",
+    {       
       "name": "蘇蘇洛",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -448,8 +416,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%8B%8F%E8%8B%8F%E6%B4%9B.png",
+    {       
       "name": "蘇蘇洛",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -462,8 +429,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%8B%8F%E8%8B%8F%E6%B4%9B.png",
+    {      
       "name": "蘇蘇洛",
       "whichSkill": "二技能",
       "skillType": "治療",
@@ -476,8 +442,7 @@
       "spdAdd": 0,
       "spdMultiply": 70
     },
-    {
-      "icon": "https://media.prts.wiki/c/cc/%E5%A4%B4%E5%83%8F_%E5%98%89%E7%BB%B4%E5%B0%94.png",
+    {       
       "name": "嘉維爾",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -490,8 +455,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/c/cc/%E5%A4%B4%E5%83%8F_%E5%98%89%E7%BB%B4%E5%B0%94.png",
+    {       
       "name": "嘉維爾",
       "whichSkill": "一技能(半血以上)",
       "skillType": "治療",
@@ -504,8 +468,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/c/cc/%E5%A4%B4%E5%83%8F_%E5%98%89%E7%BB%B4%E5%B0%94.png",
+    {      
       "name": "嘉維爾",
       "whichSkill": "一技能(半血以下)",
       "skillType": "治療",
@@ -518,8 +481,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/d/d9/%E5%A4%B4%E5%83%8F_%E6%9C%AB%E8%8D%AF.png",
+    {       
       "name": "末藥",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -532,8 +494,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/d/d9/%E5%A4%B4%E5%83%8F_%E6%9C%AB%E8%8D%AF.png",
+    {      
       "name": "末藥",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -546,8 +507,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/d/d9/%E5%A4%B4%E5%83%8F_%E6%9C%AB%E8%8D%AF.png",
+    {       
       "name": "末藥",
       "whichSkill": "二技能",
       "skillType": "治療",
@@ -560,8 +520,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/1/19/%E5%A4%B4%E5%83%8F_%E6%B8%85%E6%B5%81.png",
+    {      
       "name": "清流",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -574,8 +533,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/1/19/%E5%A4%B4%E5%83%8F_%E6%B8%85%E6%B5%81.png",
+    {       
       "name": "清流",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -588,8 +546,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/1/19/%E5%A4%B4%E5%83%8F_%E6%B8%85%E6%B5%81.png",
+    {       
       "name": "清流",
       "whichSkill": "二技能",
       "skillType": "治療",
@@ -602,8 +559,7 @@
       "spdAdd": 2.5,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/5/58/%E5%A4%B4%E5%83%8F_%E8%A4%90%E6%9E%9C.png",
+    {       
       "name": "褐果",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -616,8 +572,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/5/58/%E5%A4%B4%E5%83%8F_%E8%A4%90%E6%9E%9C.png",
+    {       
       "name": "褐果",
       "whichSkill": "一技能(治療元素)",
       "skillType": "治療",
@@ -630,8 +585,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/5/58/%E5%A4%B4%E5%83%8F_%E8%A4%90%E6%9E%9C.png",
+    {       
       "name": "褐果",
       "whichSkill": "二技能",
       "skillType": "治療",
@@ -644,8 +598,7 @@
       "spdAdd": 0,
       "spdMultiply": 100
     },
-    {
-      "icon": "https://media.prts.wiki/5/58/%E5%A4%B4%E5%83%8F_%E8%A4%90%E6%9E%9C.png",
+    {       
       "name": "褐果",
       "whichSkill": "二技能(治療元素)",
       "skillType": "治療",
@@ -658,8 +611,7 @@
       "spdAdd": 0,
       "spdMultiply": 100
     },
-    {
-      "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%B0%83%E9%A6%99%E5%B8%88.png",
+    {       
       "name": "調香師",
       "whichSkill": "無技能",
       "skillType": "治療",
@@ -672,8 +624,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%B0%83%E9%A6%99%E5%B8%88.png",
+    {       
       "name": "調香師",
       "whichSkill": "一技能",
       "skillType": "治療",
@@ -686,8 +637,7 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
-    {
-      "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%B0%83%E9%A6%99%E5%B8%88.png",
+    {      
       "name": "調香師",
       "whichSkill": "二技能",
       "skillType": "治療",
@@ -699,6 +649,19 @@
       "skillLastMultiply": 1,
       "spdAdd": 0,
       "spdMultiply": -50
+    },
+    {       
+      "name": "波登可",
+      "whichSkill": "一技能",
+      "skillType": "治療",
+      "waitTime":29,
+      "skillTime": 22,    
+      "skillFirstAdd": 0,
+      "skillFirtsMultiply": 1.3,
+      "skillLastAdd": 0,
+      "skillLastMultiply": 1,
+      "spdAdd": 0,
+      "spdMultiply": 0
     }
   ]
 }

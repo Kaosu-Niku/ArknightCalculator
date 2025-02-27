@@ -1,7 +1,6 @@
 {
   "Basic" :[
     {
-      "icon": "https://media.prts.wiki/c/c8/%E5%A4%B4%E5%83%8F_%E9%A6%99%E8%8D%89.png",
       "name": "香草",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -16,7 +15,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E6%B8%85%E9%81%93%E5%A4%AB.png",
       "name": "清道夫",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -31,7 +29,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/1/1f/%E5%A4%B4%E5%83%8F_%E7%BF%8E%E7%BE%BD.png",
       "name": "翎羽",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -46,7 +43,6 @@
       "spdMultiply": 25
     },
     {
-      "icon": "https://media.prts.wiki/b/bb/%E5%A4%B4%E5%83%8F_%E7%BA%A2%E8%B1%86.png",
       "name": "紅豆",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -61,7 +57,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/f/fc/%E5%A4%B4%E5%83%8F_%E6%85%95%E6%96%AF.png",
       "name": "幕斯",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -76,7 +71,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/f/f4/%E5%A4%B4%E5%83%8F_%E5%AE%B4.png",
       "name": "宴",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -91,7 +85,6 @@
       "spdMultiply": 75
     },
     {
-      "icon": "https://media.prts.wiki/4/4b/%E5%A4%B4%E5%83%8F_%E7%8E%AB%E5%85%B0%E8%8E%8E.png",
       "name": "玫蘭莎",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -106,7 +99,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/1/13/%E5%A4%B4%E5%83%8F_%E7%BC%A0%E4%B8%B8.png",
       "name": "纏丸",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -121,7 +113,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/c/c2/%E5%A4%B4%E5%83%8F_%E7%8C%8E%E8%9C%82.png",
       "name": "獵蜂",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -136,7 +127,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/1/16/%E5%A4%B4%E5%83%8F_%E6%B3%A1%E6%99%AE%E5%8D%A1.png",
       "name": "泡普卡",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
@@ -151,7 +141,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/5/57/%E5%A4%B4%E5%83%8F_%E8%89%BE%E4%B8%9D%E9%BB%9B%E5%B0%94.png",
       "name": "艾絲黛爾",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
@@ -166,7 +155,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/e/e0/%E5%A4%B4%E5%83%8F_%E4%BC%91%E8%B0%9F%E6%96%AF.png",
       "name": "休莫斯",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -181,7 +169,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/b/bc/%E5%A4%B4%E5%83%8F_%E7%9F%B3%E8%8B%B1.png",
       "name": "石英",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
@@ -196,7 +183,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/b/bc/%E5%A4%B4%E5%83%8F_%E7%9F%B3%E8%8B%B1.png",
       "name": "石英",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -211,7 +197,6 @@
       "spdMultiply": 65
     },
     {
-      "icon": "https://media.prts.wiki/b/b7/%E5%A4%B4%E5%83%8F_%E6%9C%88%E8%A7%81%E5%A4%9C.png",
       "name": "月見夜",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -226,7 +211,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%8A%B3%E6%B1%80.png",
       "name": "芳汀",
       "whichSkill": "一技能(二連擊)",
       "skillType": "攻擊",
@@ -241,7 +225,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%8A%B3%E6%B1%80.png",
       "name": "芳汀",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -256,7 +239,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/5/50/%E5%A4%B4%E5%83%8F_%E7%BD%97%E5%B0%8F%E9%BB%91.png",
       "name": "羅小黑",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -271,7 +253,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/a/af/%E5%A4%B4%E5%83%8F_%E7%BA%A2%E4%BA%91.png",
       "name": "紅雲",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -286,7 +267,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/a/af/%E5%A4%B4%E5%83%8F_%E7%BA%A2%E4%BA%91.png",
       "name": "紅雲",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -301,7 +281,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E6%9D%B0%E8%A5%BF%E5%8D%A1.png",
       "name": "杰西卡",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -316,7 +295,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/a/ac/%E5%A4%B4%E5%83%8F_%E6%A2%85.png",
       "name": "梅",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -331,7 +309,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/a/aa/%E5%A4%B4%E5%83%8F_%E8%B7%83%E8%B7%83.png",
       "name": "躍躍",
       "whichSkill": "二技能(二連擊)",
       "skillType": "攻擊",
@@ -346,7 +323,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/e/e9/%E5%A4%B4%E5%83%8F_%E9%85%B8%E7%B3%96.png",
       "name": "酸糖",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -361,7 +337,6 @@
       "spdMultiply": 50
     },
     {
-      "icon": "https://media.prts.wiki/e/e9/%E5%A4%B4%E5%83%8F_%E9%85%B8%E7%B3%96.png",
       "name": "酸糖",
       "whichSkill": "二技能(二連擊)",
       "skillType": "攻擊",
@@ -376,7 +351,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E9%93%85%E8%B8%9D.png",
       "name": "鉛踝",
       "whichSkill": "二技能(全程打3)(只算對1個的傷害)",
       "skillType": "攻擊",
@@ -391,7 +365,6 @@
       "spdMultiply": 35
     }, 
     {
-      "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E9%93%85%E8%B8%9D.png",
       "name": "鉛踝",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -406,7 +379,6 @@
       "spdMultiply": 35
     }, 
     {
-      "icon": "https://media.prts.wiki/f/ff/%E5%A4%B4%E5%83%8F_%E5%AE%89%E6%AF%94%E5%B0%94.png",
       "name": "安比爾",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -421,7 +393,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/5/5e/%E5%A4%B4%E5%83%8F_%E6%9D%BE%E6%9E%9C.png",
       "name": "松果",
       "whichSkill": "二技能(全程打1)(滿疊層)",
       "skillType": "攻擊",
@@ -436,7 +407,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/b/b4/%E5%A4%B4%E5%83%8F_%E7%99%BD%E9%9B%AA.png",
       "name": "白雪",
       "whichSkill": "二技能(全程打1)(只算平A傷害)",
       "skillType": "攻擊",
@@ -451,7 +421,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/b/b4/%E5%A4%B4%E5%83%8F_%E7%99%BD%E9%9B%AA.png",
       "name": "白雪",
       "whichSkill": "二技能(全程打1)(只算額外法傷)",
       "skillType": "攻擊",
@@ -466,7 +435,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/5/55/%E5%A4%B4%E5%83%8F_%E5%A4%9C%E7%83%9F.png",
       "name": "夜煙",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -481,7 +449,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/5/55/%E5%A4%B4%E5%83%8F_%E5%A4%9C%E7%83%9F.png",
       "name": "夜煙",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -496,7 +463,6 @@
       "spdMultiply": 45
     },
     {
-      "icon": "https://media.prts.wiki/4/43/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E8%BE%BE.png",
       "name": "卡達",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -511,7 +477,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/4/43/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E8%BE%BE.png",
       "name": "卡達",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -526,7 +491,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/b/b0/%E5%A4%B4%E5%83%8F_%E5%B8%83%E4%B8%81.png",
       "name": "布丁",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
@@ -541,7 +505,6 @@
       "spdMultiply": 45
     },
     {
-      "icon": "https://media.prts.wiki/b/b0/%E5%A4%B4%E5%83%8F_%E5%B8%83%E4%B8%81.png",
       "name": "布丁",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -556,7 +519,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/f/fb/%E5%A4%B4%E5%83%8F_%E7%82%8E%E7%86%94.png",
       "name": "炎熔",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
@@ -571,7 +533,6 @@
       "spdMultiply": 50
     },
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%BF%9C%E5%B1%B1.png",
       "name": "遠山",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
@@ -586,7 +547,6 @@
       "spdMultiply": 45
     },
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%BF%9C%E5%B1%B1.png",
       "name": "遠山",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -601,7 +561,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/f/fe/%E5%A4%B4%E5%83%8F_%E6%A0%BC%E9%9B%B7%E4%BC%8A.png",
       "name": "格雷伊",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -616,7 +575,6 @@
       "spdMultiply": 65
     },
     {
-      "icon": "https://media.prts.wiki/a/ab/%E5%A4%B4%E5%83%8F_%E5%9D%9A%E9%9B%B7.png",
       "name": "堅雷",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -631,7 +589,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/3/3d/%E5%A4%B4%E5%83%8F_PhonoR-0.png",
       "name": "巫役小車",
       "whichSkill": "天賦(含凋亡損傷)",
       "skillType": "攻擊",
@@ -646,7 +603,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/8/83/%E5%A4%B4%E5%83%8F_%E6%A2%93%E5%85%B0.png",
       "name": "梓蘭",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -661,7 +617,6 @@
       "spdMultiply": 25
     },
     {
-      "icon": "https://media.prts.wiki/5/57/%E5%A4%B4%E5%83%8F_%E5%9C%B0%E7%81%B5.png",
       "name": "地靈",
       "whichSkill": "一技能",
       "skillType": "攻擊",
@@ -676,7 +631,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/5/54/%E5%A4%B4%E5%83%8F_%E5%AD%91.png",
       "name": "孑",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -691,7 +645,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/c/c1/%E5%A4%B4%E5%83%8F_%E4%BC%8A%E6%A1%91.png",
       "name": "伊桑",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
@@ -706,7 +659,6 @@
       "spdMultiply": 0
     },
     {
-      "icon": "https://media.prts.wiki/9/97/%E5%A4%B4%E5%83%8F_%E7%BB%B4%E8%8D%BB.png",
       "name": "維荻",
       "whichSkill": "二技能",
       "skillType": "攻擊",
@@ -721,7 +673,6 @@
       "spdMultiply": 50
     },
     {
-      "icon": "https://media.prts.wiki/6/67/%E5%A4%B4%E5%83%8F_%E4%BA%91%E8%BF%B9.png",
       "name": "雲跡",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
