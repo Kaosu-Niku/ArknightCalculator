@@ -16,25 +16,27 @@ jobs:
     steps:
       - name: 檢測環境
         uses: actions/checkout@v4
-
+        
       - name: 設置 Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "20.18.0"
-
+          node-version: '18'
+          
       - name: 安裝依賴
-        run: npm ci
-
+        run: |
+          npm ci
+          npm install --save-dev @babel/plugin-proposal-private-property-in-object
+        
       - name: 構建 React 應用
-        run: npm run build
-
+        run: CI=false npm run build
+        
       - name: 配置頁面
         uses: actions/configure-pages@v5
-
+        
       - name: Upload artifact
         uses: actions/upload-pages-artifact@v3
         with:
-          path: "./build" # 或者 './dist'，取決於您的構建配置
+          path: './build'
 
   deploy:
     environment:
