@@ -6,25 +6,25 @@ import Calculator from '../model/Calculator';
 
 function MainContent() {
   const [specialJsonData, setSpecialJsonData] = useState(() => {
-    return fetch('/special.json')
+    return fetch(`${process.env.PUBLIC_URL}/special.json`)
     .then(response => response.json())
     .then(json => setSpecialJsonData(json))
     .catch(error => console.log('Error loading JSON:', error));
   });
   const [memberJsonData, setMemberJsonData] = useState(() => {
-    return fetch('/member.json')
+    return fetch(`${process.env.PUBLIC_URL}/member.json`)
     .then(response => response.json())
     .then(json => setMemberJsonData(json))
     .catch(error => console.log('Error loading JSON:', error));
   });
   const [attackSkillJsonData, setAttackSkillJsonData] = useState(() => {
-    return fetch('/attackSkill.json')
+    return fetch(`${process.env.PUBLIC_URL}/attackSkill.json`)
     .then(response => response.json())
     .then(json => setAttackSkillJsonData(json))
     .catch(error => console.log('Error loading JSON:', error));
   });
   const [defSkillJsonData, setDefSkillJsonData] = useState(() => {
-    return fetch('/defSkill.json')
+    return fetch(`${process.env.PUBLIC_URL}/defSkill.json`)
     .then(response => response.json())
     .then(json => setDefSkillJsonData(json))
     .catch(error => console.log('Error loading JSON:', error));
