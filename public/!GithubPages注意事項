@@ -30,8 +30,8 @@ ${process.env.PUBLIC_URL}是React的一項參數，可自動辨識當前環境�
 2. 透過 GitHub Actions 的部署方式
 
   1. 將倉庫權限設置為public
-  2. 開啟[倉庫 > Setting > GitHub Pages > Source > GitHub Actions]
+  2. 開啟[倉庫 > Setting > Pages > Source > GitHub Actions]
   3. 同樣像上述說明創建 package.json 和 package-lock.json 在根目錄下, 填寫依賴套件
   4. 創建 .github/workflows/任意名稱.yml
-  5. 開啟[倉庫 > Actions > Workflows > 運行工作流]
+  5. 開啟[倉庫 > Actions > Run workflow]
   6. 完成部署 (會在工作流顯示狀態, 當他打上綠燈代表完成)
