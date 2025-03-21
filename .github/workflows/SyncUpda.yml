@@ -14,7 +14,7 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: 檢出代碼
+      - name: 取得代碼
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
@@ -24,7 +24,6 @@ jobs:
         run: |
           REPO_FULL_NAME="${GITHUB_REPOSITORY}"
 
-          # 檢測是否有上遊倉庫
           if git remote -v | grep -q upstream; then
             echo "這是復刻倉庫，已存在上遊遠程"
             echo "IS_FORK=true" >> $GITHUB_OUTPUT
@@ -54,7 +53,6 @@ jobs:
 
           # 確保我們有 upstream/master 分支
           if git rev-parse --verify upstream/master >/dev/null 2>&1; then
-            # 檢查本地是否落後於上遊
             echo "檢查本地是否落後於上遊..."
 
             # 獲取分支比較狀態
@@ -62,19 +60,16 @@ jobs:
             BEHIND_COUNT=$(git rev-list --count master..upstream/master)
             AHEAD_COUNT=$(git rev-list --count upstream/master..master)
 
-            echo "本地分支領先上遊 $AHEAD_COUNT 個提交"
-            echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
-
             if [ "$BEHIND_COUNT" -gt 0 ]; then
               if [ "$AHEAD_COUNT" -gt 0 ]; then
                 echo "警告：本地分支既落後又領先上遊。請手動處理同步。"
                 echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
               else
-                echo "本地分支落後於上遊，可以自動同步"
+                echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
                 echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
               fi
             else
-              echo "本地分支不落後於上遊，無需同步"
+              echo "本地分支領先上遊 $AHEAD_COUNT 個提交"
               echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
             fi
           else
