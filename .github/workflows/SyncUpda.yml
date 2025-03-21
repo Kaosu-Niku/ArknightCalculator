@@ -35,7 +35,6 @@ jobs:
 
             if echo "$REPO_INFO" | grep -q '"fork": true'; then
               echo "這是復刻倉庫"
-              # 直接使用提供的上遊倉庫 URL
               PARENT_REPO="https://github.com/Kaosu-Niku/ArknightCalculator.git"
               echo "上遊倉庫 URL: $PARENT_REPO"
               git remote add upstream $PARENT_REPO
@@ -46,34 +45,54 @@ jobs:
             fi
           fi
 
-      - name: 配置 Git
+      - name: 檢查分支狀態
         if: steps.check-fork.outputs.IS_FORK == 'true'
+        id: check-branch
+        run: |
+          echo "開始檢查分支狀態..."
+          git fetch upstream
+
+          # 確保我們有 upstream/master 分支
+          if git rev-parse --verify upstream/master >/dev/null 2>&1; then
+            # 檢查本地是否落後於上遊
+            echo "檢查本地是否落後於上遊..."
+
+            # 獲取分支比較狀態
+            git checkout master
+            BEHIND_COUNT=$(git rev-list --count master..upstream/master)
+            AHEAD_COUNT=$(git rev-list --count upstream/master..master)
+
+            echo "本地分支領先上遊 $AHEAD_COUNT 個提交"
+            echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
+
+            if [ "$BEHIND_COUNT" -gt 0 ]; then
+              if [ "$AHEAD_COUNT" -gt 0 ]; then
+                echo "警告：本地分支既落後又領先上遊。請手動處理同步。"
+                echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
+              else
+                echo "本地分支落後於上遊，可以自動同步"
+                echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "本地分支不落後於上遊，無需同步"
+              echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "無法找到 upstream/master 分支，請檢查上遊倉庫配置"
+            echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 配置 Git
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
         run: |
           git config --global user.name "Canaan-HS"
           git config --global user.email "s3459897@gmail.com"
           echo "已配置 Git 用戶信息"
 
       - name: 同步分支
-        if: steps.check-fork.outputs.IS_FORK == 'true'
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
         run: |
           echo "開始同步分支..."
-          git fetch upstream
-
-          # 確保我們有 upstream/master 分支
-          if git rev-parse --verify upstream/master >/dev/null 2>&1; then
-            # 檢查是否有更新
-            LOCAL=$(git rev-parse HEAD)
-            REMOTE=$(git rev-parse upstream/master)
-
-            if [ "$LOCAL" = "$REMOTE" ]; then
-              echo "已經是最新狀態，無需同步"
-            else
-              echo "檢測到上遊更新，開始同步..."
-              git checkout master
-              git merge upstream/master --no-edit
-              git push origin master
-              echo "同步完成！"
-            fi
-          else
-            echo "無法找到 upstream/master 分支，請檢查上遊倉庫配置"
-          fi
+          git merge upstream/master --no-edit
+          git push origin master
+          echo "同步完成！"
