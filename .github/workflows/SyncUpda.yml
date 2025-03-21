@@ -58,18 +58,32 @@ jobs:
             # 獲取分支比較狀態
             git checkout master
             BEHIND_COUNT=$(git rev-list --count master..upstream/master)
-            AHEAD_COUNT=$(git rev-list --count upstream/master..master)
 
             if [ "$BEHIND_COUNT" -gt 0 ]; then
-              if [ "$AHEAD_COUNT" -gt 0 ]; then
-                echo "警告：本地分支既落後又領先上遊。請手動處理同步。"
-                echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
-              else
-                echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
+              echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
+
+              # 創建一個臨時分支來測試合併
+              git checkout -b temp_merge_test
+
+              # 嘗試合併但不提交
+              if git merge --no-commit --no-ff upstream/master > /dev/null 2>&1; then
+                echo "測試合併成功，沒有衝突"
+                git merge --abort  # 取消測試合併
+                git checkout master  # 切回主分支
+                git branch -D temp_merge_test  # 刪除臨時分支
+                echo "CAN_AUTO_MERGE=true" >> $GITHUB_OUTPUT
                 echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
+              else
+                # 有衝突
+                echo "警告：合併會產生衝突，請手動處理同步"
+                git merge --abort  # 取消測試合併
+                git checkout master  # 切回主分支
+                git branch -D temp_merge_test  # 刪除臨時分支
+                echo "CAN_AUTO_MERGE=false" >> $GITHUB_OUTPUT
+                echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
               fi
             else
-              echo "本地分支領先上遊 $AHEAD_COUNT 個提交"
+              echo "本地分支不落後於上遊，無需同步"
               echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
             fi
           else
@@ -80,8 +94,8 @@ jobs:
       - name: 配置 Git
         if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
         run: |
-          git config --global user.name "Canaan-HS"
-          git config --global user.email "s3459897@gmail.com"
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           echo "已配置 Git 用戶信息"
 
       - name: 同步分支
