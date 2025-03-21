@@ -23,7 +23,6 @@ jobs:
         id: check-fork
         run: |
           REPO_FULL_NAME="${GITHUB_REPOSITORY}"
-          UPSTREAM_REPO_URL="$(git config --get remote.origin.url)"
 
           # 檢測是否有上遊倉庫
           if git remote -v | grep -q upstream; then
@@ -35,8 +34,9 @@ jobs:
               "https://api.github.com/repos/${REPO_FULL_NAME}")
 
             if echo "$REPO_INFO" | grep -q '"fork": true'; then
-              echo "這是復刻倉庫，需要添加上遊遠程"
-              PARENT_REPO=$(echo "$REPO_INFO" | grep -o '"parent":.*"clone_url":"[^"]*"' | grep -o '"clone_url":"[^"]*"' | cut -d'"' -f4)
+              echo "這是復刻倉庫"
+              # 直接使用提供的上遊倉庫 URL
+              PARENT_REPO="https://github.com/Kaosu-Niku/ArknightCalculator.git"
               echo "上遊倉庫 URL: $PARENT_REPO"
               git remote add upstream $PARENT_REPO
               echo "IS_FORK=true" >> $GITHUB_OUTPUT
@@ -59,16 +59,21 @@ jobs:
           echo "開始同步分支..."
           git fetch upstream
 
-          # 檢查是否有更新
-          LOCAL=$(git rev-parse HEAD)
-          REMOTE=$(git rev-parse upstream/master)
+          # 確保我們有 upstream/master 分支
+          if git rev-parse --verify upstream/master >/dev/null 2>&1; then
+            # 檢查是否有更新
+            LOCAL=$(git rev-parse HEAD)
+            REMOTE=$(git rev-parse upstream/master)
 
-          if [ "$LOCAL" = "$REMOTE" ]; then
-            echo "已經是最新狀態，無需同步"
+            if [ "$LOCAL" = "$REMOTE" ]; then
+              echo "已經是最新狀態，無需同步"
+            else
+              echo "檢測到上遊更新，開始同步..."
+              git checkout master
+              git merge upstream/master --no-edit
+              git push origin master
+              echo "同步完成！"
+            fi
           else
-            echo "檢測到上遊更新，開始同步..."
-            git checkout master
-            git merge upstream/master --no-edit
-            git push origin master
-            echo "同步完成！"
+            echo "無法找到 upstream/master 分支，請檢查上遊倉庫配置"
           fi
