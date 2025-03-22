@@ -4,12 +4,12 @@ Github Pages 是Github的一項功能，可免費部屬靜態應用程式 (純�
 基本設置:
 1. 將倉庫權限設置為public (private雖然也可以使用Github Pages功能，但需要額外付費)
 2. 開啟[倉庫 > Setting > Pages]，設定選項[Source]，此處有兩個選項可選擇
-設定選項[Source] = [Deploy from a branch]，則使用Branch的部屬方式
-設定選項[Source] = [Github Actions]，則使用Action的部屬方式
-(目前會建議使用Action的部屬方式)
+設定選項[Source] = [Deploy from a branch]，則使用分支的部屬方式
+設定選項[Source] = [Github Actions]，則使用工作流的部屬方式
+(目前會建議使用工作流的部屬方式)
 
 
-Branch部屬方式:
+分支部屬方式:
 (使用這個部屬方式，Github會自動為該倉庫新增一個gh-pages分支，並自動部屬該分支)
 1. 選項[Branch] = [gh-pages /(root)]
 2. 專案中CMD執行 `npm install gh-pages --save-dev` 下載Github Pages套件
@@ -23,16 +23,16 @@ Branch部屬方式:
   },
 }
 ```
-4. CMD執行 `npm run deploy` 即可，會將專案打包後並自動推送至倉庫的gh-pages分支並自動部屬
+4. CMD執行 `npm run deploy` 即可，會自動將專案打包後並推送至倉庫的gh-pages分支並部屬
 
 
-Action部屬方式:
-(使用這個部屬方式)
-1. 專案根目錄新增[.github/workflows/任意名稱.yml]
-2. Github Actions透過yml檔的設定來執行操作，以下是一個簡單的範例
-```
-
-```
+工作流部屬方式:
+1. 開啟[倉庫 > Actions]，點擊選項[new workflow]建立新的工作流
+2. 有許多現成的工作流文件範例可供搜索，根據專案性質搜索適合的工作流文件，點擊工作流文件的選項[Configure]預覽工作流文件內容
+(以此專案為例，此專案為React專案，因此使用node.js工作流文件)
+3. 確認工作流文件內容沒問題後點擊選項[Commit changes...]，即可將此工作流文件自動添加至專案中
+4. 專案CMD執行 `git pull`，將工作流文件同步回來
+5. 依照目前的node.js工作流文件的內容，只要專案執行git push操作，以及pull request操作，
 
 
 如果以上設置沒有錯誤，則訪問以下網址即可成功瀏覽到網站內容
