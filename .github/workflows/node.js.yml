@@ -6,11 +6,11 @@ name: Node.js CI
 on:
   push:
     branches: [ "master" ]
-    paths:
-      - public
-      - src
-      - package-lock.json
-      - package.json
+    # paths:
+    #   - public
+    #   - src
+    #   - package-lock.json
+    #   - package.json
   workflow_dispatch:
 
 permissions:
