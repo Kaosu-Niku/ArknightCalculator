@@ -21,6 +21,8 @@ jobs:
 
     steps:
     - uses: actions/checkout@v4
+    - name: Set CI environment variable to false
+      run: echo "CI=false" >> $GITHUB_ENV  # 設置CI為false
     - name: Use Node.js ${{ matrix.node-version }}
       uses: actions/setup-node@v4
       with:
