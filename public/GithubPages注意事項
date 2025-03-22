@@ -12,7 +12,7 @@ Github Pages 是Github的一項功能，可免費部屬靜態應用程式 (純�
 分支部屬方式:
 (使用這個部屬方式，Github會自動為該倉庫新增一個gh-pages分支，並自動部屬該分支)
 1. 選項[Branch] = [gh-pages /(root)]
-2. 專案中CMD執行 `npm install gh-pages --save-dev` 下載Github Pages套件
+2. 專案中CMD執行 `npm install gh-pages --save-dev` 下載套件
 3. package.json 新增以下內容
 ```
 {
@@ -23,7 +23,7 @@ Github Pages 是Github的一項功能，可免費部屬靜態應用程式 (純�
   },
 }
 ```
-4. CMD執行 `npm run deploy` 即可，會自動將專案打包後並推送至倉庫的gh-pages分支並部屬
+4. CMD執行 `npm run deploy` 即可，將專案打包後會自動將打包檔推送至倉庫的gh-pages分支並部屬打包檔
 
 
 工作流部屬方式:
@@ -31,9 +31,13 @@ Github Pages 是Github的一項功能，可免費部屬靜態應用程式 (純�
 2. 有許多現成的工作流文件範例可供搜索，根據專案性質搜索適合的工作流文件，點擊工作流文件的選項[Configure]預覽工作流文件內容
 (以此專案為例，此專案為React專案，因此使用node.js工作流文件)
 3. 確認工作流文件內容沒問題後點擊選項[Commit changes...]，即可將此工作流文件自動添加至專案中
-4. 專案CMD執行 `npm install --save-dev @babel/plugin-proposal-private-property-in-object` 下載此套件
+4. 專案CMD執行 `npm install --save-dev @babel/plugin-proposal-private-property-in-object` 下載套件
 5. 專案CMD執行 `git pull`，將工作流文件同步回來
-6. 依照目前的node.js工作流文件的內容，只要專案執行git push操作，以及pull request操作，會自動將專案打包後並部屬
+6. 在編輯此文件的當下版本的node.js工作流文件的內容，還需要修改及添加某些部分，新增以下內容
+```
+
+```
+7. 只要專案執行git push操作，以及pull request操作，會自動將倉庫內的專案打包後並推送至gh-pages分支並部屬打包檔
 
 
 如果以上設置沒有錯誤，則訪問以下網址即可成功瀏覽到網站內容
