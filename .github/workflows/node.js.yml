@@ -13,6 +13,10 @@ on:
       - package.json
   workflow_dispatch:
 
+permissions:
+  pages: write
+  id-token: write
+
 concurrency:
   group: "pages"
 
