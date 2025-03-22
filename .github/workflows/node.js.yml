@@ -50,6 +50,6 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        publish_branch: gh-pages #指向gh-pages分支
+        publish_branch: master #指向master分支
         publish_dir: build #指向build目錄
         github_token: ${{ secrets.GITHUB_TOKEN }}
