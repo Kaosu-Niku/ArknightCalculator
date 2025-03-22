@@ -3,7 +3,7 @@ name: 同步復刻
 on:
   schedule:
     # 台灣時間午夜 00:00 (UTC+8) 相當於 UTC 16:00 (前一天)
-    - cron: '0 16 * * *'
+    - cron: "0 16 * * *"
   workflow_dispatch: # 允許手動觸發
 
 permissions:
@@ -66,7 +66,7 @@ jobs:
 
             # 確保我們在 master 分支上
             git checkout master
-
+            
             # 獲取分支比較狀態
             BEHIND_COUNT=$(git rev-list --count master..upstream/master)
 
@@ -99,12 +99,12 @@ jobs:
             # 通過 API 獲取觸發者的電子郵件
             USER_EMAIL=$(curl -s -H "Authorization: token ${{ github.token }}" \
               "https://api.github.com/users/${ACTOR}" | grep -o '"email": "[^"]*"' | cut -d'"' -f4)
-
+            
             if [ -z "$USER_EMAIL" ]; then
               # 如果 API 未返回電子郵件，使用備用郵件格式
               USER_EMAIL="${ACTOR}@users.noreply.github.com"
             fi
-
+            
             echo "ACTOR_NAME=${ACTOR}" >> $GITHUB_OUTPUT
             echo "ACTOR_EMAIL=${USER_EMAIL}" >> $GITHUB_OUTPUT
             echo "檢測到手動觸發，觸發者: ${ACTOR}, 郵件: ${USER_EMAIL}"
@@ -112,6 +112,22 @@ jobs:
             echo "MANUAL_TRIGGER=false" >> $GITHUB_OUTPUT
             echo "自動觸發的工作流程"
           fi
+
+      - name: 配置 Git 身份 - 自動觸發
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true' && steps.check-trigger.outputs.MANUAL_TRIGGER == 'false'
+        run: |
+          # 設置機器人身份，但不會出現在貢獻者列表
+          git config --global user.name "github-actions"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "已配置 Git 用戶信息為機器人"
+
+      - name: 配置 Git 身份 - 手動觸發
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true' && steps.check-trigger.outputs.MANUAL_TRIGGER == 'true'
+        run: |
+          # 配置用戶信息為觸發者
+          git config --global user.name "${{ steps.check-trigger.outputs.ACTOR_NAME }}"
+          git config --global user.email "${{ steps.check-trigger.outputs.ACTOR_EMAIL }}"
+          echo "已配置 Git 用戶信息為觸發者: ${{ steps.check-trigger.outputs.ACTOR_NAME }}"
 
       - name: 同步 master 分支
         if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
@@ -145,9 +161,7 @@ jobs:
       - name: 提交更改 - 手動觸發
         if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true' && steps.check-trigger.outputs.MANUAL_TRIGGER == 'true'
         run: |
-          # 配置用戶信息為觸發者
-          git config --global user.name "${{ steps.check-trigger.outputs.ACTOR_NAME }}"
-          git config --global user.email "${{ steps.check-trigger.outputs.ACTOR_EMAIL }}"
-
+          # 使用普通的 git push，這樣會顯示觸發者為貢獻者
           git push origin master
+
           echo "master 分支同步完成！優先保留了本地更改。"
