@@ -207,7 +207,7 @@ function MainContent() {
         <p>名稱帶有+表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
         <p>名稱帶有*表示其打出的數值為受職業特性或天賦影響後的最終結果 (ex: 酸糖的天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
         <p>名稱帶有%表示其打出的數值可能受職業特性或天賦影響而打的更高，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常數值</p>
-        <p>(幹員頭像取自PRTS的幹員檔案)</p>
+        <p>(幹員頭像取自PRTS的幹員檔案的圖片連結)</p>
         <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
         <hr></hr>
         <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
