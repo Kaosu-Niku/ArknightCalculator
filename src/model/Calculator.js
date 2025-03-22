@@ -9,13 +9,13 @@ const Calculator = {
   // 我方名稱
   memberNameRender: (data, specialJsonData) => {
     let newData = data; 
-    if(specialJsonData.Add.find((e) => e == data) != undefined){
+    if(specialJsonData.Add.find((e) => e === data) != undefined){
       newData += '+';//其面板數值為經天賦加成後的最終結果
     } 
-    if(specialJsonData.Spc.find((e) => e == data) != undefined){
+    if(specialJsonData.Spc.find((e) => e === data) != undefined){
       newData += '*';//其打出的數值為受職業特性或天賦影響後的最終結果
     } 
-    if(specialJsonData.Pbb.find((e) => e == data) != undefined){
+    if(specialJsonData.Pbb.find((e) => e === data) != undefined){
       newData += '%';//其打出的數值可能受職業特性或天賦影響而打的更高，但是概率或必須滿足特定條件才觸發
     } 
     return newData; 
