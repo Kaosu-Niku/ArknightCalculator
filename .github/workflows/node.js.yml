@@ -43,3 +43,4 @@ jobs:
         publish_branch: gh-pages # 部署到 gh-pages 分支
         publish_dir: build # 指向 build 資料夾
         github_token: ${{ secrets.GITHUB_TOKEN }}
+        personal_token: ${{ secrets.ACTIONS_DEPLOY_TOKEN }}
