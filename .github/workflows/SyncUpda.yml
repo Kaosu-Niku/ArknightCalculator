@@ -3,7 +3,11 @@ name: 同步復刻
 on:
   schedule:
     # 台灣時間午夜 00:00 (UTC+8) 相當於 UTC 16:00 (前一天)
-    - cron: '0 16 * * *'
+    - cron: "0 16 * * *"
+  push:
+    branches: [master]
+    paths:
+      - ".github/workflows/SyncUpda.yml"
   workflow_dispatch: # 允許手動觸發
 
 permissions:
@@ -22,6 +26,7 @@ jobs:
           fetch-depth: 0
           # 確保檢出 master 分支
           ref: master
+          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: 檢測是否為復刻倉庫
         id: check-fork
@@ -54,7 +59,7 @@ jobs:
         run: |
           echo "開始檢查分支狀態..."
           git fetch upstream
-          
+
           # 標記工作流文件為總是保留本地版本
           git config --local merge.ours.driver true
           echo ".github/workflows/* merge=ours" > .git/info/attributes
@@ -88,12 +93,45 @@ jobs:
             echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
           fi
 
-      - name: 配置 Git
-        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
+      - name: 檢測觸發方式
+        id: check-trigger
         run: |
-          git config --global user.name "github-actions[bot]"
+          if [ "${{ github.event_name }}" == "workflow_dispatch" ]; then
+            echo "MANUAL_TRIGGER=true" >> $GITHUB_OUTPUT
+            # 獲取觸發者資訊
+            ACTOR="${{ github.actor }}"
+            # 通過 API 獲取觸發者的電子郵件
+            USER_EMAIL=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/users/${ACTOR}" | grep -o '"email": "[^"]*"' | cut -d'"' -f4)
+            
+            if [ -z "$USER_EMAIL" ]; then
+              # 如果 API 未返回電子郵件，使用備用郵件格式
+              USER_EMAIL="${ACTOR}@users.noreply.github.com"
+            fi
+            
+            echo "ACTOR_NAME=${ACTOR}" >> $GITHUB_OUTPUT
+            echo "ACTOR_EMAIL=${USER_EMAIL}" >> $GITHUB_OUTPUT
+            echo "檢測到手動觸發，觸發者: ${ACTOR}, 郵件: ${USER_EMAIL}"
+          else
+            echo "MANUAL_TRIGGER=false" >> $GITHUB_OUTPUT
+            echo "自動觸發的工作流程"
+          fi
+
+      - name: 配置 Git 身份 - 自動觸發
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true' && steps.check-trigger.outputs.MANUAL_TRIGGER == 'false'
+        run: |
+          # 設置機器人身份，但不會出現在貢獻者列表
+          git config --global user.name "github-actions"
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
-          echo "已配置 Git 用戶信息"
+          echo "已配置 Git 用戶信息為機器人"
+
+      - name: 配置 Git 身份 - 手動觸發
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true' && steps.check-trigger.outputs.MANUAL_TRIGGER == 'true'
+        run: |
+          # 配置用戶信息為觸發者
+          git config --global user.name "${{ steps.check-trigger.outputs.ACTOR_NAME }}"
+          git config --global user.email "${{ steps.check-trigger.outputs.ACTOR_EMAIL }}"
+          echo "已配置 Git 用戶信息為觸發者: ${{ steps.check-trigger.outputs.ACTOR_NAME }}"
 
       - name: 同步 master 分支
         if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
@@ -114,7 +152,19 @@ jobs:
             git commit --amend --no-edit 2>/dev/null || true
           fi
 
-          # 推送到 origin master
+          echo "準備提交更改..."
+
+      - name: 提交更改 - 自動觸發
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true' && steps.check-trigger.outputs.MANUAL_TRIGGER == 'false'
+        uses: ad-m/github-push-action@master
+        with:
+          github_token: ${{ secrets.GITHUB_TOKEN }}
+          branch: master
+          force: false
+
+      - name: 提交更改 - 手動觸發
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true' && steps.check-trigger.outputs.MANUAL_TRIGGER == 'true'
+        run: |
           git push origin master
 
           echo "master 分支同步完成！優先保留了本地更改。"
