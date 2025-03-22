@@ -7,10 +7,11 @@ on:
   push:
     branches: [ "master" ]
     paths:
-      - public
-      - src
-      - package-lock.json
-      - package.json
+      - "public/**"
+      - "src/**"
+      - ".github/workflows/node.js.yml"
+      - "package-lock.json"
+      - "package.json"
   workflow_dispatch:
 
 permissions:
