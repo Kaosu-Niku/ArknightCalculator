@@ -1,0 +1,107 @@
+name: 同步復刻
+
+on:
+  schedule:
+    # 台灣時間午夜 00:00 (UTC+8) 相當於 UTC 16:00 (前一天)
+    - cron: '0 16 * * *'
+  workflow_dispatch: # 允許手動觸發
+
+permissions:
+  contents: write # 給予寫入權限
+
+jobs:
+  sync-fork:
+    runs-on: ubuntu-latest
+
+    steps:
+      - name: 取得代碼
+        uses: actions/checkout@v3
+        with:
+          fetch-depth: 0
+
+      - name: 檢測是否為復刻倉庫
+        id: check-fork
+        run: |
+          REPO_FULL_NAME="${GITHUB_REPOSITORY}"
+
+          if git remote -v | grep -q upstream; then
+            echo "這是復刻倉庫，已存在上遊遠程"
+            echo "IS_FORK=true" >> $GITHUB_OUTPUT
+          else
+            # 嘗試從 API 獲取 fork 信息
+            REPO_INFO=$(curl -s -H "Authorization: token ${{ github.token }}" \
+              "https://api.github.com/repos/${REPO_FULL_NAME}")
+
+            if echo "$REPO_INFO" | grep -q '"fork": true'; then
+              echo "這是復刻倉庫"
+              PARENT_REPO="https://github.com/Kaosu-Niku/ArknightCalculator.git"
+              echo "上遊倉庫 URL: $PARENT_REPO"
+              git remote add upstream $PARENT_REPO
+              echo "IS_FORK=true" >> $GITHUB_OUTPUT
+            else
+              echo "這是原始倉庫，不需要同步"
+              echo "IS_FORK=false" >> $GITHUB_OUTPUT
+            fi
+          fi
+
+      - name: 檢查分支狀態
+        if: steps.check-fork.outputs.IS_FORK == 'true'
+        id: check-branch
+        run: |
+          echo "開始檢查分支狀態..."
+          git fetch upstream
+
+          # 確保我們有 upstream/master 分支
+          if git rev-parse --verify upstream/master >/dev/null 2>&1; then
+            echo "檢查本地是否落後於上遊..."
+
+            # 獲取分支比較狀態
+            git checkout master
+            BEHIND_COUNT=$(git rev-list --count master..upstream/master)
+
+            if [ "$BEHIND_COUNT" -gt 0 ]; then
+              echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
+
+              # 創建一個臨時分支來測試合併
+              git checkout -b temp_merge_test
+
+              # 嘗試合併但不提交
+              if git merge --no-commit --no-ff upstream/master > /dev/null 2>&1; then
+                echo "測試合併成功，沒有衝突"
+                git merge --abort  # 取消測試合併
+                git checkout master  # 切回主分支
+                git branch -D temp_merge_test  # 刪除臨時分支
+                echo "CAN_AUTO_MERGE=true" >> $GITHUB_OUTPUT
+                echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
+              else
+                # 有衝突
+                echo "警告：合併會產生衝突，請手動處理同步"
+                git merge --abort  # 取消測試合併
+                git checkout master  # 切回主分支
+                git branch -D temp_merge_test  # 刪除臨時分支
+                echo "CAN_AUTO_MERGE=false" >> $GITHUB_OUTPUT
+                echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
+              fi
+            else
+              echo "本地分支不落後於上遊，無需同步"
+              echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
+            fi
+          else
+            echo "無法找到 upstream/master 分支，請檢查上遊倉庫配置"
+            echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
+          fi
+
+      - name: 配置 Git
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
+        run: |
+          git config --global user.name "github-actions[bot]"
+          git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          echo "已配置 Git 用戶信息"
+
+      - name: 同步分支
+        if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
+        run: |
+          echo "開始同步分支..."
+          git merge upstream/master --no-edit
+          git push origin master
+          echo "同步完成！"
