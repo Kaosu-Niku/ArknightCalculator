@@ -116,7 +116,7 @@ function MainContent() {
         ],
       });
     }
-  }, [enemyData]); // 每次敵人數值改變時就更新網頁並重新初始化表格
+  }, [memberJsonData.Basic, enemyData, attackSkillJsonData.Basic, defSkillJsonData.Basic, specialJsonData]); // 每次敵人數值改變時就更新網頁並重新初始化表格
 
   return (
     <div className='container'>
