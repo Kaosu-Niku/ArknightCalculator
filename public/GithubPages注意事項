@@ -58,11 +58,11 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        publish_branch: master #指向master分支
+        publish_branch: gh-pages #指向gh-pages分支
         publish_dir: build #指向build目錄
         github_token: ${{ secrets.GITHUB_TOKEN }}
 ```
-7. 依照目前工作流文件的設置，只要專案執行git push操作，以及pull request操作，會自動將倉庫內的專案打包後並推送至gh-pages分支並部屬打包檔
+7. 依照目前工作流文件的設置，只要專案執行git push操作，以及同意pull request，會自動將倉庫內的專案打包後並推送至gh-pages分支並部屬打包檔
 
 
 如果以上設置沒有錯誤，則訪問以下網址即可成功瀏覽到網站內容
