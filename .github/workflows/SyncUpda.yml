@@ -62,26 +62,14 @@ jobs:
             if [ "$BEHIND_COUNT" -gt 0 ]; then
               echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
 
-              # 創建一個臨時分支來測試合併
-              git checkout -b temp_merge_test
+              # 設置為需要同步
+              echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
+              echo "CAN_AUTO_MERGE=true" >> $GITHUB_OUTPUT
 
-              # 嘗試合併但不提交
-              if git merge --no-commit --no-ff upstream/master > /dev/null 2>&1; then
-                echo "測試合併成功，沒有衝突"
-                git merge --abort  # 取消測試合併
-                git checkout master  # 切回主分支
-                git branch -D temp_merge_test  # 刪除臨時分支
-                echo "CAN_AUTO_MERGE=true" >> $GITHUB_OUTPUT
-                echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
-              else
-                # 有衝突
-                echo "警告：合併會產生衝突，請手動處理同步"
-                git merge --abort  # 取消測試合併
-                git checkout master  # 切回主分支
-                git branch -D temp_merge_test  # 刪除臨時分支
-                echo "CAN_AUTO_MERGE=false" >> $GITHUB_OUTPUT
-                echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
-              fi
+              # 在同步階段使用 -X ours 策略自動解決衝突，優先保留本地更改
+              echo "MERGE_STRATEGY=-X ours" >> $GITHUB_OUTPUT
+
+              echo "警告：同步過程中可能有衝突被自動解決，優先保留本地更改。請在同步後檢查代碼。"
             else
               echo "本地分支不落後於上遊，無需同步"
               echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
@@ -102,6 +90,6 @@ jobs:
         if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
         run: |
           echo "開始同步分支..."
-          git merge upstream/master --no-edit
+          git merge upstream/master --no-edit ${{ steps.check-branch.outputs.MERGE_STRATEGY }}
           git push origin master
           echo "同步完成！"
