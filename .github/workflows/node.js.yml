@@ -6,17 +6,27 @@ name: Node.js CI
 on:
   push:
     branches: [ "master" ]
-  pull_request:
-    branches: [ "master" ]
+    paths:
+      - public
+      - src
+      - package-lock.json
+      - package.json
+  workflow_dispatch:
+
+permissions:
+  pages: write
+  id-token: write
+
+concurrency:
+  group: "pages"
 
 jobs:
   build:
-
     runs-on: ubuntu-latest
 
     strategy:
       matrix:
-        node-version: [18.x]
+        node-version: [20.x]
         # See supported Node.js release schedule at https://nodejs.org/en/about/releases/
 
     steps:
@@ -40,7 +50,6 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        publish_branch: gh-pages # 部署到 gh-pages 分支
+        publish_branch: gh-pages # 部署到 gh-pages 分支 (透過 GitHub Actions, 可以不用創建 gh-pages 分支, 這是舊的方法)
         publish_dir: build # 指向 build 資料夾
         github_token: ${{ secrets.GITHUB_TOKEN }}
-        personal_token: ${{ secrets.ACTIONS_DEPLOY_TOKEN }}

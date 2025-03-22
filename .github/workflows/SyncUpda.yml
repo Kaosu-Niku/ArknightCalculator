@@ -7,7 +7,9 @@ on:
   workflow_dispatch: # 允許手動觸發
 
 permissions:
-  contents: write # 給予寫入權限
+  actions: write
+  checks: write
+  contents: write
 
 jobs:
   sync-fork:
@@ -18,6 +20,8 @@ jobs:
         uses: actions/checkout@v3
         with:
           fetch-depth: 0
+          # 確保檢出 master 分支
+          ref: master
 
       - name: 檢測是否為復刻倉庫
         id: check-fork
@@ -50,40 +54,33 @@ jobs:
         run: |
           echo "開始檢查分支狀態..."
           git fetch upstream
+          
+          # 標記工作流文件為總是保留本地版本
+          git config --local merge.ours.driver true
+          echo ".github/workflows/* merge=ours" > .git/info/attributes
 
-          # 確保我們有 upstream/master 分支
+          # 確保我們有 upstream/master 分支並只處理 master 分支
           if git rev-parse --verify upstream/master >/dev/null 2>&1; then
-            echo "檢查本地是否落後於上遊..."
+            echo "檢查本地 master 是否落後於上遊 master..."
 
-            # 獲取分支比較狀態
+            # 確保我們在 master 分支上
             git checkout master
+            
+            # 獲取分支比較狀態
             BEHIND_COUNT=$(git rev-list --count master..upstream/master)
 
             if [ "$BEHIND_COUNT" -gt 0 ]; then
-              echo "本地分支落後上遊 $BEHIND_COUNT 個提交"
+              echo "本地 master 分支落後上遊 $BEHIND_COUNT 個提交"
 
-              # 創建一個臨時分支來測試合併
-              git checkout -b temp_merge_test
+              # 設置為需要同步
+              echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
 
-              # 嘗試合併但不提交
-              if git merge --no-commit --no-ff upstream/master > /dev/null 2>&1; then
-                echo "測試合併成功，沒有衝突"
-                git merge --abort  # 取消測試合併
-                git checkout master  # 切回主分支
-                git branch -D temp_merge_test  # 刪除臨時分支
-                echo "CAN_AUTO_MERGE=true" >> $GITHUB_OUTPUT
-                echo "NEED_SYNC=true" >> $GITHUB_OUTPUT
-              else
-                # 有衝突
-                echo "警告：合併會產生衝突，請手動處理同步"
-                git merge --abort  # 取消測試合併
-                git checkout master  # 切回主分支
-                git branch -D temp_merge_test  # 刪除臨時分支
-                echo "CAN_AUTO_MERGE=false" >> $GITHUB_OUTPUT
-                echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
-              fi
+              # 在同步階段使用 -X ours 策略自動解決衝突，優先保留本地更改
+              echo "MERGE_STRATEGY=-X ours" >> $GITHUB_OUTPUT
+
+              echo "警告：同步過程中可能有衝突被自動解決，優先保留本地更改。"
             else
-              echo "本地分支不落後於上遊，無需同步"
+              echo "本地 master 分支不落後於上遊，無需同步"
               echo "NEED_SYNC=false" >> $GITHUB_OUTPUT
             fi
           else
@@ -98,10 +95,26 @@ jobs:
           git config --global user.email "41898282+github-actions[bot]@users.noreply.github.com"
           echo "已配置 Git 用戶信息"
 
-      - name: 同步分支
+      - name: 同步 master 分支
         if: steps.check-fork.outputs.IS_FORK == 'true' && steps.check-branch.outputs.NEED_SYNC == 'true'
         run: |
-          echo "開始同步分支..."
-          git merge upstream/master --no-edit
+          echo "開始同步 master 分支..."
+
+          # 備份工作流文件以防萬一
+          mkdir -p /tmp/workflows_backup
+          cp -r .github/workflows/* /tmp/workflows_backup/ 2>/dev/null || true
+
+          # 使用 ours 策略合併，優先保留本地更改
+          git merge upstream/master --no-edit ${{ steps.check-branch.outputs.MERGE_STRATEGY }}
+
+          # 確保工作流文件不被修改
+          if [ -d "/tmp/workflows_backup" ] && [ -d ".github/workflows" ]; then
+            cp -r /tmp/workflows_backup/* .github/workflows/ 2>/dev/null || true
+            git add .github/workflows/* 2>/dev/null || true
+            git commit --amend --no-edit 2>/dev/null || true
+          fi
+
+          # 推送到 origin master
           git push origin master
-          echo "同步完成！"
+
+          echo "master 分支同步完成！優先保留了本地更改。"
