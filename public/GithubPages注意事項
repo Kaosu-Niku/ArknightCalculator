@@ -27,13 +27,14 @@ Github Pages 是Github的一項功能，可免費部屬靜態應用程式 (純�
 
 
 工作流部屬方式:
-1. 開啟[倉庫 > Actions]，點擊選項[new workflow]建立新的工作流
-2. 有許多現成的工作流文件範例可供搜索，根據專案性質搜索適合的工作流文件，點擊工作流文件的選項[Configure]預覽工作流文件內容
+1. 開啟[倉庫 > Setting > Actions > General]，將[Workflow permissions]改為[Read and write permissions] (不啟用起選項則Action無權限執行Deploy操作)
+2. 開啟[倉庫 > Actions]，點擊選項[new workflow]建立新的工作流
+3. 有許多現成的工作流文件範例可供搜索，根據專案性質搜索適合的工作流文件，點擊工作流文件的選項[Configure]預覽工作流文件內容
 (以此專案為例，此專案為React專案，因此使用node.js工作流文件)
-3. 確認工作流文件內容沒問題後點擊選項[Commit changes...]，即可將此工作流文件自動添加至專案中
 4. 專案CMD執行 `npm install --save-dev @babel/plugin-proposal-private-property-in-object` 下載套件
-5. 專案CMD執行 `git pull`，將工作流文件同步回來
-6. 當下版本的node.js工作流文件的內容，還需要修改及添加某些部分，新增以下內容 (需如同python一樣注意縮排)
+5. 確認工作流文件內容沒問題後點擊選項[Commit changes...]，即可將此工作流文件自動添加至倉庫中
+6. 專案CMD執行 `git pull`，將工作流文件同步回專案
+7. 當下版本的node.js工作流文件的內容，還需要修改及添加某些部分，新增以下內容 (需如同python一樣注意縮排)
 ```
 #為Github Actions添加必要的權限 (沒有權限將無法順利執行Deploy)
 permissions:
