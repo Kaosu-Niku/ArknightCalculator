@@ -52,6 +52,6 @@ jobs:
     - name: Deploy to GitHub Pages
       uses: peaceiris/actions-gh-pages@v3
       with:
-        publish_branch: gh-pages # 部署到 gh-pages 分支 (透過 GitHub Actions, 可以不用創建 gh-pages 分支, 這是舊的方法)
+        publish_branch: master # 部署到 master 分支 (透過 GitHub Actions, 可以不用創建 gh-pages 分支, 這是舊的方法)
         publish_dir: build # 指向 build 資料夾
         github_token: ${{ secrets.GITHUB_TOKEN }}
