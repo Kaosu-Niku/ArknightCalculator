@@ -6,7 +6,7 @@ on:
     paths:
       - "public/**"
       - "src/**"
-      - ".github/workflows/node.js.yml"
+      - ".github/workflows/Pages.yml"
       - "package-lock.json"
       - "package.json"
   workflow_dispatch:
