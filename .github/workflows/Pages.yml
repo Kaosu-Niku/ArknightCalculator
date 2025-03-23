@@ -1,6 +1,14 @@
 name: React GitHub Pages
 
 on:
+  push:
+    branches: [ "master" ]
+    paths:
+      - "public/**"
+      - "src/**"
+      - ".github/workflows/node.js.yml"
+      - "package-lock.json"
+      - "package.json"
   workflow_dispatch:
 
 permissions:

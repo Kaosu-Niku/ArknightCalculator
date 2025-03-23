@@ -4,14 +4,14 @@
 name: Node.js CI
 
 on:
-  push:
-    branches: [ "master" ]
-    paths:
-      - "public/**"
-      - "src/**"
-      - ".github/workflows/node.js.yml"
-      - "package-lock.json"
-      - "package.json"
+  # push:
+  #   branches: [ "master" ]
+  #   paths:
+  #     - "public/**"
+  #     - "src/**"
+  #     - ".github/workflows/node.js.yml"
+  #     - "package-lock.json"
+  #     - "package.json"
   workflow_dispatch:
 
 permissions:
