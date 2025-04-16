@@ -28,11 +28,11 @@ function App() {
       <Header />
       <MainContent />
       <Footer />
-      <div class="fixed-buttons">
-      <a class="btn btn-danger" href='#enemy_form'>EnemyData</a>
-        <a class="btn btn-success" href='#member_table'>MemberData</a>
-        <a class="btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
-        <a class="btn btn-primary" href='#defSkill_table'>DefSkillData</a>
+      <div className="fixed-buttons">
+        <a className="btn btn-danger" href='#enemy_form'>EnemyData</a>
+        <a className="btn btn-success" href='#member_table'>MemberData</a>
+        <a className="btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
+        <a className="btn btn-primary" href='#defSkill_table'>DefSkillData</a>
       </div>
     </div>    
   );

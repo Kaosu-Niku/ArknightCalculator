@@ -126,7 +126,8 @@ function MainContent() {
       })
       .catch(error => console.log('Error loading JSON:', error));
     };
-    loadData(whichType);console.log('useEffect1');
+    loadData(whichType);
+    console.log(whichType);
   }, [whichType, enemyData]); // 每次修改敵人數值或是改變流派時就更新網頁並重新初始化表格
 
   return (
@@ -214,7 +215,12 @@ function MainContent() {
             </div>              
         </div>
         <hr></hr>
-        <p>以下表格的我方面板數值皆以精1滿級滿潛能滿信賴為準</p>
+        <div className="d-flex flex-row">
+          <button className="btn btn-primary flex-grow-1 mx-4" onClick={() => { setWhichType('114'); }}>精一1級四星隊</button>
+          <button className="btn btn-primary flex-grow-1 mx-4" onClick={() => { setWhichType('1604'); }}>精一滿級四星隊</button>
+          <button className="btn btn-primary flex-grow-1 mx-4" onClick={() => { setWhichType('2704'); }}>四星隊</button>
+        </div>
+        <p>以下表格的我方面板數值皆以滿潛能滿信賴為準</p>
         <p>名稱帶有+表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
         <p>名稱帶有*表示其打出的數值為受職業特性或天賦影響後的最終結果 (ex: 酸糖的天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
         <p>名稱帶有%表示其打出的數值可能受職業特性或天賦影響而打的更高，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常數值</p>
