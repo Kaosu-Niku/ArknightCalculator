@@ -276,6 +276,17 @@
       "spd": 1
     },
     {
+      "icon": "https://media.prts.wiki/f/fe/%E5%A4%B4%E5%83%8F_%E9%AA%8B%E9%A3%8E.png",
+      "name": "騁風",
+      "type": "解放者",
+      "hp": 3084,
+      "attackType": "物傷",
+      "attack": 301,
+      "def": 413,
+      "res": 15,
+      "spd": 1.2
+    },
+    {
       "icon": "https://media.prts.wiki/b/b9/%E5%A4%B4%E5%83%8F_%E5%85%8B%E6%B4%9B%E4%B8%9D.png",
       "name": "克洛絲",
       "type": "速射手",
