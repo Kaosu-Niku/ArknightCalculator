@@ -274,7 +274,7 @@
       "waitTime":40,
       "skillTime": 25,    
       "skillFirstAdd": 0,
-      "skillFirtsMultiply": 7.5,
+      "skillFirtsMultiply": 0.75,
       "skillLastAdd": 0,
       "skillLastMultiply": 1.7,
       "spdAdd": 0,
