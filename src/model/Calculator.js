@@ -1,4 +1,4 @@
-import MemberSpecial from './MemberSpecial';
+import MemberSpecial1604 from './MemberSpecial1604';
 
 const Calculator = {
   // 我方icon
@@ -31,14 +31,14 @@ const Calculator = {
           finalDamage = memberRow.attack / 20;
         }
         finalDps = (finalDamage / memberRow.spd).toFixed(2);        
-      return MemberSpecial.memberDpsSpecial(memberRow, enemyData, finalDps);
+      return MemberSpecial1604.memberDpsSpecial(memberRow, enemyData, finalDps);
       case "法傷":
         finalDamage = memberRow.attack * ((100 - enemyData.enemyRes) / 100);
         if(finalDamage < memberRow.attack / 20){
           finalDamage = memberRow.attack / 20;
         }
         finalDps = (finalDamage / memberRow.spd).toFixed(2);
-      return MemberSpecial.memberDpsSpecial(memberRow, enemyData, finalDps);
+      return MemberSpecial1604.memberDpsSpecial(memberRow, enemyData, finalDps);
       default:
       return 0;
     }
@@ -48,7 +48,7 @@ const Calculator = {
     switch(memberRow.attackType){
       case "治療":
         let finalHps = (memberRow.attack / memberRow.spd).toFixed(2);
-      return MemberSpecial.memberHpsSpecial(memberRow, finalHps);
+      return MemberSpecial1604.memberHpsSpecial(memberRow, finalHps);
       default:
       return 0;
     }
@@ -178,8 +178,8 @@ const Calculator = {
       // 強力擊類型技能
       finalHps = (newMemberRow.attack / skillRow.waitTime).toFixed(2);
     }
-    specialHps = MemberSpecial.memberHpsSpecial(newMemberRow, finalHps);
-    return MemberSpecial.defSkillHpsSpecial(skillRow, specialHps);
+    specialHps = MemberSpecial1604.memberHpsSpecial(newMemberRow, finalHps);
+    return MemberSpecial1604.defSkillHpsSpecial(skillRow, specialHps);
   }
 }
 

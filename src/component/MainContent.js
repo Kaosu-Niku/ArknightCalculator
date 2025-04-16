@@ -5,30 +5,7 @@ import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import Calculator from '../model/Calculator';
 
 function MainContent() {
-  const [specialJsonData, setSpecialJsonData] = useState(() => {
-    return fetch(`${process.env.PUBLIC_URL}/special.json`)
-    .then(response => response.json())
-    .then(json => setSpecialJsonData(json))
-    .catch(error => console.log('Error loading JSON:', error));
-  });
-  const [memberJsonData, setMemberJsonData] = useState(() => {
-    return fetch(`${process.env.PUBLIC_URL}/member.json`)
-    .then(response => response.json())
-    .then(json => setMemberJsonData(json))
-    .catch(error => console.log('Error loading JSON:', error));
-  });
-  const [attackSkillJsonData, setAttackSkillJsonData] = useState(() => {
-    return fetch(`${process.env.PUBLIC_URL}/attackSkill.json`)
-    .then(response => response.json())
-    .then(json => setAttackSkillJsonData(json))
-    .catch(error => console.log('Error loading JSON:', error));
-  });
-  const [defSkillJsonData, setDefSkillJsonData] = useState(() => {
-    return fetch(`${process.env.PUBLIC_URL}/defSkill.json`)
-    .then(response => response.json())
-    .then(json => setDefSkillJsonData(json))
-    .catch(error => console.log('Error loading JSON:', error));
-  });
+  const [whichType, setWhichType] = useState('1604');
   
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
@@ -44,79 +21,113 @@ function MainContent() {
   const defSkillTableRef = useRef(null); 
 
   useEffect(() => {
-    if (memberJsonData.Basic !== undefined) {
-      // 使用DataTable套件來製作表格
-
-      // 基本數值表格
-      $(memberTableRef.current).DataTable({
-        destroy: true,  // 使表格可以重新初始化
-        data: memberJsonData.Basic, // 表格使用的資料
-        pageLength: 100, // 每頁顯示100筆資料
-        columns: [
-          { title: "", data: null, render: function(row) {return `<img src=${row.icon} alt='member_icon' width='40' height='40' />`} },
-          { title: "名稱", data: "name", render: function(data, type, row) {return Calculator.memberNameRender(data, specialJsonData);}},
-          { title: "職業", data: "type" },
-          { title: "生命", data: "hp" },
-          { title: "傷害類型", data: "attackType" },
-          { title: "攻擊", data: "attack" },
-          { title: "防禦", data: "def" },
-          { title: "法抗", data: "res" },
-          { title: "攻速", data: "spd" },
-          { title: "DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(row, enemyData);} },
-          { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(row, enemyData);} },
-          { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(row, enemyData);} },
-        ],
-      });
-
-      // 攻擊技能表格
-      $(attackSkillTableRef.current).DataTable({
-        destroy: true,  // 使表格可以重新初始化
-        data: attackSkillJsonData.Basic, // 表格使用的資料
-        pageLength: 100, // 每頁顯示100筆資料
-        columns: [
-          { title: "", data: null, render: function(row) {return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`} },
-          { title: "名稱", data: "name", render: function(data, type, row) {return Calculator.memberNameRender(data, specialJsonData);}},
-          { title: "技能", data: "whichSkill" },
-          { title: "傷害類型", data: "attackType" },
-          { title: "冷卻時間", data: "waitTime" },
-          { title: "持續時間", data: "skillTime" },
-          // { title: "直接固定加算", data: "attackFirstAdd" },
-          // { title: "直接倍率乘算", data: "attackFirtsMultiply" },
-          // { title: "最終固定加算", data: "attackLastAdd" },
-          // { title: "最終倍率乘算", data: "attackLastMultiply" },
-          // { title: "攻擊間隔縮減", data: "spdAdd" },
-          // { title: "攻速提升", data: "spdMultiply" },
-          { title: "DPS", data: null, render: function(data, type, row) {return Calculator.memberDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData);} },
-          //{ title: "總傷", data: null, render: function(data, type, row) {return (Calculator.memberDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData) * row.skillTime).toFixed(2);} },
-          { title: "擊殺所需時間", data: null, render: function(data, type, row) {return Calculator.memberKillTime(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData);} },
-        ],
-      });
-
+    const loadData = async (type) => {
+      let witchMember = 'member1604.json';
+      let witchAttackSkill = 'attackSkill1604.json';
+      let witchDefSkill = 'defSkill1604.json';
+      
+      //根據指定的流派獲取對應的JSON檔案
+      switch(type){
+        case '114':
+          witchMember = 'member114.json';
+          witchAttackSkill = 'attackSkill114.json';
+          witchDefSkill = 'defSkill114.json';
+        break;
+        case '1604':
+          witchMember = 'member1604.json';
+          witchAttackSkill = 'attackSkill1604.json';
+          witchDefSkill = 'defSkill1604.json';
+        break;
+        case '2704':
+          witchMember = 'member2704.json';
+          witchAttackSkill = 'attackSkill2704.json';
+          witchDefSkill = 'defSkill2704.json';
+        break;
+      }
+      //特殊標記表格 
+      const specialJsonData = await fetch(`${process.env.PUBLIC_URL}/special.json`)
+      .then(response => response.json())
+      .then(json => {
+        return json;
+      })
+      .catch(error => console.log('Error loading JSON:', error));
+      //基礎數值表格
+      const memberJsonData = await fetch(`${process.env.PUBLIC_URL}/${witchMember}`)
+      .then(response => response.json())
+      .then(json => {
+        if (json) {
+          $(memberTableRef.current).DataTable({
+            destroy: true,
+            data: json.Basic,
+            pageLength: 100,
+            columns: [
+              { title: "", data: null, render: function (row) { return `<img src=${row.icon} alt='member_icon' width='40' height='40' />`; } },
+              { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+              { title: "職業", data: "type" },
+              { title: "生命", data: "hp" },
+              { title: "傷害類型", data: "attackType" },
+              { title: "攻擊", data: "attack" },
+              { title: "防禦", data: "def" },
+              { title: "法抗", data: "res" },
+              { title: "攻速", data: "spd" },
+              { title: "DPS", data: null, render: function (data, type, row) { return Calculator.memberDps(row, enemyData); } },
+              { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(row, enemyData); } },
+              { title: "敵方DPS", data: null, render: function (data, type, row) { return Calculator.enemyDps(row, enemyData); } },
+            ],
+          });
+        }
+      })
+      .catch(error => console.log('Error loading JSON:', error));
+      //攻擊技能表格
+      await fetch(`${process.env.PUBLIC_URL}/${witchAttackSkill}`)
+      .then(response => response.json())
+      .then(json => {
+        if (json) {
+          $(attackSkillTableRef.current).DataTable({
+            destroy: true,
+            data: json.Basic,
+            pageLength: 100,
+            columns: [
+              { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`; } },
+              { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+              { title: "技能", data: "whichSkill" },
+              { title: "傷害類型", data: "attackType" },
+              { title: "冷卻時間", data: "waitTime" },
+              { title: "持續時間", data: "skillTime" },
+              { title: "DPS", data: null, render: function (data, type, row) { return Calculator.memberDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
+              { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
+            ],
+          });
+        }
+      })
+      .catch(error => console.log('Error loading JSON:', error));
       //防禦技能表格
-      $(defSkillTableRef.current).DataTable({
-        destroy: true,  // 使表格可以重新初始化
-        data: defSkillJsonData.Basic, // 表格使用的資料
-        pageLength: 100, // 每頁顯示100筆資料
-        columns: [
-          { title: "", data: null, render: function(row) {return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`} },
-          { title: "名稱", data: "name", render: function(data, type, row) {return Calculator.memberNameRender(data, specialJsonData);}},
-          { title: "技能", data: "whichSkill" },
-          { title: "技能類型", data: "skillType" },
-          { title: "冷卻時間", data: "waitTime" },
-          { title: "持續時間", data: "skillTime" },
-          // { title: "直接固定加算", data: "skillFirstAdd" },
-          // { title: "直接倍率乘算", data: "skillFirtsMultiply" },
-          // { title: "最終固定加算", data: "skillLastAdd" },
-          // { title: "最終倍率乘算", data: "skillLastMultiply" },
-          // { title: "攻擊間隔縮減", data: "spdAdd" },
-          // { title: "攻速提升", data: "spdMultiply" },
-          { title: "我方DEF", data: null, render: function(data, type, row) {return Calculator.skillMemberRow(row, memberJsonData.Basic).def;} },
-          { title: "我方HPS", data: null, render: function(data, type, row) {return Calculator.skillMemberHps(row, memberJsonData.Basic);} },         
-          { title: "敵方DPS", data: null, render: function(data, type, row) {return Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData);} },
-        ],
-      });
-    }
-  }, [memberJsonData.Basic, enemyData, attackSkillJsonData.Basic, defSkillJsonData.Basic, specialJsonData]); // 每次敵人數值改變時就更新網頁並重新初始化表格
+      await fetch(`${process.env.PUBLIC_URL}/${witchDefSkill}`)
+      .then(response => response.json())
+      .then(json => {
+        if (json) {
+          $(defSkillTableRef.current).DataTable({
+            destroy: true,
+            data: json.Basic,
+            pageLength: 100,
+            columns: [
+              { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`; } },
+              { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+              { title: "技能", data: "whichSkill" },
+              { title: "技能類型", data: "skillType" },
+              { title: "冷卻時間", data: "waitTime" },
+              { title: "持續時間", data: "skillTime" },
+              { title: "我方DEF", data: null, render: function (data, type, row) { return Calculator.skillMemberRow(row, memberJsonData.Basic).def; } },
+              { title: "我方HPS", data: null, render: function (data, type, row) { return Calculator.skillMemberHps(row, memberJsonData.Basic); } },
+              { title: "敵方DPS", data: null, render: function (data, type, row) { return Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
+            ],
+          });
+        }
+      })
+      .catch(error => console.log('Error loading JSON:', error));
+    };
+    loadData(whichType);console.log('useEffect1');
+  }, [whichType, enemyData]); // 每次修改敵人數值或是改變流派時就更新網頁並重新初始化表格
 
   return (
     <div className='container'>
