@@ -2,6 +2,7 @@ const MemberSpecial = {
   // 一些特定幹員因職業特性或天賦影響，DPS需另外獨立計算
   memberDpsSpecial: (row, emenyData, originalDps) => {
     let finalDamage = 0;
+    let otherDamage = 0;
     switch(row.name){
       case "刻刀":
         // 職業特性為攻擊皆是二連擊
@@ -10,6 +11,17 @@ const MemberSpecial = {
           finalDamage = row.attack / 20;
         }
       return ((finalDamage * 2) / row.spd).toFixed(2);
+      case "騁風":
+        // 天賦為攻擊力滿疊層，攻擊附加25%攻擊力的傷害
+        finalDamage = row.attack - emenyData.enemyDef;
+        if(finalDamage < row.attack / 20){
+          finalDamage = row.attack / 20;
+        }
+        otherDamage = (row.attack / 4) - emenyData.enemyDef;
+        if(otherDamage < (row.attack / 4) / 20){
+          otherDamage = (row.attack / 4) / 20;
+        }
+      return ((finalDamage + otherDamage) / row.spd).toFixed(2);
       case "酸糖":
         // 天賦為至少保底20%傷害
         finalDamage = row.attack - emenyData.enemyDef;
@@ -30,23 +42,59 @@ const MemberSpecial = {
         if(finalDamage < row.attack / 20){
           finalDamage = row.attack / 20;
         }
-        let otherDamage = row.attack * 1.1 * ((100 - emenyData.enemyRes) / 100);
+        otherDamage = row.attack * 1.1 * ((100 - emenyData.enemyRes) / 100);
         if(otherDamage < row.attack * 1.1 / 20){
           otherDamage = row.attack * 1.1 / 20;
         }
       return ((finalDamage + otherDamage) / row.spd).toFixed(2);  
       case "巫役小車":
-        // 天賦為部署後的40秒內每次攻擊附帶60凋亡損傷，而小車40秒內可以打25下，所以造成凋亡損傷的總值為1500
-        // 且還會使攻擊範圍內所有敵人+10%法術脆弱和+10%元素脆弱 
+        // 天賦為部署後的40秒內每次攻擊附帶60凋亡損傷，且期間還會使攻擊範圍內所有敵人+10%法術脆弱和+10%元素脆弱
+        // 而小車40秒內可以打25下，所以造成凋亡損傷的總值為1500
+        // (普通與精英敵人的損傷累計值為1000，BOSS敵人的損傷累計值為2000)
+        // (對普通與精英敵人來說，小車於第17下(27.2秒)打爆條)
+        // (而對BOSS敵人與元素抵抗高於33%以上的敵人，則無法爆條)
+        // (凋亡損傷爆條期間造成每秒800元素傷害，持續15秒，所以造成元素傷害的總傷為12000)
+        // (但是小車卻還有+10%元素脆弱，所以實際上是每秒880元素傷害，實際總傷為13200)         
         finalDamage = row.attack * ((100 - emenyData.enemyRes) / 100) * 1.1;
         if(finalDamage < row.attack / 20){
           finalDamage = row.attack / 20 * 1.1;
         }
-        // (普通與精英敵人的損傷累計值為1000，BOSS敵人的損傷累計值為2000)
-        // (對普通與精英敵人來說，小車可於第17下打爆條，也就是部屬後約27秒)
-        // (而對BOSS敵人與元素抵抗高於33%以上的敵人，則無法爆條)
-        // (凋亡損傷爆條期間造成每秒800元素傷害，持續15秒，所以造成元素傷害的總傷為12000)
-        // (但是小車卻還有+10%元素脆弱，所以實際上是每秒880元素傷害，實際總傷為13200)
+        // 計算小車是否能於17下以內擊殺敵人     
+        if(emenyData.enemyHp / finalDamage < 17){
+          //能擊殺，沒有觸發爆條，DPS計算只計算平A
+          return (finalDamage / row.spd).toFixed(2);  
+        }
+        else{
+          //未能擊殺，觸發爆條，DPS計算另外帶入元素傷害
+          let enemyHpCopy = emenyData.enemyHp;
+          let attackDps = finalDamage / row.spd
+          let second = 0;
+          let tureCount = 0;
+          while(enemyHpCopy > 0){
+            enemyHpCopy = enemyHpCopy - attackDps;
+            console.log(`${second}秒: 剩餘生命:${enemyHpCopy}`);
+            second = second + 1;
+            if(second > 27){
+              // 27秒之後，每秒都會受到880元素傷害，最多15秒
+              if(tureCount < 16){
+                enemyHpCopy = enemyHpCopy - 880;
+                tureCount = tureCount + 1;
+              }  
+              // 到42秒就打完小車的所有元素傷害了，再往後計算就會大量稀釋DPS而不準了，最大DPS就以42秒計
+              if(second > 42){
+                enemyHpCopy = -1;
+              }           
+            }
+          }
+          return (((attackDps * second) + (880 * tureCount)) / second).toFixed(2);
+
+        }
+        
+        
+        
+        
+        
+        
         let damageDps = finalDamage / row.spd;
         // 最終計算DPS的方式以計算40秒內的所有普攻傷害與一次凋亡損傷爆條總傷的總和為準
       return ((damageDps * 40 + 13200) / 40).toFixed(2);
