@@ -72,7 +72,6 @@ const MemberSpecial = {
           let tureCount = 0;
           while(enemyHpCopy > 0){
             enemyHpCopy = enemyHpCopy - attackDps;
-            console.log(`${second}秒: 剩餘生命:${enemyHpCopy}`);
             second = second + 1;
             if(second > 27){
               // 27秒之後，每秒都會受到880元素傷害，最多15秒
