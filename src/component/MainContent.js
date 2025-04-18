@@ -218,9 +218,9 @@ function MainContent() {
         </div>
         <hr></hr>
         <div className="d-flex flex-row">
-          <button className="btn btn-primary flex-grow-1 mx-4" onClick={() => { setWhichType('114'); }}>精一1級四星隊</button>
-          <button className="btn btn-primary flex-grow-1 mx-4" onClick={() => { setWhichType('1604'); }}>精一滿級四星隊</button>
-          <button className="btn btn-primary flex-grow-1 mx-4" onClick={() => { setWhichType('2704'); }}>四星隊</button>
+          <button className={ `${whichType === '114'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('114'); }}>精一1級四星隊</button>
+          <button className={ `${whichType === '1604'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('1604'); }}>精一滿級四星隊</button>
+          <button className={ `${whichType === '2704'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('2704'); }}>四星隊</button>
         </div>
         <p>以下表格的我方面板數值皆以滿潛能滿信賴為準</p>
         <p>名稱帶有+表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
