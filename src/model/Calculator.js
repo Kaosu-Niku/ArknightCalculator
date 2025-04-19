@@ -6,22 +6,18 @@ const Calculator = {
     let memberRow = memberJsonData.find(item => item.name === skillRow.name);
     return memberRow.icon;
   },
+  // 我方說明文字
+  memberDirection: (row, directionsJsonData) => {
+    let memberRow = directionsJsonData.Basic.find(item => item.name === row.name);
+    return memberRow.direction;
+  },
   // 我方名稱
-  memberNameRender: (row, specialJsonData) => {
+  memberNameRender: (row) => {
     let newName = row.name; 
     // 如果是四星隊，在名字後面標註模組
     if('mod' in row){
       newName += `(${row.mod})`;
     }
-    if(specialJsonData.Add.find((e) => e === row.name) !== undefined){
-      newName += '+';//其面板數值為經天賦加成後的最終結果
-    } 
-    if(specialJsonData.Spc.find((e) => e === row.name) !== undefined){
-      newName += '*';//其打出的數值為受職業特性或天賦影響後的最終結果
-    } 
-    if(specialJsonData.Pbb.find((e) => e === row.name) !== undefined){
-      newName += '%';//其打出的數值可能受職業特性或天賦影響而打的更高，但是概率或必須滿足特定條件才觸發
-    } 
     return newName; 
   },
   // 我方DPS
