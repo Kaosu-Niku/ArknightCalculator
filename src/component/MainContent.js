@@ -60,7 +60,7 @@ function MainContent() {
               pageLength: 100,
               columns: [
                 { title: "", data: null, render: function (row) { return `<img src=${row.icon} alt='member_icon' width='40' height='40' />`; } },
-                { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+                { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row, specialJsonData); } },
                 { title: "職業", data: "type" },
                 { title: "生命", data: "hp" },
                 { title: "傷害類型", data: "attackType" },
@@ -86,7 +86,7 @@ function MainContent() {
                 pageLength: 100,
                 columns: [
                   { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`; } },
-                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row, specialJsonData); } },
                   { title: "技能", data: "whichSkill" },
                   { title: "傷害類型", data: "attackType" },
                   { title: "冷卻時間", data: "waitTime" },
@@ -110,7 +110,7 @@ function MainContent() {
                 pageLength: 100,
                 columns: [
                   { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`; } },
-                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row, specialJsonData); } },
                   { title: "技能", data: "whichSkill" },
                   { title: "技能類型", data: "skillType" },
                   { title: "冷卻時間", data: "waitTime" },

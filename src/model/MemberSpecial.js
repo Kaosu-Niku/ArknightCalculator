@@ -6,45 +6,100 @@ const MemberSpecial = {
     switch(row.name){
       case "刻刀":
         // 職業特性為攻擊皆是二連擊
-        finalDamage = row.attack - emenyData.enemyDef;
+        if('mod' in row){
+          // Y模組為無視防禦力
+          finalDamage = row.attack - (emenyData.enemyDef - 70);
+        }    
+        else{
+          finalDamage = row.attack - emenyData.enemyDef;
+        }
         if(finalDamage < row.attack / 20){
           finalDamage = row.attack / 20;
         }
-      return ((finalDamage * 2) / row.spd).toFixed(2);
+      return (finalDamage / (row.spd / 2)).toFixed(2);
       case "騁風":
-        // 天賦為攻擊力滿疊層，攻擊附加25%攻擊力的傷害
+        // 天賦為攻擊力滿疊層，攻擊附加額外傷害
         finalDamage = row.attack - emenyData.enemyDef;
         if(finalDamage < row.attack / 20){
           finalDamage = row.attack / 20;
         }
-        otherDamage = (row.attack / 4) - emenyData.enemyDef;
-        if(otherDamage < (row.attack / 4) / 20){
-          otherDamage = (row.attack / 4) / 20;
+        if('mod' in row){
+          otherDamage = (row.attack * 0.4) - emenyData.enemyDef;
+        }    
+        else{
+          otherDamage = (row.attack * 0.25) - emenyData.enemyDef;
+        }
+        if(otherDamage < otherDamage / 20){
+          otherDamage = otherDamage / 20;
+        }
+        
+      return ((finalDamage + otherDamage) / row.spd).toFixed(2);
+      case "霜葉":        
+        finalDamage = row.attack - emenyData.enemyDef;
+        if(finalDamage < row.attack / 20){
+          finalDamage = row.attack / 20;
+        }
+        if('mod' in row){
+          // Y模組為攻擊附加額外法術傷害
+          otherDamage = row.attack * 0.1 * ((100 - emenyData.enemyRes) / 100);
+          if(otherDamage < otherDamage / 20){
+            otherDamage = otherDamage / 20;
+          }
+        }    
+        else{
+          otherDamage = 0;
         }
       return ((finalDamage + otherDamage) / row.spd).toFixed(2);
       case "酸糖":
-        // 天賦為至少保底20%傷害
+        // 天賦為保底傷害
         finalDamage = row.attack - emenyData.enemyDef;
-        if(finalDamage < row.attack / 5){
-          finalDamage = row.attack / 5;
+        if('mod' in row){
+          // X模組為保底更多傷害
+          if(finalDamage < row.attack * 0.5){
+            finalDamage = row.attack * 0.5;
+          }
+        }    
+        else{
+          if(finalDamage < row.attack * 0.3){
+            finalDamage = row.attack * 0.3;
+          }
         }
       return (finalDamage / row.spd).toFixed(2);    
       case "夜煙":
-        // 天賦為攻擊給敵人-10%法抗1秒(夜煙自身攻擊都能吃到加成)
-        finalDamage = row.attack * ((100 - Math.ceil(emenyData.enemyRes * 0.9)) / 100);
+        // 天賦為攻擊給減法抗1秒(夜煙自身攻擊都能吃到這個加成)
+        if('mod' in row){
+          //X模為攻擊減更多法抗和無視法抗
+          if(Math.ceil(emenyData.enemyRes * 0.73) >= 10){
+            // 減法抗完>10法抗
+            finalDamage = row.attack * ((100 - (Math.ceil(emenyData.enemyRes * 0.73) - 10)) / 100);
+          }
+          else{
+            // 減法抗完<10法抗
+            finalDamage = row.attack;
+          } 
+        }    
+        else{
+          finalDamage = row.attack * ((100 - Math.ceil(emenyData.enemyRes * 0.9)) / 100);
+        }    
         if(finalDamage < row.attack / 20){
           finalDamage = row.attack / 20;
-        }
+        } 
       return (finalDamage / row.spd).toFixed(2);      
       case "卡達":
-        // 職業特性為攻擊皆是自身與浮游單元的獨立攻擊，且浮游單元攻擊同個單位還會有最高疊層造成110%攻擊力的傷害
+        // 職業特性為每次攻擊附加額外浮游單元傷害，且浮游單元攻擊同個單位還會疊加傷害
         finalDamage = row.attack * ((100 - emenyData.enemyRes) / 100);
         if(finalDamage < row.attack / 20){
           finalDamage = row.attack / 20;
         }
-        otherDamage = row.attack * 1.1 * ((100 - emenyData.enemyRes) / 100);
-        if(otherDamage < row.attack * 1.1 / 20){
-          otherDamage = row.attack * 1.1 / 20;
+        if('mod' in row){
+          // Y模組為浮游單元疊加更多傷害
+          otherDamage = row.attack * 1.2 * ((100 - emenyData.enemyRes) / 100);
+        }    
+        else{
+          otherDamage = row.attack * 1.1 * ((100 - emenyData.enemyRes) / 100);
+        }
+        if(otherDamage < otherDamage / 20){
+          otherDamage = otherDamage / 20;
         }
       return ((finalDamage + otherDamage) / row.spd).toFixed(2);  
       case "巫役小車":
@@ -96,35 +151,50 @@ const MemberSpecial = {
   memberHpsSpecial: (row, originalHps) => {
     let otherHps = 0;
     switch(row.name){
+      case "清流":
+        if('mod' in row){
+          // Y模組為治療量提升
+          originalHps = (row.attack * 1.2) / row.spd;
+        }    
+        else{
+          originalHps = parseFloat(originalHps);
+        }
+      return (originalHps).toFixed(2);
       case "調香師":
-        // 天賦為每秒額外為所有幹員緩回調香師攻擊力3%的回復量
-        otherHps = row.attack / 100 * 3;
-      return (parseFloat(originalHps) + parseFloat(otherHps)).toFixed(2);
+        // 天賦為所有幹員每秒緩回額外治療量
+        if('mod' in row){
+          // Y模組為緩回更多額外治療量
+          otherHps = row.attack / 100 * 3;
+        }    
+        else{
+          otherHps = row.attack / 100 * 6.5;
+        }
+      return (parseFloat(originalHps) + otherHps).toFixed(2);
       default:
       return originalHps;
     }
   },
   // 一些特定幹員因技能較為特殊，在技能期間的HPS需另外獨立計算
-  defSkillHpsSpecial: (skillRow, originalHps) => {
+  defSkillHpsSpecial: (row, skillRow, originalHps) => {
     if(skillRow.skillType === "治療"){
       switch(skillRow.name){
         case "卡緹":
           if(skillRow.whichSkill === "一技能"){
             //技能為回復40%生命上限的血量(技能冷卻時間20秒)
-            originalHps = (2946 * 0.4) / 20;
+            originalHps = (row.hp * 0.4) / 20;
           }      
         return originalHps.toFixed(2);
         case "蛇屠箱":
           if(skillRow.whichSkill === "二技能"){
-            //技能為每秒回復2%生命上限的血量
-            originalHps = (2173 * 0.02);
+            //技能為每秒回復生命比例上限的血量
+            if('mod' in row){
+              originalHps = (row.hp * 0.03);
+            }    
+            else{
+              originalHps = (row.hp * 0.02);
+            }
+            
           }          
-        return originalHps.toFixed(2);
-        case "角峰":
-          if(skillRow.whichSkill === "一技能"){
-            //技能為每秒回復30固定血量
-            originalHps = 30;
-          }         
         return originalHps.toFixed(2);
         default:
         return originalHps;

@@ -54,6 +54,7 @@
     },
     {       
       "name": "泡泡",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -67,6 +68,7 @@
     },
     {       
       "name": "泡泡",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "防禦",
       "waitTime":35,
@@ -80,6 +82,7 @@
     },
     {       
       "name": "泡泡",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":45,
@@ -93,6 +96,7 @@
     },
     {       
       "name": "蛇屠箱",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -106,6 +110,7 @@
     },
     {       
       "name": "蛇屠箱",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "防禦",
       "waitTime":35,
@@ -119,6 +124,7 @@
     },
     {      
       "name": "蛇屠箱",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":40,
@@ -130,8 +136,23 @@
       "spdAdd": 0,
       "spdMultiply": 0
     },
+    {      
+      "name": "蛇屠箱",
+      "mod": "X模組",
+      "whichSkill": "二技能",
+      "skillType": "治療",
+      "waitTime":40,
+      "skillTime": 30,    
+      "skillFirstAdd": 0,
+      "skillFirtsMultiply": 2.3,
+      "skillLastAdd": 0,
+      "skillLastMultiply": 1,
+      "spdAdd": 0,
+      "spdMultiply": 0
+    },
     {       
       "name": "角峰",
+      "mod": "Y模組",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -145,6 +166,7 @@
     },
     {      
       "name": "角峰",
+      "mod": "Y模組",
       "whichSkill": "一技能",
       "skillType": "防禦",
       "waitTime":35,
@@ -158,19 +180,7 @@
     },
     {       
       "name": "角峰",
-      "whichSkill": "一技能",
-      "skillType": "治療",
-      "waitTime":35,
-      "skillTime": 30,    
-      "skillFirstAdd": 0,
-      "skillFirtsMultiply": 1,
-      "skillLastAdd": 0,
-      "skillLastMultiply": 1,
-      "spdAdd": 0,
-      "spdMultiply": 0
-    },
-    {       
-      "name": "角峰",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":32,
@@ -210,6 +220,7 @@
     },
     {      
       "name": "古米",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -223,6 +234,7 @@
     },
     {       
       "name": "古米",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":4,
@@ -236,6 +248,7 @@
     },
     {      
       "name": "古米",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":30,
@@ -249,6 +262,7 @@
     },
     {       
       "name": "古米",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "治療",
       "waitTime":30,
@@ -262,6 +276,7 @@
     },
     {       
       "name": "堅雷",
+      "mod": "無模組",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -275,6 +290,7 @@
     },
     {       
       "name": "露托",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -288,6 +304,7 @@
     },
     {       
       "name": "露托",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":35,
@@ -301,6 +318,7 @@
     },
     {       
       "name": "羅比菈塔",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "防禦",
       "waitTime":0,
@@ -314,6 +332,7 @@
     },
     {      
       "name": "羅比菈塔",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "防禦",
       "waitTime":25,
@@ -327,6 +346,7 @@
     },
     {       
       "name": "羅比菈塔",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "防禦",
       "waitTime":30,
@@ -392,6 +412,7 @@
     },  
     {       
       "name": "蘇蘇洛",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "治療",
       "waitTime":0,
@@ -405,6 +426,7 @@
     },
     {       
       "name": "蘇蘇洛",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":30,
@@ -418,6 +440,7 @@
     },
     {      
       "name": "蘇蘇洛",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "治療",
       "waitTime":15,
@@ -431,6 +454,7 @@
     },
     {       
       "name": "嘉維爾",
+      "mod": "Y模組",
       "whichSkill": "無技能",
       "skillType": "治療",
       "waitTime":0,
@@ -444,6 +468,7 @@
     },
     {       
       "name": "嘉維爾",
+      "mod": "Y模組",
       "whichSkill": "一技能(半血以上)",
       "skillType": "治療",
       "waitTime":8,
@@ -457,6 +482,7 @@
     },
     {      
       "name": "嘉維爾",
+      "mod": "Y模組",
       "whichSkill": "一技能(半血以下)",
       "skillType": "治療",
       "waitTime":8,
@@ -470,6 +496,7 @@
     },
     {       
       "name": "末藥",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "治療",
       "waitTime":0,
@@ -483,6 +510,7 @@
     },
     {      
       "name": "末藥",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":8,
@@ -496,6 +524,7 @@
     },
     {       
       "name": "末藥",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "治療",
       "waitTime":50,
@@ -509,6 +538,7 @@
     },
     {      
       "name": "清流",
+      "mod": "Y模組",
       "whichSkill": "無技能",
       "skillType": "治療",
       "waitTime":0,
@@ -522,6 +552,7 @@
     },
     {       
       "name": "清流",
+      "mod": "Y模組",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":20,
@@ -535,6 +566,7 @@
     },
     {       
       "name": "清流",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "治療",
       "waitTime":60,
@@ -548,6 +580,7 @@
     },
     {       
       "name": "褐果",
+      "mod": "X模組",
       "whichSkill": "無技能",
       "skillType": "治療",
       "waitTime":0,
@@ -561,6 +594,7 @@
     },
     {       
       "name": "褐果",
+      "mod": "X模組",
       "whichSkill": "一技能(治療元素)",
       "skillType": "治療",
       "waitTime":10,
@@ -574,6 +608,7 @@
     },
     {       
       "name": "褐果",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "治療",
       "waitTime":70,
@@ -587,6 +622,7 @@
     },
     {       
       "name": "褐果",
+      "mod": "X模組",
       "whichSkill": "二技能(治療元素)",
       "skillType": "治療",
       "waitTime":70,
@@ -600,6 +636,7 @@
     },
     {       
       "name": "調香師",
+      "mod": "Y模組",
       "whichSkill": "無技能",
       "skillType": "治療",
       "waitTime":0,
@@ -613,6 +650,7 @@
     },
     {       
       "name": "調香師",
+      "mod": "Y模組",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":30,
@@ -626,6 +664,7 @@
     },
     {      
       "name": "調香師",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "治療",
       "waitTime":60,
@@ -639,6 +678,7 @@
     },
     {       
       "name": "波登可",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "治療",
       "waitTime":25,
