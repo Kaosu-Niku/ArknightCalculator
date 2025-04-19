@@ -92,10 +92,10 @@
       "icon": "",
       "name": "磐蟹",
       "type": "召喚物",
-      "hp": 1440,
+      "hp": 1180,
       "attackType": "物傷",
-      "attack": 321,
-      "def": 323,
+      "attack": 240,
+      "def": 258,
       "res": 0,
       "spd": 1.25
     },
@@ -512,7 +512,7 @@
       "type": "擴散術師",
       "hp": 1199,
       "attackType": "法傷",
-      "attack": 584577,
+      "attack": 457,
       "def": 79,
       "res": 15,
       "spd": 2.9
@@ -721,7 +721,7 @@
       "type": "鐵衛",
       "hp": 2333,
       "attackType": "物傷",
-      "attack": 325418,
+      "attack": 254,
       "def": 361,
       "res": 12,
       "spd": 1.2
