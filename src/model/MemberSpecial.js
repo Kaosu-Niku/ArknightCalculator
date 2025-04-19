@@ -25,13 +25,17 @@ const MemberSpecial = {
         }
         if('mod' in row){
           otherDamage = (row.attack * 0.4) - emenyData.enemyDef;
+          if(otherDamage < (row.attack * 0.4) / 20){
+            otherDamage = (row.attack * 0.4) / 20;
+          }
         }    
         else{
           otherDamage = (row.attack * 0.25) - emenyData.enemyDef;
+          if(otherDamage < (row.attack * 0.25) / 20){
+            otherDamage = (row.attack * 0.25) / 20;
+          }
         }
-        if(otherDamage < otherDamage / 20){
-          otherDamage = otherDamage / 20;
-        }
+        
         
       return ((finalDamage + otherDamage) / row.spd).toFixed(2);
       case "霜葉":        
@@ -41,9 +45,9 @@ const MemberSpecial = {
         }
         if('mod' in row){
           // Y模組為攻擊附加額外法術傷害
-          otherDamage = row.attack * 0.1 * ((100 - emenyData.enemyRes) / 100);
-          if(otherDamage < otherDamage / 20){
-            otherDamage = otherDamage / 20;
+          otherDamage = (row.attack * 0.1) * ((100 - emenyData.enemyRes) / 100);
+          if(otherDamage < (row.attack * 0.1) / 20){
+            otherDamage = (row.attack * 0.1) / 20;
           }
         }    
         else{
@@ -93,14 +97,18 @@ const MemberSpecial = {
         }
         if('mod' in row){
           // Y模組為浮游單元疊加更多傷害
-          otherDamage = row.attack * 1.2 * ((100 - emenyData.enemyRes) / 100);
+          otherDamage = (row.attack * 1.2) * ((100 - emenyData.enemyRes) / 100);
+          if(otherDamage < (row.attack * 1.2) / 20){
+            otherDamage = (row.attack * 1.2) / 20;
+          }
         }    
         else{
-          otherDamage = row.attack * 1.1 * ((100 - emenyData.enemyRes) / 100);
+          otherDamage = (row.attack * 1.1) * ((100 - emenyData.enemyRes) / 100);
+          if(otherDamage < (row.attack * 1.1) / 20){
+            otherDamage = (row.attack * 1.1) / 20;
+          }
         }
-        if(otherDamage < otherDamage / 20){
-          otherDamage = otherDamage / 20;
-        }
+        
       return ((finalDamage + otherDamage) / row.spd).toFixed(2);  
       case "巫役小車":
         // 天賦為部署後的40秒內每次攻擊附帶60凋亡損傷，且期間還會使攻擊範圍內所有敵人+10%法術脆弱和+10%元素脆弱
