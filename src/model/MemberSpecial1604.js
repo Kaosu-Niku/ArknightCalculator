@@ -88,15 +88,6 @@ const MemberSpecial = {
           return (((attackDps * second) + (880 * tureCount)) / second).toFixed(2);
 
         }
-        
-        
-        
-        
-        
-        
-        let damageDps = finalDamage / row.spd;
-        // 最終計算DPS的方式以計算40秒內的所有普攻傷害與一次凋亡損傷爆條總傷的總和為準
-      return ((damageDps * 40 + 13200) / 40).toFixed(2);
       default:
       return originalDps;
     }

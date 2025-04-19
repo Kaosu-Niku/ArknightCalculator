@@ -131,19 +131,6 @@
       "spdMultiply": 0
     },
     {       
-      "name": "蛇屠箱",
-      "whichSkill": "二技能",
-      "skillType": "治療",
-      "waitTime":40,
-      "skillTime": 30,    
-      "skillFirstAdd": 0,
-      "skillFirtsMultiply": 1,
-      "skillLastAdd": 0,
-      "skillLastMultiply": 1,
-      "spdAdd": 0.2,
-      "spdMultiply": 0
-    },
-    {       
       "name": "角峰",
       "whichSkill": "無技能",
       "skillType": "防禦",

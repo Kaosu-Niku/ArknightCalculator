@@ -47,8 +47,8 @@
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
-      "skillTime": 28,
-      "waitTime":25,
+      "waitTime":28,
+      "skillTime": 25,
       "skillFirstAdd": 0,
       "skillFirtsMultiply": 2.5,
       "skillLastAdd": 0,
@@ -72,7 +72,7 @@
     },
     {
       "name": "宴",
-      "whichSkill": "二技能",
+      "whichSkill": "二技能(天賦加攻速最大加成)",
       "skillType": "攻擊",
       "attackType": "法傷",
       "waitTime":60,
@@ -155,8 +155,22 @@
       "spdMultiply": 0
     },
     {
-      "name": "休莫斯",
+      "name": "艾絲黛爾",
       "whichSkill": "二技能(全程打1)",
+      "skillType": "攻擊",
+      "attackType": "物傷",
+      "waitTime":23,
+      "skillTime": 15,    
+      "skillFirstAdd": 0,
+      "skillFirtsMultiply": 2.15,
+      "skillLastAdd": 0,
+      "skillLastMultiply": 1,
+      "spdAdd": 0,
+      "spdMultiply": 0
+    },
+    {
+      "name": "休莫斯",
+      "whichSkill": "二技能(全程打1)(全程雙倍加成)",
       "skillType": "攻擊",
       "attackType": "物傷",
       "waitTime":45,
