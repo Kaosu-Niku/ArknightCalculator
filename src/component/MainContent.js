@@ -5,7 +5,7 @@ import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import Calculator from '../model/Calculator';
 
 function MainContent() {
-  const [whichType, setWhichType] = useState('1604');
+  const [whichType, setWhichType] = useState(getCookie('type'));
   
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
@@ -19,6 +19,26 @@ function MainContent() {
   const memberTableRef = useRef(null);
   const attackSkillTableRef = useRef(null); 
   const defSkillTableRef = useRef(null); 
+
+  //取得Cookie
+  function getCookie(name) {
+    const cookies = document.cookie.split('; ');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split('=');
+      if (cookie[0] === name) {
+        return cookie[1] || '1604';
+      }
+    }
+    return '1604'; 
+  }
+  //設置Cookie
+  function setCookie(type) {
+    document.cookie = `type=${type}`;
+    // 設定Cookier在7天後過期
+    let expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 7); 
+    document.cookie = `theme=dark; expires=${expirationDate.toUTCString()}`;
+  }
 
   useEffect(() => {
     const loadData = async (type) => {
@@ -217,9 +237,9 @@ function MainContent() {
         </div>
         <hr></hr>
         <div className="d-flex flex-row">
-          <button className={ `${whichType === '114'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('114'); }}>精一1級四星隊</button>
-          <button className={ `${whichType === '1604'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('1604'); }}>精一滿級四星隊</button>
-          <button className={ `${whichType === '2704'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('2704'); }}>四星隊</button>
+          <button className={ `${whichType === '114'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('114'); setWhichType('114'); }}>精一1級四星隊</button>
+          <button className={ `${whichType === '1604'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('1604'); setWhichType('1604'); }}>精一滿級四星隊</button>
+          <button className={ `${whichType === '2704'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('2704'); setWhichType('2704'); }}>四星隊</button>
         </div>
         <p>以下表格的我方面板數值皆以滿潛能滿信賴(四星隊3級模組)為準</p>
         <p>由於幹員會有許多的因素會影響實際數值或是傷害計算結果</p>
