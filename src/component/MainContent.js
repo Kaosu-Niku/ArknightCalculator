@@ -35,7 +35,7 @@ function MainContent() {
   function setCookie(type) {
     let expirationDate = new Date();
     expirationDate.setDate(expirationDate.getDate() + 7); //設定Cookier在7天後過期
-    document.cookie = `type=${type}; expires=${expirationDate.toUTCString()};`;
+    document.cookie = `type=${type}; expires=${expirationDate.toUTCString()}; path=/;`;
   }
 
   useEffect(() => {
