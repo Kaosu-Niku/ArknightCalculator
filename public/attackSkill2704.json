@@ -16,6 +16,7 @@
     },
     {
       "name": "清道夫",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -44,6 +45,7 @@
     },
     {
       "name": "紅豆",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -58,6 +60,7 @@
     },
     {
       "name": "幕斯",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -72,6 +75,7 @@
     },
     {
       "name": "宴",
+      "mod": "X模組",
       "whichSkill": "二技能(天賦加攻速最大加成)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -100,6 +104,7 @@
     },
     {
       "name": "纏丸",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -114,6 +119,7 @@
     },
     {
       "name": "獵蜂",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -142,6 +148,7 @@
     },
     {
       "name": "艾絲黛爾",
+      "mod": "Y模組",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -156,6 +163,7 @@
     },
     {
       "name": "艾絲黛爾",
+      "mod": "Y模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -170,6 +178,7 @@
     },
     {
       "name": "休莫斯",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)(全程雙倍加成)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -184,6 +193,7 @@
     },
     {
       "name": "石英",
+      "mod": "X模組",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -198,6 +208,7 @@
     },
     {
       "name": "石英",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -226,6 +237,7 @@
     },
     {
       "name": "芳汀",
+      "mod": "Y模組",
       "whichSkill": "一技能(二連擊)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -240,6 +252,7 @@
     },
     {
       "name": "芳汀",
+      "mod": "Y模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -254,6 +267,7 @@
     },
     {
       "name": "羅小黑",
+      "mod": "Y模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -268,6 +282,7 @@
     },
     {
       "name": "騁風",
+      "mod": "無模組",
       "whichSkill": "二技能(全程打1)(含天賦追加傷害)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -282,6 +297,7 @@
     },
     {
       "name": "紅雲",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -296,6 +312,7 @@
     },
     {
       "name": "紅雲",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -310,6 +327,7 @@
     },
     {
       "name": "杰西卡",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -324,6 +342,7 @@
     },
     {
       "name": "梅",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -338,6 +357,7 @@
     },
     {
       "name": "躍躍",
+      "mod": "無模組",
       "whichSkill": "二技能(二連擊)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -352,6 +372,7 @@
     },
     {
       "name": "酸糖",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -366,6 +387,7 @@
     },
     {
       "name": "酸糖",
+      "mod": "X模組",
       "whichSkill": "二技能(二連擊)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -380,6 +402,7 @@
     },
     {
       "name": "鉛踝",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打3)(只算對1個的傷害)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -394,6 +417,7 @@
     }, 
     {
       "name": "鉛踝",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -408,6 +432,7 @@
     }, 
     {
       "name": "安比爾",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -422,6 +447,7 @@
     },
     {
       "name": "松果",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)(滿疊層)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -436,6 +462,7 @@
     },
     {
       "name": "白雪",
+      "mod": "Y模組",
       "whichSkill": "二技能(全程打1)(只算額外法傷)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -450,6 +477,7 @@
     },
     {
       "name": "夜煙",
+      "mod": "X模組",
       "whichSkill": "一技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -464,6 +492,7 @@
     },
     {
       "name": "夜煙",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -478,6 +507,7 @@
     },
     {
       "name": "卡達",
+      "mod": "Y模組",
       "whichSkill": "一技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -492,6 +522,7 @@
     },
     {
       "name": "卡達",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -506,6 +537,7 @@
     },
     {
       "name": "布丁",
+      "mod": "Y模組",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -520,6 +552,7 @@
     },
     {
       "name": "布丁",
+      "mod": "Y模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -548,6 +581,7 @@
     },
     {
       "name": "遠山",
+      "mod": "X模組",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -562,6 +596,7 @@
     },
     {
       "name": "遠山",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -576,6 +611,7 @@
     },
     {
       "name": "格雷伊",
+      "mod": "Y模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -590,6 +626,7 @@
     },
     {
       "name": "堅雷",
+      "mod": "無模組",
       "whichSkill": "一技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -632,6 +669,7 @@
     },
     {
       "name": "地靈",
+      "mod": "Y模組",
       "whichSkill": "一技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -646,6 +684,7 @@
     },
     {
       "name": "孑",
+      "mod": "X模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -660,6 +699,7 @@
     },
     {
       "name": "伊桑",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -674,6 +714,7 @@
     },
     {
       "name": "維荻",
+      "mod": "Y模組",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -688,6 +729,7 @@
     },
     {
       "name": "雲跡",
+      "mod": "無模組",
       "whichSkill": "二技能(全程打1)",
       "skillType": "攻擊",
       "attackType": "物傷",
@@ -696,7 +738,7 @@
       "skillFirstAdd": 0,
       "skillFirtsMultiply": 1.9,
       "skillLastAdd": 0,
-      "skillLastMultiply": 1,
+      "skillLastMultiply": 1.12,
       "spdAdd": 0,
       "spdMultiply": 0
     }

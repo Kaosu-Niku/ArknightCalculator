@@ -5,7 +5,7 @@ import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import Calculator from '../model/Calculator';
 
 function MainContent() {
-  const [whichType, setWhichType] = useState('1604');
+  const [whichType, setWhichType] = useState(getCookie('type'));
   
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
@@ -19,6 +19,24 @@ function MainContent() {
   const memberTableRef = useRef(null);
   const attackSkillTableRef = useRef(null); 
   const defSkillTableRef = useRef(null); 
+
+  //取得Cookie
+  function getCookie(name) {
+    const cookies = document.cookie.split('; ');
+    for (let i = 0; i < cookies.length; i++) {
+      const cookie = cookies[i].split('=');
+      if (cookie[0] === name) {
+        return cookie[1] || '1604';
+      }
+    }
+    return '1604'; 
+  }
+  //設置Cookie
+  function setCookie(type) {
+    let expirationDate = new Date();
+    expirationDate.setDate(expirationDate.getDate() + 7); //設定Cookier在7天後過期
+    document.cookie = `type=${type}; expires=${expirationDate.toUTCString()}; path=/;`;
+  }
 
   useEffect(() => {
     const loadData = async (type) => {
@@ -44,11 +62,10 @@ function MainContent() {
           witchDefSkill = 'defSkill2704.json';
         break;
       }
-      //特殊標記表格 
-      await fetch(`${process.env.PUBLIC_URL}/special.json`)
+      //說明表格 
+      await fetch(`${process.env.PUBLIC_URL}/memberDirections.json`)
       .then(response => response.json())
-      .then(specialJsonData => {
-
+      .then(directionJsonData => {
         fetch(`${process.env.PUBLIC_URL}/${witchMember}`)
         .then(response => response.json())
         .then(memberJsonData => {
@@ -59,8 +76,8 @@ function MainContent() {
               data: memberJsonData.Basic,
               pageLength: 100,
               columns: [
-                { title: "", data: null, render: function (row) { return `<img src=${row.icon} alt='member_icon' width='40' height='40' />`; } },
-                { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+                { title: "", data: null, render: function (row) { return `<img src=${row.icon} title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
+                { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
                 { title: "職業", data: "type" },
                 { title: "生命", data: "hp" },
                 { title: "傷害類型", data: "attackType" },
@@ -85,8 +102,8 @@ function MainContent() {
                 data: attackSkillJsonData.Basic,
                 pageLength: 100,
                 columns: [
-                  { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`; } },
-                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+                  { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
+                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
                   { title: "技能", data: "whichSkill" },
                   { title: "傷害類型", data: "attackType" },
                   { title: "冷卻時間", data: "waitTime" },
@@ -109,8 +126,8 @@ function MainContent() {
                 data: defSkillJsonData.Basic,
                 pageLength: 100,
                 columns: [
-                  { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} alt='member_icon' width='40' height='40' />`; } },
-                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(data, specialJsonData); } },
+                  { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
+                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
                   { title: "技能", data: "whichSkill" },
                   { title: "技能類型", data: "skillType" },
                   { title: "冷卻時間", data: "waitTime" },
@@ -218,14 +235,14 @@ function MainContent() {
         </div>
         <hr></hr>
         <div className="d-flex flex-row">
-          <button className={ `${whichType === '114'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('114'); }}>精一1級四星隊</button>
-          <button className={ `${whichType === '1604'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('1604'); }}>精一滿級四星隊</button>
-          <button className={ `${whichType === '2704'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setWhichType('2704'); }}>四星隊</button>
+          <button className={ `${whichType === '114'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('114'); setWhichType('114'); }}>精一1級四星隊</button>
+          <button className={ `${whichType === '1604'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('1604'); setWhichType('1604'); }}>精一滿級四星隊</button>
+          <button className={ `${whichType === '2704'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('2704'); setWhichType('2704'); }}>四星隊</button>
         </div>
-        <p>以下表格的我方面板數值皆以滿潛能滿信賴為準</p>
-        <p>名稱帶有+表示其面板數值為經天賦加成後的最終結果 (ex: 香草的天賦為攻擊力+8%)</p>
-        <p>名稱帶有*表示其打出的數值為受職業特性或天賦影響後的最終結果 (ex: 酸糖的天賦為至少造成20%傷害，因此刮痧時打出的保底傷害與正常幹員的5%不一樣需另外計算)</p>
-        <p>名稱帶有%表示其打出的數值可能受職業特性或天賦影響而打的更高，但由於是概率或必須滿足特定條件才觸發，因此不帶入計算，只計算無觸發的正常數值</p>
+        <p>以下表格的我方面板數值皆以滿潛能滿信賴(四星隊3級模組)為準</p>
+        <p>由於幹員會有許多的因素會影響實際數值或是傷害計算結果</p>
+        <p>(ex: 香草的天賦加攻擊力、夜煙的天賦減法抗、刻刀的職業特性攻擊都是二連擊...等等)</p>
+        <p>***可將滑鼠懸停在幹員頭像圖示上，會彈出提示訊息，經由提示訊息可確認詳細資訊***</p>
         <p>(幹員頭像取自PRTS的幹員檔案)</p>
         <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
         <hr></hr>

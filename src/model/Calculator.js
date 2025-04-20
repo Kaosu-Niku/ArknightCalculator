@@ -1,4 +1,4 @@
-import MemberSpecial1604 from './MemberSpecial1604';
+import MemberSpecial from './MemberSpecial';
 
 const Calculator = {
   // 我方icon
@@ -6,19 +6,19 @@ const Calculator = {
     let memberRow = memberJsonData.find(item => item.name === skillRow.name);
     return memberRow.icon;
   },
+  // 我方說明文字
+  memberDirection: (row, directionsJsonData) => {
+    let memberRow = directionsJsonData.Basic.find(item => item.name === row.name);
+    return memberRow.direction;
+  },
   // 我方名稱
-  memberNameRender: (data, specialJsonData) => {
-    let newData = data; 
-    if(specialJsonData.Add.find((e) => e === data) !== undefined){
-      newData += '+';//其面板數值為經天賦加成後的最終結果
-    } 
-    if(specialJsonData.Spc.find((e) => e === data) !== undefined){
-      newData += '*';//其打出的數值為受職業特性或天賦影響後的最終結果
-    } 
-    if(specialJsonData.Pbb.find((e) => e === data) !== undefined){
-      newData += '%';//其打出的數值可能受職業特性或天賦影響而打的更高，但是概率或必須滿足特定條件才觸發
-    } 
-    return newData; 
+  memberNameRender: (row) => {
+    let newName = row.name; 
+    // 如果是四星隊，在名字後面標註模組
+    if('mod' in row){
+      newName += `(${row.mod})`;
+    }
+    return newName; 
   },
   // 我方DPS
   memberDps: (memberRow, enemyData) => {
@@ -31,14 +31,14 @@ const Calculator = {
           finalDamage = memberRow.attack / 20;
         }
         finalDps = (finalDamage / memberRow.spd).toFixed(2);        
-      return MemberSpecial1604.memberDpsSpecial(memberRow, enemyData, finalDps);
+      return MemberSpecial.memberDpsSpecial(memberRow, enemyData, finalDps);
       case "法傷":
         finalDamage = memberRow.attack * ((100 - enemyData.enemyRes) / 100);
         if(finalDamage < memberRow.attack / 20){
           finalDamage = memberRow.attack / 20;
         }
         finalDps = (finalDamage / memberRow.spd).toFixed(2);
-      return MemberSpecial1604.memberDpsSpecial(memberRow, enemyData, finalDps);
+      return MemberSpecial.memberDpsSpecial(memberRow, enemyData, finalDps);
       default:
       return 0;
     }
@@ -48,7 +48,7 @@ const Calculator = {
     switch(memberRow.attackType){
       case "治療":
         let finalHps = (memberRow.attack / memberRow.spd).toFixed(2);
-      return MemberSpecial1604.memberHpsSpecial(memberRow, finalHps);
+      return MemberSpecial.memberHpsSpecial(memberRow, finalHps);
       default:
       return 0;
     }
@@ -178,8 +178,10 @@ const Calculator = {
       // 強力擊類型技能
       finalHps = (newMemberRow.attack / skillRow.waitTime).toFixed(2);
     }
-    specialHps = MemberSpecial1604.memberHpsSpecial(newMemberRow, finalHps);
-    return MemberSpecial1604.defSkillHpsSpecial(skillRow, specialHps);
+    // 正常奶媽的特殊計算
+    specialHps = MemberSpecial.memberHpsSpecial(newMemberRow, finalHps);
+    // 非正常奶媽的特殊計算
+    return MemberSpecial.defSkillHpsSpecial(newMemberRow, skillRow, specialHps);
   }
 }
 
