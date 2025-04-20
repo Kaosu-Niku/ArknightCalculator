@@ -33,11 +33,9 @@ function MainContent() {
   }
   //設置Cookie
   function setCookie(type) {
-    document.cookie = `type=${type}`;
-    // 設定Cookier在7天後過期
     let expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 7); 
-    document.cookie = `theme=dark; expires=${expirationDate.toUTCString()}`;
+    expirationDate.setDate(expirationDate.getDate() + 7); //設定Cookier在7天後過期
+    document.cookie = `type=${type}; expires=${expirationDate.toUTCString()};`;
   }
 
   useEffect(() => {
