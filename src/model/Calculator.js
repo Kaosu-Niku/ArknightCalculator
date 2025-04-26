@@ -165,6 +165,19 @@ const Calculator = {
     }
     return copyMemberRow;
   },
+  // 技能總傷
+  memberSkillTotal: (skillRow, memberJsonData, enemyData) => { 
+    const newMemberRow = Calculator.skillMemberRow(skillRow, memberJsonData);
+    let dps = Calculator.memberDps(newMemberRow, enemyData);
+    switch(skillRow.attackType){
+      case "物傷":       
+      return (Math.ceil(dps * skillRow.skillTime));
+      case "法傷":
+      return (Math.ceil(dps * skillRow.skillTime));
+      default:
+      return 0;
+    }
+  },
   // 技能期間我方HPS
   skillMemberHps: (skillRow, memberJsonData) => {
     const newMemberRow = Calculator.skillMemberRow(skillRow, memberJsonData);

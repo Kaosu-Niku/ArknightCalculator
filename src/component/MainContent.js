@@ -109,6 +109,7 @@ function MainContent() {
                   { title: "冷卻時間", data: "waitTime" },
                   { title: "持續時間", data: "skillTime" },
                   { title: "DPS", data: null, render: function (data, type, row) { return Calculator.memberDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
+                  { title: "技能總傷", data: null, render: function (data, type, row) { return Calculator.memberSkillTotal(row, memberJsonData.Basic, enemyData ); } },
                   { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
                 ],
               });
