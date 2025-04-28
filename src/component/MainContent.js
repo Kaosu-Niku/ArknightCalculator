@@ -66,7 +66,6 @@ function MainContent() {
       await fetch(`${process.env.PUBLIC_URL}/memberDirections.json`)
       .then(response => response.json())
       .then(directionJsonData => {
-        console.log(directionJsonData);
         fetch(`${process.env.PUBLIC_URL}/${witchMember}`)
         .then(response => response.json())
         .then(memberJsonData => {
