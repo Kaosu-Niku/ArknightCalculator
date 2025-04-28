@@ -76,7 +76,6 @@ function MainContent() {
               data: memberJsonData.Basic,
               pageLength: 100,
               columns: [
-                //"${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png"
                 { title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
                 { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
                 { title: "職業", data: "type" },
