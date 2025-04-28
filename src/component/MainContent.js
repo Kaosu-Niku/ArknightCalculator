@@ -40,6 +40,7 @@ function MainContent() {
 
   useEffect(() => {
     const loadData = async (type) => {
+      console.log(process.env.PUBLIC_URL);
       let witchMember = 'member1604.json';
       let witchAttackSkill = 'attackSkill1604.json';
       let witchDefSkill = 'defSkill1604.json';
