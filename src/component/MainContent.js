@@ -76,7 +76,8 @@ function MainContent() {
               data: memberJsonData.Basic,
               pageLength: 100,
               columns: [
-                { title: "", data: null, render: function (row) { return `<img src=${row.icon} title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
+                //"${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png"
+                { title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
                 { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
                 { title: "職業", data: "type" },
                 { title: "生命", data: "hp" },
@@ -102,7 +103,8 @@ function MainContent() {
                 data: attackSkillJsonData.Basic,
                 pageLength: 100,
                 columns: [
-                  { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
+                  //${Calculator.memberIcon(row, memberJsonData.Basic)}
+                  { title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
                   { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
                   { title: "技能", data: "whichSkill" },
                   { title: "傷害類型", data: "attackType" },
@@ -127,7 +129,7 @@ function MainContent() {
                 data: defSkillJsonData.Basic,
                 pageLength: 100,
                 columns: [
-                  { title: "", data: null, render: function (row) { return `<img src=${Calculator.memberIcon(row, memberJsonData.Basic)} title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
+                  { title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
                   { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
                   { title: "技能", data: "whichSkill" },
                   { title: "技能類型", data: "skillType" },
