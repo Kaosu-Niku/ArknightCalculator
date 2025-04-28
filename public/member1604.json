@@ -1,7 +1,6 @@
 {
   "Basic" :[
     {
-      "icon": "https://media.prts.wiki/9/9d/%E5%A4%B4%E5%83%8F_%E6%A1%83%E9%87%91%E5%A8%98.png",
       "name": "桃金娘",
       "type": "執旗手",
       "hp": 1142,
@@ -12,7 +11,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/4/41/%E5%A4%B4%E5%83%8F_%E8%8A%AC.png",
       "name": "芬",
       "type": "尖兵",
       "hp": 1325,
@@ -23,7 +21,6 @@
       "spd": 1.05
     },
     {
-      "icon": "https://media.prts.wiki/c/c8/%E5%A4%B4%E5%83%8F_%E9%A6%99%E8%8D%89.png",
       "name": "香草",
       "type": "尖兵",
       "hp": 1270,
@@ -34,7 +31,6 @@
       "spd": 1.05
     },
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E6%B8%85%E9%81%93%E5%A4%AB.png",
       "name": "清道夫",
       "type": "尖兵",
       "hp": 1284,
@@ -45,7 +41,6 @@
       "spd": 1.05
     },
     {
-      "icon": "https://media.prts.wiki/2/27/%E5%A4%B4%E5%83%8F_%E8%AE%AF%E4%BD%BF.png",
       "name": "訊使",
       "type": "尖兵",
       "hp": 1389,
@@ -56,7 +51,6 @@
       "spd": 1.05
     },
     {
-      "icon": "https://media.prts.wiki/1/1f/%E5%A4%B4%E5%83%8F_%E7%BF%8E%E7%BE%BD.png",
       "name": "翎羽",
       "type": "沖鋒手",
       "hp": 1226,
@@ -67,7 +61,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/b/bb/%E5%A4%B4%E5%83%8F_%E7%BA%A2%E8%B1%86.png",
       "name": "紅豆",
       "type": "沖鋒手",
       "hp": 1291,
@@ -78,7 +71,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/c/cb/%E5%A4%B4%E5%83%8F_%E8%B1%86%E8%8B%97.png",
       "name": "豆苗",
       "type": "戰術家",
       "hp": 1286,
@@ -89,7 +81,6 @@
       "spd": 1.2
     },
     {
-      "icon": "",
       "name": "磐蟹",
       "type": "召喚物",
       "hp": 1440,
@@ -100,7 +91,6 @@
       "spd": 1.25
     },
     {
-      "icon": "https://media.prts.wiki/f/fc/%E5%A4%B4%E5%83%8F_%E6%85%95%E6%96%AF.png",
       "name": "慕斯",
       "type": "術戰者",
       "hp": 1782,
@@ -111,7 +101,6 @@
       "spd": 1.25
     },
     {
-      "icon": "https://media.prts.wiki/f/f4/%E5%A4%B4%E5%83%8F_%E5%AE%B4.png",
       "name": "宴",
       "type": "武者",
       "hp": 2583,
@@ -122,7 +111,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/4/4b/%E5%A4%B4%E5%83%8F_%E7%8E%AB%E5%85%B0%E8%8E%8E.png",
       "name": "玫蘭莎",
       "type": "無畏者",
       "hp": 2745,
@@ -133,7 +121,6 @@
       "spd": 1.5
     },
     {
-      "icon": "https://media.prts.wiki/1/13/%E5%A4%B4%E5%83%8F_%E7%BC%A0%E4%B8%B8.png",
       "name": "纏丸",
       "type": "無畏者",
       "hp": 3323,
@@ -144,7 +131,6 @@
       "spd": 1.5
     },
     {
-      "icon": "https://media.prts.wiki/d/d8/%E5%A4%B4%E5%83%8F_%E6%9D%B0%E5%85%8B.png",
       "name": "杰克",
       "type": "鬥士",
       "hp": 1949,
@@ -155,7 +141,6 @@
       "spd": 0.8
     },
     {
-      "icon": "https://media.prts.wiki/c/c2/%E5%A4%B4%E5%83%8F_%E7%8C%8E%E8%9C%82.png",
       "name": "獵蜂",
       "type": "鬥士",
       "hp": 2176,
@@ -166,7 +151,6 @@
       "spd": 0.8
     },
     {
-      "icon": "https://media.prts.wiki/1/16/%E5%A4%B4%E5%83%8F_%E6%B3%A1%E6%99%AE%E5%8D%A1.png",
       "name": "泡普卡",
       "type": "強攻手",
       "hp": 2007,
@@ -177,7 +161,6 @@
       "spd": 2
     },
     {
-      "icon": "https://media.prts.wiki/5/57/%E5%A4%B4%E5%83%8F_%E8%89%BE%E4%B8%9D%E9%BB%9B%E5%B0%94.png",
       "name": "艾絲黛爾",
       "type": "強攻手",
       "hp": 2425,
@@ -188,7 +171,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/e/e0/%E5%A4%B4%E5%83%8F_%E4%BC%91%E8%B0%9F%E6%96%AF.png",
       "name": "休謨斯",
       "type": "收割者",
       "hp": 1612,
@@ -199,7 +181,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/b/bc/%E5%A4%B4%E5%83%8F_%E7%9F%B3%E8%8B%B1.png",
       "name": "石英",
       "type": "重劍手",
       "hp": 4593,
@@ -210,7 +191,6 @@
       "spd": 2.5
     },
     {
-      "icon": "https://media.prts.wiki/b/b7/%E5%A4%B4%E5%83%8F_%E6%9C%88%E8%A7%81%E5%A4%9C.png",
       "name": "月見夜",
       "type": "領主",
       "hp": 1653,
@@ -221,7 +201,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%8A%B3%E6%B1%80.png",
       "name": "芳汀",
       "type": "領主",
       "hp": 1777,
@@ -232,7 +211,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/2/29/%E5%A4%B4%E5%83%8F_%E9%9C%9C%E5%8F%B6.png",
       "name": "霜葉",
       "type": "領主",
       "hp": 1785,
@@ -243,7 +221,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/5/50/%E5%A4%B4%E5%83%8F_%E7%BD%97%E5%B0%8F%E9%BB%91.png",
       "name": "羅小黑",
       "type": "領主",
       "hp": 1611,
@@ -254,7 +231,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/2/2c/%E5%A4%B4%E5%83%8F_%E5%88%BB%E5%88%80.png",
       "name": "刻刀",
       "type": "劍豪",
       "hp": 1763,
@@ -265,7 +241,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/a/a1/%E5%A4%B4%E5%83%8F_%E6%9D%9C%E5%AE%BE.png",
       "name": "杜賓",
       "type": "教官",
       "hp": 1607,
@@ -276,7 +251,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/f/fe/%E5%A4%B4%E5%83%8F_%E9%AA%8B%E9%A3%8E.png",
       "name": "騁風",
       "type": "解放者",
       "hp": 3084,
@@ -287,7 +261,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/b/b9/%E5%A4%B4%E5%83%8F_%E5%85%8B%E6%B4%9B%E4%B8%9D.png",
       "name": "克洛絲",
       "type": "速射手",
       "hp": 1060,
@@ -298,7 +271,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/f/f6/%E5%A4%B4%E5%83%8F_%E5%AE%89%E5%BE%B7%E5%88%87%E5%B0%94.png",
       "name": "安德切爾",
       "type": "速射手",
       "hp": 1080,
@@ -309,7 +281,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/a/af/%E5%A4%B4%E5%83%8F_%E7%BA%A2%E4%BA%91.png",
       "name": "紅雲",
       "type": "速射手",
       "hp": 1008,
@@ -320,7 +291,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E6%9D%B0%E8%A5%BF%E5%8D%A1.png",
       "name": "杰西卡",
       "type": "速射手",
       "hp": 1108,
@@ -331,7 +301,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/1/14/%E5%A4%B4%E5%83%8F_%E6%B5%81%E6%98%9F.png",
       "name": "流星",
       "type": "速射手",
       "hp": 1123,
@@ -342,7 +311,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/a/ac/%E5%A4%B4%E5%83%8F_%E6%A2%85.png",
       "name": "梅",
       "type": "速射手",
       "hp": 1338,
@@ -353,7 +321,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/a/aa/%E5%A4%B4%E5%83%8F_%E8%B7%83%E8%B7%83.png",
       "name": "躍躍",
       "type": "回環射手",
       "hp": 1804,
@@ -364,7 +331,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/e/e9/%E5%A4%B4%E5%83%8F_%E9%85%B8%E7%B3%96.png",
       "name": "酸糖",
       "type": "重射手",
       "hp": 1197,
@@ -375,7 +341,6 @@
       "spd": 1.6
     },
     {
-      "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E9%93%85%E8%B8%9D.png",
       "name": "鉛踝",
       "type": "攻城手",
       "hp": 1193,
@@ -386,7 +351,6 @@
       "spd": 2.4
     }, 
     {
-      "icon": "https://media.prts.wiki/f/ff/%E5%A4%B4%E5%83%8F_%E5%AE%89%E6%AF%94%E5%B0%94.png",
       "name": "安比爾",
       "type": "神射手",
       "hp": 1276,
@@ -397,7 +361,6 @@
       "spd": 2.7
     },
     {
-      "icon": "https://media.prts.wiki/5/5e/%E5%A4%B4%E5%83%8F_%E6%9D%BE%E6%9E%9C.png",
       "name": "松果",
       "type": "散射手",
       "hp": 1650,
@@ -408,7 +371,6 @@
       "spd": 2.3
     },
     {
-      "icon": "https://media.prts.wiki/c/cd/%E5%A4%B4%E5%83%8F_%E7%A9%BA%E7%88%86.png",
       "name": "空爆",
       "type": "炮手",
       "hp": 1150,
@@ -419,7 +381,6 @@
       "spd": 2.8
     },
     {
-      "icon": "https://media.prts.wiki/b/b4/%E5%A4%B4%E5%83%8F_%E7%99%BD%E9%9B%AA.png",
       "name": "白雪",
       "type": "炮手",
       "hp": 1304,
@@ -430,7 +391,6 @@
       "spd": 2.8
     },
     {
-      "icon": "https://media.prts.wiki/b/b3/%E5%A4%B4%E5%83%8F_%E5%8F%B2%E9%83%BD%E5%8D%8E%E5%BE%B7.png",
       "name": "史都華德",
       "type": "中堅術師",
       "hp": 1100,
@@ -441,7 +401,6 @@
       "spd": 1.6
     },
     {
-      "icon": "https://media.prts.wiki/5/55/%E5%A4%B4%E5%83%8F_%E5%A4%9C%E7%83%9F.png",
       "name": "夜煙",
       "type": "中堅術師",
       "hp": 1250,
@@ -452,7 +411,6 @@
       "spd": 1.6
     },
     {
-      "icon": "https://media.prts.wiki/4/43/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E8%BE%BE.png",
       "name": "卡達",
       "type": "御械術師",
       "hp": 1094,
@@ -463,7 +421,6 @@
       "spd": 1.3
     },
     {
-      "icon": "https://media.prts.wiki/9/92/%E5%A4%B4%E5%83%8F_%E6%B7%B1%E9%9D%9B.png",
       "name": "深靛",
       "type": "秘術師",
       "hp": 1162,
@@ -474,7 +431,6 @@
       "spd": 3
     },
     {
-      "icon": "https://media.prts.wiki/b/b0/%E5%A4%B4%E5%83%8F_%E5%B8%83%E4%B8%81.png",
       "name": "布丁",
       "type": "鍊術師",
       "hp": 1007,
@@ -485,7 +441,6 @@
       "spd": 2.3
     },
     {
-      "icon": "https://media.prts.wiki/f/fb/%E5%A4%B4%E5%83%8F_%E7%82%8E%E7%86%94.png",
       "name": "炎熔",
       "type": "擴散術師",
       "hp": 1141,
@@ -496,7 +451,6 @@
       "spd": 2.9
     },
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%BF%9C%E5%B1%B1.png",
       "name": "遠山",
       "type": "擴散術師",
       "hp": 1214,
@@ -507,7 +461,6 @@
       "spd": 2.9
     },
     {
-      "icon": "https://media.prts.wiki/f/fe/%E5%A4%B4%E5%83%8F_%E6%A0%BC%E9%9B%B7%E4%BC%8A.png",
       "name": "格雷伊",
       "type": "擴散術師",
       "hp": 1469,
@@ -518,7 +471,6 @@
       "spd": 2.9
     },
     {
-      "icon": "https://media.prts.wiki/3/3d/%E5%A4%B4%E5%83%8F_PhonoR-0.png",
       "name": "巫役小車",
       "type": "巫役",
       "hp": 520,
@@ -529,7 +481,6 @@
       "spd": 1.6
     },
     {
-      "icon": "https://media.prts.wiki/8/83/%E5%A4%B4%E5%83%8F_%E6%A2%93%E5%85%B0.png",
       "name": "梓蘭",
       "type": "凝滯師",
       "hp": 935,
@@ -540,7 +491,6 @@
       "spd": 1.9
     },
     {
-      "icon": "https://media.prts.wiki/4/43/%E5%A4%B4%E5%83%8F_%E6%B3%A2%E7%99%BB%E5%8F%AF.png",
       "name": "波登可",
       "type": "凝滯師",
       "hp": 930,
@@ -551,7 +501,6 @@
       "spd": 1.9
     },
     {
-      "icon": "https://media.prts.wiki/5/57/%E5%A4%B4%E5%83%8F_%E5%9C%B0%E7%81%B5.png",
       "name": "地靈",
       "type": "凝滯師",
       "hp": 964,
@@ -562,7 +511,6 @@
       "spd": 1.9
     },
     {
-      "icon": "https://media.prts.wiki/d/d1/%E5%A4%B4%E5%83%8F_%E6%B7%B1%E6%B5%B7%E8%89%B2.png",
       "name": "深海色",
       "type": "召喚師",
       "hp": 1129,
@@ -573,7 +521,6 @@
       "spd": 1.6
     },
     {
-      "icon": "",
       "name": "觸手",
       "type": "召喚物",
       "hp": 1480,
@@ -584,7 +531,6 @@
       "spd": 1.25
     },
     {
-      "icon": "https://media.prts.wiki/5/52/%E5%A4%B4%E5%83%8F_%E7%BD%97%E6%AF%94%E8%8F%88%E5%A1%94.png",
       "name": "羅比菈塔",
       "type": "工匠",
       "hp": 1976,
@@ -595,7 +541,6 @@
       "spd": 1.5
     },
     {
-      "icon": "https://media.prts.wiki/2/2f/%E5%A4%B4%E5%83%8F_%E9%98%BF%E6%B6%88.png",
       "name": "阿消",
       "type": "推擊手",
       "hp": 1732,
@@ -606,7 +551,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/d/dd/%E5%A4%B4%E5%83%8F_%E6%9A%97%E7%B4%A2.png",
       "name": "暗索",
       "type": "鉤索師",
       "hp": 1307,
@@ -617,7 +561,6 @@
       "spd": 1.8
     },
     {
-      "icon": "https://media.prts.wiki/c/ce/%E5%A4%B4%E5%83%8F_%E7%A0%BE.png",
       "name": "礫",
       "type": "處決者",
       "hp": 1567,
@@ -628,7 +571,6 @@
       "spd": 0.9
     },
     {
-      "icon": "https://media.prts.wiki/5/54/%E5%A4%B4%E5%83%8F_%E5%AD%91.png",
       "name": "孑",
       "type": "行商",
       "hp": 2004,
@@ -639,7 +581,6 @@
       "spd": 1
     },
     {
-      "icon": "https://media.prts.wiki/c/c1/%E5%A4%B4%E5%83%8F_%E4%BC%8A%E6%A1%91.png",
       "name": "伊桑",
       "type": "伏擊客",
       "hp": 1900,
@@ -650,7 +591,6 @@
       "spd": 3.5
     },
     {
-      "icon": "https://media.prts.wiki/9/97/%E5%A4%B4%E5%83%8F_%E7%BB%B4%E8%8D%BB.png",
       "name": "維荻",
       "type": "傀儡師",
       "hp": 2050,
@@ -661,7 +601,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/6/67/%E5%A4%B4%E5%83%8F_%E4%BA%91%E8%BF%B9.png",
       "name": "雲跡",
       "type": "巡空者",
       "hp": 1781,
@@ -672,7 +611,6 @@
       "spd": 1.5
     },
     {
-      "icon": "https://media.prts.wiki/8/87/%E5%A4%B4%E5%83%8F_%E5%8D%A1%E7%BC%87.png",
       "name": "卡緹",
       "type": "鐵衛",
       "hp": 2946,
@@ -683,7 +621,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/3/32/%E5%A4%B4%E5%83%8F_%E7%B1%B3%E6%A0%BC%E9%B2%81.png",
       "name": "米格魯",
       "type": "鐵衛",
       "hp": 2035,
@@ -694,7 +631,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/2/28/%E5%A4%B4%E5%83%8F_%E6%B3%A1%E6%B3%A1.png",
       "name": "泡泡",
       "type": "鐵衛",
       "hp": 2391,
@@ -705,7 +641,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/0/02/%E5%A4%B4%E5%83%8F_%E8%9B%87%E5%B1%A0%E7%AE%B1.png",
       "name": "蛇屠箱",
       "type": "鐵衛",
       "hp": 2173,
@@ -716,7 +651,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/e/e4/%E5%A4%B4%E5%83%8F_%E8%A7%92%E5%B3%B0.png",
       "name": "角峰",
       "type": "鐵衛",
       "hp": 2899,
@@ -727,7 +661,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/3/30/%E5%A4%B4%E5%83%8F_%E6%96%91%E7%82%B9.png",
       "name": "斑點",
       "type": "守護者",
       "hp": 1833,
@@ -738,7 +671,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/0/07/%E5%A4%B4%E5%83%8F_%E5%8F%A4%E7%B1%B3.png",
       "name": "古米",
       "type": "守護者",
       "hp": 2236,
@@ -749,7 +681,6 @@
       "spd": 1.2
     },
     {
-      "icon": "https://media.prts.wiki/a/ab/%E5%A4%B4%E5%83%8F_%E5%9D%9A%E9%9B%B7.png",
       "name": "堅雷",
       "type": "馭法鐵衛",
       "hp": 2165,
@@ -760,7 +691,6 @@
       "spd": 1.6
     },
     {
-      "icon": "https://media.prts.wiki/7/77/%E5%A4%B4%E5%83%8F_%E9%9C%B2%E6%89%98.png",
       "name": "露托",
       "type": "不屈者",
       "hp": 2991,
@@ -771,7 +701,6 @@
       "spd": 1.6
     },
     {
-      "icon": "https://media.prts.wiki/9/94/%E5%A4%B4%E5%83%8F_%E5%AE%89%E8%B5%9B%E5%B0%94.png",
       "name": "安賽爾",
       "type": "醫師",
       "hp": 1135,
@@ -782,7 +711,6 @@
       "spd": 2.85
     },
     {
-      "icon": "https://media.prts.wiki/d/d3/%E5%A4%B4%E5%83%8F_%E8%8A%99%E8%93%89.png",
       "name": "芙蓉",
       "type": "醫師",
       "hp": 1220,
@@ -793,7 +721,6 @@
       "spd": 2.85
     },  
     {
-      "icon": "https://media.prts.wiki/6/63/%E5%A4%B4%E5%83%8F_%E8%8B%8F%E8%8B%8F%E6%B4%9B.png",
       "name": "蘇蘇洛",
       "type": "醫師",
       "hp": 1170,
@@ -804,7 +731,6 @@
       "spd": 2.85
     },
     {
-      "icon": "https://media.prts.wiki/c/cc/%E5%A4%B4%E5%83%8F_%E5%98%89%E7%BB%B4%E5%B0%94.png",
       "name": "嘉維爾",
       "type": "醫師",
       "hp": 1374,
@@ -815,7 +741,6 @@
       "spd": 2.85
     },
     {
-      "icon": "https://media.prts.wiki/d/d9/%E5%A4%B4%E5%83%8F_%E6%9C%AB%E8%8D%AF.png",
       "name": "末藥",
       "type": "醫師",
       "hp": 1278,
@@ -826,7 +751,6 @@
       "spd": 2.85
     },
     {
-      "icon": "https://media.prts.wiki/1/19/%E5%A4%B4%E5%83%8F_%E6%B8%85%E6%B5%81.png",
       "name": "清流",
       "type": "療養師",
       "hp": 1323,
@@ -837,7 +761,6 @@
       "spd": 2.85
     },
     {
-      "icon": "https://media.prts.wiki/5/58/%E5%A4%B4%E5%83%8F_%E8%A4%90%E6%9E%9C.png",
       "name": "褐果",
       "type": "行醫",
       "hp": 1077,
@@ -848,7 +771,6 @@
       "spd": 2.85
     },
     {
-      "icon": "https://media.prts.wiki/6/6a/%E5%A4%B4%E5%83%8F_%E8%B0%83%E9%A6%99%E5%B8%88.png",
       "name": "調香師",
       "type": "群癒師",
       "hp": 1382,
