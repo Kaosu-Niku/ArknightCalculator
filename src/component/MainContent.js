@@ -40,7 +40,6 @@ function MainContent() {
 
   useEffect(() => {
     const loadData = async (type) => {
-      console.log(process.env.PUBLIC_URL);
       let witchMember = 'member1604.json';
       let witchAttackSkill = 'attackSkill1604.json';
       let witchDefSkill = 'defSkill1604.json';
@@ -67,6 +66,7 @@ function MainContent() {
       await fetch(`${process.env.PUBLIC_URL}/memberDirections.json`)
       .then(response => response.json())
       .then(directionJsonData => {
+        console.log(directionJsonData);
         fetch(`${process.env.PUBLIC_URL}/${witchMember}`)
         .then(response => response.json())
         .then(memberJsonData => {
