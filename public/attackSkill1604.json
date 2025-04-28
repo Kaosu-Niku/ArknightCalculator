@@ -505,6 +505,34 @@
       "spdMultiply": 0
     },
     {
+      "name": "深靛",
+      "whichSkill": "二技能(全程不束縛)",
+      "skillType": "攻擊",
+      "attackType": "法傷",
+      "waitTime":44,
+      "skillTime": 20,    
+      "skillFirstAdd": 0,
+      "skillFirtsMultiply": 1,
+      "skillLastAdd": 0,
+      "skillLastMultiply": 1,
+      "spdAdd": 1.05,
+      "spdMultiply": 0
+    },
+    {
+      "name": "深靛",
+      "whichSkill": "二技能(束縛一次的額外傷害)",
+      "skillType": "攻擊",
+      "attackType": "法傷",
+      "waitTime":1,
+      "skillTime": 4,    
+      "skillFirstAdd": 0,
+      "skillFirtsMultiply": 1,
+      "skillLastAdd": 0,
+      "skillLastMultiply": 0.15,
+      "spdAdd": 2.5,
+      "spdMultiply": 0
+    },
+    {
       "name": "布丁",
       "whichSkill": "一技能(全程打1)",
       "skillType": "攻擊",
