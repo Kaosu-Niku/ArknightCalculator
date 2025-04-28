@@ -26,7 +26,7 @@ function App() {
     <div>
       <header>
         <title>Arknight Calculator</title>
-        <link rel="icon" href="放icon的地方" type="image/x-icon"></link>
+        <link rel="icon" href="圖片URL" type="image/x-icon"></link>
         <meta charset="UTF-8"></meta>
         <html lang="zh-TW"></html>
         <meta name="author" content="Kaosu-Niku"></meta>
@@ -36,13 +36,13 @@ function App() {
         <meta name="description" content="用於明日方舟的以下流派: ( 精一1級四星隊、精一滿級四星隊、四星隊 ) 的數據計算器，可以自定義敵人數據並快速計算我方DPS、敵方DPS...等等數據，方便攻略"></meta>
         {/* 搜索引擎相關設定，index = 允許搜索引擎搜索到此網站，follow = 不允許搜索引擎追蹤此網站上的其餘URL */}
         <meta name="robots" content="index, nofollow"></meta>
-        {/* 於社群媒體上分享此網站時的資訊設定 */}
-        <meta property="og:title" content="網站分享測試"></meta>
-        <meta property="og:description" content="用於明日方舟的以下流派: ( 精一1級四星隊、精一滿級四星隊、四星隊 ) 的數據計算器，可以自定義敵人數據並快速計算我方DPS、敵方DPS...等等數據，方便攻略"></meta>
-        <meta property="og:image" content="https://media.prts.wiki/9/94/%E5%A4%B4%E5%83%8F_%E5%AE%89%E8%B5%9B%E5%B0%94.png"></meta>
-        <meta property="og:url" content="https://kaosu-niku.github.io/ArknightCalculator/"></meta>
+        {/* 於社群媒體上分享此網站時的資訊設定 (Open Graph) */}
+        <meta property="og:url" content="https://kaosu-niku.github.io/ArknightCalculator/"></meta>  
         <meta property="og:type" content="website"></meta>
         <meta property="og:site_name" content="Arknight Calculator"></meta>
+        <meta property="og:image" content="圖片URL"></meta>
+        <meta property="og:title" content="明日方舟數據計算器"></meta>
+        <meta property="og:description" content="用於明日方舟的以下流派: ( 精一1級四星隊、精一滿級四星隊、四星隊 ) 的數據計算器，可以自定義敵人數據並快速計算我方DPS、敵方DPS...等等數據，方便攻略"></meta>
       </header>
       <Header />
       <MainContent />
