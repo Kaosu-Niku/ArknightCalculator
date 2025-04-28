@@ -64,7 +64,7 @@ function MainContent() {
         break;
       }
       //說明表格 
-      await fetch(`${process.env.PUBLIC_URL}/public/memberDirections.json`)
+      await fetch(`${process.env.PUBLIC_URL}/memberDirections.json`)
       .then(response => response.json())
       .then(directionJsonData => {
         fetch(`${process.env.PUBLIC_URL}/${witchMember}`)
