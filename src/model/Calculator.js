@@ -1,11 +1,6 @@
 import MemberSpecial from './MemberSpecial';
 
 const Calculator = {
-  // 我方icon
-  memberIcon: (skillRow, memberJsonData) => {
-    let memberRow = memberJsonData.find(item => item.name === skillRow.name);
-    return memberRow.icon;
-  },
   // 我方說明文字
   memberDirection: (row, directionsJsonData) => {
     let memberRow = directionsJsonData.Basic.find(item => item.name === row.name);

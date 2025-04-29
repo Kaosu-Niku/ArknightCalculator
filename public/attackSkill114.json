@@ -57,7 +57,7 @@
       "spdMultiply": 0
     },
     {
-      "name": "幕斯",
+      "name": "慕斯",
       "whichSkill": "二技能",
       "skillType": "攻擊",
       "attackType": "法傷",
@@ -169,7 +169,7 @@
       "spdMultiply": 0
     },
     {
-      "name": "休莫斯",
+      "name": "休謨斯",
       "whichSkill": "二技能(全程打1)(全程雙倍加成)",
       "skillType": "攻擊",
       "attackType": "物傷",
