@@ -89,6 +89,12 @@ function MainContent() {
                 { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(row, enemyData); } },
                 { title: "敵方DPS", data: null, render: function (data, type, row) { return Calculator.enemyDps(row, enemyData); } },
               ],
+              drawCallback: function(settings) {
+                $(memberTableRef.current).find('th').css({
+                  'background-color': '#c5c5c5',
+                  'color': 'black'
+                });
+              }
             });
           }
 
@@ -113,6 +119,12 @@ function MainContent() {
                   { title: "技能總傷", data: null, render: function (data, type, row) { return Calculator.memberSkillTotal(row, memberJsonData.Basic, enemyData ); } },
                   { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
                 ],
+                drawCallback: function(settings) {
+                  $(attackSkillTableRef.current).find('th').css({
+                    'background-color': '#c5c5c5',
+                    'color': 'black'
+                  });
+                }
               });
             }
           })
@@ -138,6 +150,12 @@ function MainContent() {
                   { title: "我方HPS", data: null, render: function (data, type, row) { return Calculator.skillMemberHps(row, memberJsonData.Basic); } },
                   { title: "敵方DPS", data: null, render: function (data, type, row) { return Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
                 ],
+                drawCallback: function(settings) {
+                  $(defSkillTableRef.current).find('th').css({
+                    'background-color': '#c5c5c5',
+                    'color': 'black'
+                  });
+                }
               });
             }
           })
@@ -152,107 +170,149 @@ function MainContent() {
   }, [whichType, enemyData]); // 每次修改敵人數值或是改變流派時就更新網頁並重新初始化表格
 
   return (
-    <div className='container'>
-      <div className='d-flex flex-column'>
-        <div>     
-          <form id='enemy_form'>
-            <h1>敵人數據</h1>
-            <label htmlFor="enemyHp">生命:</label>
-            <input type="number" id="enemyHp" value={enemyHp} onChange={(e) => setEnemyHp(e.target.value)} min="0" required />
-            <br></br>
-            <label htmlFor="enemyAttackType">傷害類型:</label>
-            <label htmlFor="enemyAttackType1">物傷</label>
-            <input type="radio" name="enemyAttackType" value="物傷" checked={enemyAttackType === '物傷'} onChange={(e) => setEnemyAttackType(e.target.value)} required />
-            <label htmlFor="enemyAttackType2">法傷</label>
-            <input type="radio" name="enemyAttackType" value="法傷" checked={enemyAttackType === '法傷'} onChange={(e) => setEnemyAttackType(e.target.value)} />
-            <label htmlFor="enemyAttackType3">真傷</label>
-            <input type="radio" name="enemyAttackType" value="真傷" checked={enemyAttackType === '真傷'} onChange={(e) => setEnemyAttackType(e.target.value)} />
-            <br></br>
-            <label htmlFor="enemyAttack">攻擊:</label>
-            <input type="number" id="enemyAttack" value={enemyAttack} onChange={(e) => setEnemyAttack(e.target.value)} min="0" required />
-            <br></br>
-            <label htmlFor="enemyDef">防禦:</label>
-            <input type="number" id="enemyDef" value={enemyDef} onChange={(e) => setEnemyDef(e.target.value)} min="0" required />
-            <br></br>
-            <label htmlFor="enemyRes">法抗:</label>
-            <input type="number" id="enemyRes" value={enemyRes} onChange={(e) => setEnemyRes(e.target.value)} min="0" max="100" required />
-            <br></br>
-            <label htmlFor="enemySpd">攻速:</label>
-            <input type="number" id="enemySpd" value={enemySpd} onChange={(e) => setEnemySpd(e.target.value)} min="0" step="0.01" required />
-          </form> 
-          <form onSubmit={(e) => {
-              e.preventDefault()
-              const formElements = e.target.elements;
-              const formData = {
-                enemySkillType: formElements.enemySkillType.value,
-                enemySkillDamage: formElements.enemySkillDamage.value,
-                enemySkillCount: formElements.enemySkillCount.value,
-                enemySkillWaitTime: formElements.enemySkillWaitTime.value,
-              };
-              setEnemySkill((prevSkills) => [...prevSkills, formData]);  
-            }}>
-              <h1>敵人技能</h1>            
-              <small className="mx-3">{`*若技能屬於一次性傷害，填寫 (技能傷害=總傷) (技能造成傷害次數=1)*`}</small>
-              <br></br>
-              <small className="mx-3">{`*若技能屬於持續性傷害，填寫 (技能傷害=每次造成的傷害) (技能造成傷害次數=傷害次數)*`}</small>
-              <br></br>
-              <label htmlFor="enemySkillType">技能傷害類型:</label>
-              <label htmlFor="enemySkillType1">物傷</label>
+    <div className='container'>  
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+        <div className='row justify-content-center'>
+          <h3 className='col-md-12 text-center'>敵人數據</h3>
+        </div>  
+        <form id='enemy_form'>
+          <div className='row justify-content-center align-items-center p-1'>
+            <label className='col-1 text-center' htmlFor="enemyHp">生命</label>
+            <input className='col-2' type="number" id="enemyHp" value={enemyHp} onChange={(e) => setEnemyHp(e.target.value)} min="0" required />
+            <label className='col-1 text-center' htmlFor="enemyAttack">攻擊</label>
+            <input className='col-2' type="number" id="enemyAttack" value={enemyAttack} onChange={(e) => setEnemyAttack(e.target.value)} min="0" required />
+            <label className='col-1 text-center' htmlFor="enemyAttackType">傷害類型</label>
+            <div className='col-2 d-flex justify-content-around align-items-center'>          
+              <input type="radio" name="enemyAttackType" value="物傷" checked={enemyAttackType === '物傷'} onChange={(e) => setEnemyAttackType(e.target.value)} required />
+              <label htmlFor="enemyAttackType1">物傷</label>
+              <input type="radio" name="enemyAttackType" value="法傷" checked={enemyAttackType === '法傷'} onChange={(e) => setEnemyAttackType(e.target.value)} />
+              <label htmlFor="enemyAttackType2">法傷</label>
+              <input type="radio" name="enemyAttackType" value="真傷" checked={enemyAttackType === '真傷'} onChange={(e) => setEnemyAttackType(e.target.value)} />
+              <label htmlFor="enemyAttackType3">真傷</label>
+            </div>
+          </div>
+          <div className='row justify-content-center align-items-center p-1'>
+            <label className='col-1 text-center' htmlFor="enemyDef">防禦</label>
+            <input className='col-2' type="number" id="enemyDef" value={enemyDef} onChange={(e) => setEnemyDef(e.target.value)} min="0" required />
+            <label className='col-1 text-center' htmlFor="enemyRes">法抗</label>
+            <input className='col-2' type="number" id="enemyRes" value={enemyRes} onChange={(e) => setEnemyRes(e.target.value)} min="0" max="100" required />
+            <label className='col-1 text-center' htmlFor="enemySpd">攻速</label>
+            <input className='col-2' type="number" id="enemySpd" value={enemySpd} onChange={(e) => setEnemySpd(e.target.value)} min="0" step="0.01" required />
+          </div>        
+        </form>
+      </div>
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+        <div className='row justify-content-center'>
+          <h3 className='col-md-12 text-center'>敵人技能</h3>
+        </div>  
+        <div className='row justify-content-center'>
+          <small className="col-md-12 text-center">{`若技能屬於一次性傷害，填寫 (技能傷害 = 總傷) (傷害次數 = 1)`}</small>
+        </div> 
+        <div className='row justify-content-center'>
+          <small className="col-md-12 text-center">{`若技能屬於持續性傷害，填寫 (技能傷害 = 每次造成的傷害) (傷害次數 = 傷害次數)`}</small>
+        </div>  
+        <form onSubmit={(e) => {
+            e.preventDefault()
+            const formElements = e.target.elements;
+            const formData = {
+              enemySkillType: formElements.enemySkillType.value,
+              enemySkillDamage: formElements.enemySkillDamage.value,
+              enemySkillCount: formElements.enemySkillCount.value,
+              enemySkillWaitTime: formElements.enemySkillWaitTime.value,
+            };
+            setEnemySkill((prevSkills) => [...prevSkills, formData]);  
+          }}>    
+          <div className='row justify-content-center align-items-center p-1'>
+            <label className='col-1 text-center' htmlFor="enemySkillDamage">技能傷害</label>
+            <input className='col-2' type="number" id="enemySkillDamage" name="enemySkillDamage" min="0" required /> 
+            <label className='col-1 text-center' htmlFor="enemySkillCount">傷害次數</label>
+            <input className='col-2' type="number" id="enemySkillCount" name="enemySkillCount" min="1" required />   
+          </div>
+          <div className='row justify-content-center align-items-center p-1'>
+            <label className='col-1 text-center' htmlFor="enemySkillType">傷害類型</label>
+            <div className='col-2 d-flex justify-content-around align-items-center'>                    
               <input type="radio" name="enemySkillType" value="物傷" required />
-              <label htmlFor="enemySkillType2">法傷</label>
+              <label htmlFor="enemySkillType1">物傷</label>          
               <input type="radio" name="enemySkillType" value="法傷" />
-              <label htmlFor="enemySkillType3">真傷</label>
+              <label htmlFor="enemySkillType2">法傷</label>          
               <input type="radio" name="enemySkillType" value="真傷" />
-              <br></br>
-              <label htmlFor="enemySkillDamage">技能傷害:</label>
-              <input type="number" id="enemySkillDamage" name="enemySkillDamage" min="0" required />         
-              <br></br>
-              <label htmlFor="enemySkillCount">技能造成傷害次數:</label>
-              <input type="number" id="enemySkillCount" name="enemySkillCount" min="1" required />
-              <br></br>
-              <label htmlFor="enemySkillWaitTime">技能冷卻時間:</label>
-              <input type="number" id="enemySkillWaitTime" name="enemySkillWaitTime" min="1" required />
-              <br></br>
-              <button type="submit">新增技能</button>
-            </form>
-            <div className="container">          
-              <div className="d-flex">
-              {
-                enemySkill.map((group, index) => (
-                  <div className="border border-1 p-2 m-2">
-                    <button type='button' onClick={() => {
+              <label htmlFor="enemySkillType3">真傷</label>
+            </div>
+            <label className='col-1 text-center' htmlFor="enemySkillWaitTime">冷卻時間:</label>
+            <input className='col-2' type="number" id="enemySkillWaitTime" name="enemySkillWaitTime" min="1" required />
+          </div>   
+          <div className='row justify-content-center align-items-center p-1'>
+            <button className='btn btn-danger col-md-2' type="submit">新增技能</button>
+          </div>                 
+        </form>  
+        <div className="row justify-content-center">
+        {
+          enemySkill.map((group, index) => (
+            <div className="col-2 m-2 border border-2 rounded-4 bg-light">
+              <div className="d-flex flex-column p-2">
+                <div className='row justify-content-center align-items-center'>
+                  <span className='col-6 text-center'>{`技能${index}`}</span>
+                  <div  className='col-6 d-flex justify-content-end'>
+                    <button className='btn btn-close' type='button' onClick={() => {
                       const newItems = enemySkill.filter((item, i) => i !== index); 
                       setEnemySkill(newItems);
-                      }}>刪除</button>
-                    <p>{`技能${index}`}</p>
-                    <p>{`技能傷害類型: ${group.enemySkillType}`}</p>
-                    <p>{`技能傷害: ${group.enemySkillDamage}`}</p>
-                    <p>{`技能造成傷害次數: ${group.enemySkillCount}`}</p>
-                    <p>{`技能冷卻時間: ${group.enemySkillWaitTime}`}</p>
-                  </div>
-                ))
-              }
-              </div> 
-            </div>              
+                      }}></button>
+                  </div> 
+                </div>
+                <div className='row justify-content-center'>
+                  <span className='col-6 text-center'>{`傷害類型: `}</span>
+                  <span className='col-6'>{`${group.enemySkillType}`}</span>
+                </div>
+                <div className='row justify-content-center'>
+                  <span className='col-6 text-center'>{`技能傷害: `}</span>
+                  <span className='col-6'>{`${group.enemySkillDamage}`}</span>
+                </div>
+                <div className='row justify-content-center'>
+                  <span className='col-6 text-center'>{`傷害次數: `}</span>
+                  <span className='col-6'>{`${group.enemySkillCount}`}</span>
+                </div>
+                <div className='row justify-content-center'>
+                  <span className='col-6 text-center'>{`冷卻時間: `}</span>
+                  <span className='col-6'>{`${group.enemySkillWaitTime}`}</span>
+                </div>
+              </div>
+            </div>
+          ))
+        }
         </div>
-        <hr></hr>
-        <div className="d-flex flex-row">
-          <button className={ `${whichType === '114'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('114'); setWhichType('114'); }}>精一1級四星隊</button>
-          <button className={ `${whichType === '1604'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('1604'); setWhichType('1604'); }}>精一滿級四星隊</button>
-          <button className={ `${whichType === '2704'? 'btn btn-danger' : 'btn btn-primary'} flex-grow-1 mx-4` } onClick={() => { setCookie('2704'); setWhichType('2704'); }}>四星隊</button>
+      </div> 
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+        <div className="row justify-content-around p-2">
+          <button className={ `${whichType === '114'? 'btn btn-primary' : 'btn btn-secondary'} col-md-3` } onClick={() => { setCookie('114'); setWhichType('114'); }}>精一1級四星隊</button>
+          <button className={ `${whichType === '1604'? 'btn btn-primary' : 'btn btn-secondary'} col-md-3` } onClick={() => { setCookie('1604'); setWhichType('1604'); }}>精一滿級四星隊</button>
+          <button className={ `${whichType === '2704'? 'btn btn-primary' : 'btn btn-secondary'} col-md-3` } onClick={() => { setCookie('2704'); setWhichType('2704'); }}>四星隊</button>
         </div>
-        <p>以下表格的我方面板數值皆以滿潛能滿信賴(四星隊3級模組)為準</p>
-        <p>由於幹員會有許多的因素會影響實際數值或是傷害計算結果</p>
-        <p>(ex: 香草的天賦加攻擊力、夜煙的天賦減法抗、刻刀的職業特性攻擊都是二連擊...等等)</p>
-        <p>***可將滑鼠懸停在幹員頭像圖示上，會彈出提示訊息，經由提示訊息可確認詳細資訊***</p>
-        <p>(幹員頭像取自PRTS的幹員檔案)</p>
-        <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display"></table>
-        <hr></hr>
-        <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display"></table>
-        <hr></hr>
-        <p>以下表格的持續時間為-1表示其為強力擊類型的技能，此類技能的HPS計算方式不屬於通常算法(攻擊力/攻速)，而是改用(攻擊力/冷卻時間)的方式計算</p>
-        <table id='defSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display"></table>
+        <div className='row justify-content-center'>
+          <small className="col-md-12 text-center">{`以下表格的我方面板數值皆以滿潛能滿信賴(四星隊3級模組)為準`}</small>
+        </div> 
+        <div className='row justify-content-center'>
+          <small className="col-md-12 text-center">{`幹員會有許多的因素會影響實際數值或是傷害計算結果`}</small>
+        </div> 
+        <div className='row justify-content-center'>
+          <small className="col-md-12 text-center">{`(ex: 香草的天賦加攻擊力、夜煙的天賦減法抗、刻刀的職業特性攻擊都是二連擊...等等)`}</small>
+        </div> 
+        <div className='row justify-content-center'>
+          <small className="col-md-12 text-center">{`可將滑鼠懸停在幹員頭像圖示上，會彈出提示訊息，經由提示訊息可確認詳細資訊`}</small>
+        </div> 
+      </div>  
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+        <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display table-light"></table>
       </div>
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+        <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display table-light"></table>
+      </div>           
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+        <div className='row justify-content-center'>
+          <small className="col-md-12 text-center">{`以下表格的持續時間為-1表示其為強力擊類型的技能，
+          此類技能的HPS計算方式不屬於通常算法(攻擊力/攻速)，而是改用(攻擊力/冷卻時間)的方式計算`}</small>
+        </div> 
+        <table id='defSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display table-light"></table>
+      </div>  
     </div> 
   );
 }

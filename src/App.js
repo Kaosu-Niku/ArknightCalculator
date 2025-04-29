@@ -7,22 +7,6 @@ import Footer from './component/Footer.js';
 
 function App() {
   return (
-    // <div className="App">
-    //   <header className="App-header">
-    //     <img src={logo} className="App-logo" alt="logo" />
-    //     <p>
-    //       Edit <code>src/App.js</code> and save to reload.
-    //     </p>
-    //     <a
-    //       className="App-link"
-    //       href="https://reactjs.org"
-    //       target="_blank"
-    //       rel="noopener noreferrer"
-    //     >
-    //       Learn React
-    //     </a>
-    //   </header>
-    // </div>
     <div>
       <header>
         <title>Arknight Calculator</title>
@@ -46,11 +30,14 @@ function App() {
       <Header />
       <MainContent />
       <Footer />
-      <div className="fixed-buttons">
-        <a className="btn btn-danger" href='#enemy_form'>EnemyData</a>
-        <a className="btn btn-success" href='#member_table'>MemberData</a>
-        <a className="btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
-        <a className="btn btn-primary" href='#defSkill_table'>DefSkillData</a>
+      <div className="position-fixed" style={{ top: '15%', right: '10px' }}>
+        <div className='d-flex flex-column gap-2'>
+        <a className="d-inline-blockrounded-5 btn btn-danger" href='#enemy_form'>EnemyData</a>
+        <a className="d-inline-blockrounded-5 btn btn-success" href='#member_table'>MemberData</a>
+        <a className="d-inline-blockrounded-5 btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
+        <a className="d-inline-blockrounded-5 btn btn-primary" href='#defSkill_table'>DefSkillData</a>
+        </div>
+        
       </div>
     </div>    
   );

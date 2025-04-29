@@ -2,11 +2,12 @@
 
 function Header() {
   return (
-    <div className='container'>
-      <div className='d-flex flex-row'>
-
+    <div className='bg-dark text-white'>
+      <div className='row justify-content-center p-1'>
+        <h2 className='col-md-12 text-center'>Arknight Calculator</h2>
       </div>
     </div>
+    
   );
 }
 
