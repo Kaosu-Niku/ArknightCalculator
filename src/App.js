@@ -30,14 +30,23 @@ function App() {
       <Header />
       <MainContent />
       <Footer />
-      <div className="position-fixed" style={{ top: '15%', right: '10px' }}>
+      {/* 電腦版呈現在右邊的的固定按鈕 */}
+      <div className="d-none d-md-block position-fixed" style={{ top: '15%', right: '-10px' }}>
         <div className='d-flex flex-column gap-2'>
-        <a className="d-inline-blockrounded-5 btn btn-danger" href='#enemy_form'>EnemyData</a>
-        <a className="d-inline-blockrounded-5 btn btn-success" href='#member_table'>MemberData</a>
-        <a className="d-inline-blockrounded-5 btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
-        <a className="d-inline-blockrounded-5 btn btn-primary" href='#defSkill_table'>DefSkillData</a>
+        <a className="btn btn-danger" href='#enemy_form'>EnemyData</a>
+        <a className="btn btn-success" href='#member_table'>MemberData</a>
+        <a className="btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
+        <a className="btn btn-primary" href='#defSkill_table'>DefSkillData</a>
         </div>
-        
+      </div>
+      {/* 手機版呈現在底部的的固定按鈕 */}
+      <div className="d-block d-md-none position-fixed" style={{ bottom: '0' }}>
+        <div className='row justify-content-around justify-content-center m-0'>
+        <a className="col-6 p-0 rounded-0 btn btn-danger" href='#enemy_form'>EnemyData</a>
+        <a className="col-6 p-0 rounded-0 btn btn-success" href='#member_table'>MemberData</a>
+        <a className="col-6 p-0 rounded-0 btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
+        <a className="col-6 p-0 rounded-0 btn btn-primary" href='#defSkill_table'>DefSkillData</a>
+        </div>
       </div>
     </div>    
   );
