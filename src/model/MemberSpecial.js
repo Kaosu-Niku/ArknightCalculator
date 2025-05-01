@@ -73,9 +73,9 @@ const MemberSpecial = {
         // 天賦為攻擊給減法抗1秒(夜煙自身攻擊都能吃到這個加成)
         if('mod' in row){
           //X模為攻擊減更多法抗和無視法抗
-          if(Math.ceil(emenyData.enemyRes * 0.73) >= 10){
+          if(Math.ceil(emenyData.enemyRes * 0.7) >= 10){
             // 減法抗完>10法抗
-            finalDamage = row.attack * ((100 - (Math.ceil(emenyData.enemyRes * 0.73) - 10)) / 100);
+            finalDamage = row.attack * ((100 - (Math.ceil(emenyData.enemyRes * 0.7) - 10)) / 100);
           }
           else{
             // 減法抗完<10法抗
@@ -83,7 +83,7 @@ const MemberSpecial = {
           } 
         }    
         else{
-          finalDamage = row.attack * ((100 - Math.ceil(emenyData.enemyRes * 0.9)) / 100);
+          finalDamage = row.attack * ((100 - Math.ceil(emenyData.enemyRes * 0.87)) / 100);
         }    
         if(finalDamage < row.attack / 20){
           finalDamage = row.attack / 20;
@@ -172,10 +172,10 @@ const MemberSpecial = {
         // 天賦為所有幹員每秒緩回額外治療量
         if('mod' in row){
           // Y模組為緩回更多額外治療量
-          otherHps = row.attack / 100 * 3;
+          otherHps = row.attack / 100 * 7;
         }    
         else{
-          otherHps = row.attack / 100 * 6.5;
+          otherHps = row.attack / 100 * 3.5;
         }
       return (parseFloat(originalHps) + otherHps).toFixed(2);
       default:
