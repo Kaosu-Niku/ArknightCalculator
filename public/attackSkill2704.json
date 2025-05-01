@@ -129,7 +129,7 @@
       "skillFirtsMultiply": 1,
       "skillLastAdd": 0,
       "skillLastMultiply": 1,
-      "spdAdd": 0.48,
+      "spdAdd": 0.4,
       "spdMultiply": 0
     },
     {
@@ -472,7 +472,7 @@
       "skillFirtsMultiply": 1,
       "skillLastAdd": 0,
       "skillLastMultiply": 0.8,
-      "spdAdd": 1.8,
+      "spdAdd": 1.85,
       "spdMultiply": 0
     },
     {
@@ -547,7 +547,7 @@
       "skillFirtsMultiply": 1,
       "skillLastAdd": 0,
       "skillLastMultiply": 1,
-      "spdAdd": 1.2,
+      "spdAdd": 1.15,
       "spdMultiply": 0
     },
     {
@@ -562,7 +562,7 @@
       "skillFirtsMultiply": 1,
       "skillLastAdd": 0,
       "skillLastMultiply": 0.2,
-      "spdAdd": 2.5,
+      "spdAdd": 2.38,
       "spdMultiply": 0
     },
     {
