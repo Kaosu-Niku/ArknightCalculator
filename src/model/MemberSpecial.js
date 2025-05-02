@@ -24,15 +24,15 @@ const MemberSpecial = {
           finalDamage = row.attack / 20;
         }
         if('mod' in row){
-          otherDamage = (row.attack * 0.4) - emenyData.enemyDef;
-          if(otherDamage < (row.attack * 0.4) / 20){
-            otherDamage = (row.attack * 0.4) / 20;
+          otherDamage = (row.attack * 0.55) - emenyData.enemyDef;
+          if(otherDamage < (row.attack * 0.55) / 20){
+            otherDamage = (row.attack * 0.55) / 20;
           }
         }    
         else{
-          otherDamage = (row.attack * 0.25) - emenyData.enemyDef;
-          if(otherDamage < (row.attack * 0.25) / 20){
-            otherDamage = (row.attack * 0.25) / 20;
+          otherDamage = (row.attack * 0.28) - emenyData.enemyDef;
+          if(otherDamage < (row.attack * 0.28) / 20){
+            otherDamage = (row.attack * 0.28) / 20;
           }
         }
         
