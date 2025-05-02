@@ -282,7 +282,7 @@
     },
     {
       "name": "騁風",
-      "mod": "無模組",
+      "mod": "X模組",
       "whichSkill": "二技能(全程打1)(含天賦追加傷害)",
       "skillType": "攻擊",
       "attackType": "物傷",
