@@ -1,11 +1,6 @@
 import MemberSpecial from './MemberSpecial';
 
 const Calculator = {
-  // 我方說明文字
-  memberDirection: (row, directionsJsonData) => {
-    let memberRow = directionsJsonData.Basic.find(item => item.name === row.name);
-    return memberRow.direction;
-  },
   // 我方名稱
   memberNameRender: (row) => {
     let newName = row.name; 
@@ -14,6 +9,11 @@ const Calculator = {
       newName += `(${row.mod})`;
     }
     return newName; 
+  },
+  // 我方說明文字
+  memberDirection: (row, directionsJsonData) => {
+    let memberRow = directionsJsonData.Basic.find(item => item.name === row.name);
+    return memberRow.direction;
   },
   // 我方DPS
   memberDps: (memberRow, enemyData) => {
@@ -49,17 +49,17 @@ const Calculator = {
     }
   },
   // 擊殺所需時間
-  memberKillTime: (memberRow, enemyData) => {
-    let dps = Calculator.memberDps(memberRow, enemyData);  
-    switch(memberRow.attackType){
-      case "物傷":       
-      return (Math.ceil(enemyData.enemyHp / dps));
-      case "法傷":
-      return (Math.ceil(enemyData.enemyHp / dps));
-      default:
-      return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
-    }
-  },
+  // memberKillTime: (memberRow, enemyData) => {
+  //   let dps = Calculator.memberDps(memberRow, enemyData);  
+  //   switch(memberRow.attackType){
+  //     case "物傷":       
+  //     return (Math.ceil(enemyData.enemyHp / dps));
+  //     case "法傷":
+  //     return (Math.ceil(enemyData.enemyHp / dps));
+  //     default:
+  //     return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
+  //   }
+  // },
   // 敵方DPS
   enemyDps: (memberRow, enemyData) => {
     // 計算平A的DPS
@@ -160,18 +160,41 @@ const Calculator = {
     }
     return copyMemberRow;
   },
-  // 技能總傷
-  memberSkillTotal: (skillRow, memberJsonData, enemyData) => { 
+  // 技能期間我方DPS
+  skillMemberDps: (skillRow, memberJsonData, enemyData) => {
     const newMemberRow = Calculator.skillMemberRow(skillRow, memberJsonData);
-    let dps = Calculator.memberDps(newMemberRow, enemyData);
-    switch(skillRow.attackType){
-      case "物傷":       
-      return (Math.ceil(dps * skillRow.skillTime));
-      case "法傷":
-      return (Math.ceil(dps * skillRow.skillTime));
-      default:
-      return 0;
+    let finalDamage = 0;
+    let finalDps = 0;
+    if(skillRow.skillTime !== -1){
+      // 正常類型技能
+      finalDps = Calculator.memberDps(newMemberRow, enemyData);      
     }
+    else{
+      // 強力擊類型技能
+      switch(newMemberRow.attackType){
+        case "物傷":
+          finalDamage = newMemberRow.attack - enemyData.enemyDef;
+          if(finalDamage < newMemberRow.attack / 20){
+            finalDamage = newMemberRow.attack / 20;
+          }
+          finalDps = (finalDamage / skillRow.waitTime).toFixed(2);
+        break;     
+        case "法傷":
+          finalDamage = newMemberRow.attack * ((100 - enemyData.enemyRes) / 100);
+          if(finalDamage < newMemberRow.attack / 20){
+            finalDamage = newMemberRow.attack / 20;
+          }
+          finalDps = (finalDamage / skillRow.waitTime).toFixed(2);
+        break;
+        default:
+        break;
+      }
+    }
+    // 刻刀的強力擊算法太破壞公式，只能獨立處理
+    if(newMemberRow.name == '刻刀' && skillRow.whichSkill.includes('一技能')){
+      finalDps = ((finalDamage * 4) / skillRow.waitTime).toFixed(2);
+    }
+    return finalDps;
   },
   // 技能期間我方HPS
   skillMemberHps: (skillRow, memberJsonData) => {
@@ -186,11 +209,57 @@ const Calculator = {
       // 強力擊類型技能
       finalHps = (newMemberRow.attack / skillRow.waitTime).toFixed(2);
     }
-    // 正常奶媽的特殊計算
+    // 正常奶媽的特殊計算(先計算所有正常奶媽的HPS)
     specialHps = MemberSpecial.memberHpsSpecial(newMemberRow, finalHps);
-    // 非正常奶媽的特殊計算
+    // 非正常奶媽的特殊計算(後計算所有非正常奶媽的HPS，而正常奶媽的HPS會直接回傳原值)
     return MemberSpecial.defSkillHpsSpecial(newMemberRow, skillRow, specialHps);
-  }
+  },
+  // 技能總傷
+  memberSkillTotal: (skillRow, memberJsonData, enemyData) => { 
+    const newMemberRow = Calculator.skillMemberRow(skillRow, memberJsonData);
+    let finalDamage = 0;
+    let totalDamage = 0;
+    let dps = Calculator.memberDps(newMemberRow, enemyData);
+    if(skillRow.skillTime !== -1){
+      // 正常類型技能
+      switch(skillRow.attackType){
+        case "物傷": 
+          totalDamage = Math.ceil(dps * skillRow.skillTime);      
+        break;
+        case "法傷":
+          totalDamage = Math.ceil(dps * skillRow.skillTime);  
+        break;
+        default:
+        break;
+      }
+    }
+    else{
+      // 強力擊類型技能
+      switch(newMemberRow.attackType){
+        case "物傷":
+          finalDamage = newMemberRow.attack - enemyData.enemyDef;
+          if(finalDamage < newMemberRow.attack / 20){
+            finalDamage = newMemberRow.attack / 20;
+          }
+          totalDamage = finalDamage.toFixed(2);
+        break; 
+        case "法傷":
+          finalDamage = newMemberRow.attack * ((100 - enemyData.enemyRes) / 100);
+          if(finalDamage < newMemberRow.attack / 20){
+            finalDamage = newMemberRow.attack / 20;
+          }
+          totalDamage = finalDamage.toFixed(2);
+        break;
+        default:
+        break;
+      }
+    } 
+    // 刻刀的強力擊算法太破壞公式，只能獨立處理
+    if(newMemberRow.name == '刻刀' && skillRow.whichSkill.includes('一技能')){
+      totalDamage = (finalDamage * 4).toFixed(2);
+    } 
+    return totalDamage; 
+  },
 }
 
 export default Calculator;
