@@ -37,6 +37,12 @@ function MainContent() {
     expirationDate.setDate(expirationDate.getDate() + 7); //設定Cookier在7天後過期
     document.cookie = `type=${type}; expires=${expirationDate.toUTCString()}; path=/;`;
   }
+  //處理數值資料
+  function numberFilter(number) {
+    //數值資料如為整數，則回傳原值，如有小數點，則無條件捨去至整數
+    // 如要使用其他方法，無條件進位 = ceil()，無條件捨去 = trunc()，四捨五入 = round()
+    return Number.isInteger(number) ? number : Math.trunc(number);
+  }
 
   useEffect(() => {
     const loadData = async (type) => {
@@ -85,9 +91,9 @@ function MainContent() {
                 { title: "防禦", data: "def" },
                 { title: "法抗", data: "res" },
                 { title: "攻速", data: "spd" },
-                { title: "DPS", data: null, render: function (data, type, row) { return Calculator.memberDps(row, enemyData); } },
+                { title: "DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberDps(row, enemyData)); } },
                 // { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(row, enemyData); } },
-                { title: "敵方DPS", data: null, render: function (data, type, row) { return Calculator.enemyDps(row, enemyData); } },
+                { title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(row, enemyData)); } },
               ],
               drawCallback: function(settings) {
                 $(memberTableRef.current).find('th').css({
@@ -115,8 +121,8 @@ function MainContent() {
                   { title: "傷害類型", data: "attackType" },
                   { title: "冷卻時間", data: "waitTime" },
                   { title: "持續時間", data: "skillTime" },
-                  { title: "DPS", data: null, render: function (data, type, row) { return Calculator.skillMemberDps(row, memberJsonData.Basic, enemyData); } },
-                  { title: "技能總傷", data: null, render: function (data, type, row) { return Calculator.memberSkillTotal(row, memberJsonData.Basic, enemyData ); } },
+                  { title: "DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberDps(row, memberJsonData.Basic, enemyData)); } },
+                  { title: "技能總傷", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberSkillTotal(row, memberJsonData.Basic, enemyData)); } },
                   // { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
                 ],
                 drawCallback: function(settings) {
@@ -146,9 +152,9 @@ function MainContent() {
                   { title: "技能類型", data: "skillType" },
                   { title: "冷卻時間", data: "waitTime" },
                   { title: "持續時間", data: "skillTime" },
-                  { title: "我方DEF", data: null, render: function (data, type, row) { return Calculator.skillMemberRow(row, memberJsonData.Basic).def; } },
-                  { title: "我方HPS", data: null, render: function (data, type, row) { return Calculator.skillMemberHps(row, memberJsonData.Basic, enemyData); } },
-                  { title: "敵方DPS", data: null, render: function (data, type, row) { return Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
+                  { title: "我方DEF", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberRow(row, memberJsonData.Basic).def); } },
+                  { title: "我方HPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberHps(row, memberJsonData.Basic, enemyData)); } },
+                  { title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData)); } },
                 ],
                 drawCallback: function(settings) {
                   $(defSkillTableRef.current).find('th').css({
