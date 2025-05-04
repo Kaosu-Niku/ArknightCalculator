@@ -140,6 +140,16 @@ const Calculator = {
         let finalDef = (((memberRow.def + skillRow.skillFirstAdd) * skillRow.skillFirtsMultiply) + skillRow.skillLastAdd) * skillRow.skillLastMultiply;
         // 改變後的防禦力可能不是整數，防禦力直接取至小數點後兩位
         copyMemberRow.def = finalDef.toFixed(2);
+        // 角峰的二技能加法抗太破壞公式，只能獨立處理
+        if(copyMemberRow.name == '角峰' && skillRow.whichSkill.includes('二技能')){
+          if('mod' in skillRow){
+            // Y模組加更多基礎法抗
+            copyMemberRow.res = 25 * 2;
+          }    
+          else{
+            copyMemberRow.res = 12 * 1.7;
+          }
+        } 
       break;
       case "治療":  
         // 最終攻擊力 = (((原始攻擊力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算

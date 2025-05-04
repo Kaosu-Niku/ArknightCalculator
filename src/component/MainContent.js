@@ -152,7 +152,7 @@ function MainContent() {
                   { title: "技能類型", data: "skillType" },
                   { title: "冷卻時間", data: "waitTime" },
                   { title: "持續時間", data: "skillTime" },
-                  { title: "我方DEF", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberRow(row, memberJsonData.Basic).def); } },
+                  { title: "我方防禦", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberRow(row, memberJsonData.Basic).def); } },
                   { title: "我方HPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberHps(row, memberJsonData.Basic, enemyData)); } },
                   { title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData)); } },
                 ],
