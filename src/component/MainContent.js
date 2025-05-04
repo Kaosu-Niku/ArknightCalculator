@@ -147,7 +147,7 @@ function MainContent() {
                   { title: "冷卻時間", data: "waitTime" },
                   { title: "持續時間", data: "skillTime" },
                   { title: "我方DEF", data: null, render: function (data, type, row) { return Calculator.skillMemberRow(row, memberJsonData.Basic).def; } },
-                  { title: "我方HPS", data: null, render: function (data, type, row) { return Calculator.skillMemberHps(row, memberJsonData.Basic); } },
+                  { title: "我方HPS", data: null, render: function (data, type, row) { return Calculator.skillMemberHps(row, memberJsonData.Basic, enemyData); } },
                   { title: "敵方DPS", data: null, render: function (data, type, row) { return Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
                 ],
                 drawCallback: function(settings) {

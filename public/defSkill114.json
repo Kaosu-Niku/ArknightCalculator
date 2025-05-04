@@ -649,6 +649,19 @@
       "skillLastMultiply": 1,
       "spdAdd": 0,
       "spdMultiply": 0
+    },
+    {       
+      "name": "孑",
+      "whichSkill": "二技能",
+      "skillType": "治療",
+      "waitTime":10,
+      "skillTime": 0,    
+      "skillFirstAdd": 0,
+      "skillFirtsMultiply": 1.4,
+      "skillLastAdd": 0,
+      "skillLastMultiply": 1,
+      "spdAdd": 0,
+      "spdMultiply": 0
     }
   ]
 }

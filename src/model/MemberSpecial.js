@@ -183,7 +183,7 @@ const MemberSpecial = {
     }
   },
   // 一些特定幹員因技能較為特殊，在技能期間的HPS需另外獨立計算
-  defSkillHpsSpecial: (row, skillRow, originalHps) => {
+  defSkillHpsSpecial: (row, skillRow, enemyData, originalHps) => {
     if(skillRow.skillType === "治療"){
       switch(skillRow.name){
         case "卡緹":
@@ -200,6 +200,23 @@ const MemberSpecial = {
             }    
             else{
               originalHps = (row.hp * 0.02);
+            }
+            
+          }          
+        return originalHps.toFixed(2);
+        case "孑":
+          if(skillRow.whichSkill === "二技能"){
+            //技能為每次攻擊回復造成傷害一定量的生命值
+            let finalDamage = 0;
+            finalDamage = row.attack - enemyData.enemyDef;
+            if(finalDamage < row.attack / 20){
+              finalDamage = row.attack / 20;
+            }
+            if('mod' in row){
+              originalHps = ((finalDamage * 0.5) / row.spd);
+            }    
+            else{
+              originalHps = ((finalDamage * 0.4) / row.spd);
             }
             
           }          

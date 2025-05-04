@@ -197,7 +197,7 @@ const Calculator = {
     return finalDps;
   },
   // 技能期間我方HPS
-  skillMemberHps: (skillRow, memberJsonData) => {
+  skillMemberHps: (skillRow, memberJsonData, enemyData) => {
     const newMemberRow = Calculator.skillMemberRow(skillRow, memberJsonData);
     let finalHps = 0;
     let specialHps = 0;
@@ -212,7 +212,7 @@ const Calculator = {
     // 正常奶媽的特殊計算(先計算所有正常奶媽的HPS)
     specialHps = MemberSpecial.memberHpsSpecial(newMemberRow, finalHps);
     // 非正常奶媽的特殊計算(後計算所有非正常奶媽的HPS，而正常奶媽的HPS會直接回傳原值)
-    return MemberSpecial.defSkillHpsSpecial(newMemberRow, skillRow, specialHps);
+    return MemberSpecial.defSkillHpsSpecial(newMemberRow, skillRow, enemyData, specialHps);
   },
   // 技能總傷
   memberSkillTotal: (skillRow, memberJsonData, enemyData) => { 
