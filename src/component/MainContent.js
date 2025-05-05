@@ -177,11 +177,11 @@ function MainContent() {
 
   return (
     <div className='container'>  
-      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='enemy_form'>
         <div className='row justify-content-center'>
           <h3 className='col-12 text-center'>敵人數據</h3>
         </div>  
-        <form id='enemy_form'>
+        <form>
           <div className='row justify-content-start justify-content-md-center align-items-center row-gap-1 p-1'>
             <label className='col-2 col-md-1 text-center' htmlFor="enemyHp">生命</label>
             <input className='col-3 col-md-2' type="number" id="enemyHp" value={enemyHp} onChange={(e) => setEnemyHp(e.target.value)} min="0" required />
@@ -289,30 +289,30 @@ function MainContent() {
           <small className="col-12 text-center">{`可將滑鼠懸停在幹員頭像圖示上，會彈出提示訊息，經由提示訊息可確認詳細資訊`}</small>
         </div> 
       </div>  
-      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='member_table'>
         <div className='table-responsive'>
-          <table id='member_table' ref={memberTableRef} className="table table-bordered table-hover display table-light"></table>
+          <table ref={memberTableRef} className="table table-bordered table-hover display table-light"></table>
         </div>     
       </div>
-      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
-      <div className='row justify-content-center row-gap-1'>
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='attackSkill_table'>
+        <div className='row justify-content-center row-gap-1'>
           <small className="col-12 text-center">{`以下表格的持續時間為-1表示其為強力擊類型的技能，
           此類技能的DPS計算方式不屬於通常算法(攻擊力/攻速)，而是改用(總傷/冷卻時間)的方式計算。`}</small>
           <small className="col-12 text-center">{`因此對於使用強力擊技能的幹員，將其無技能的DPS和強力擊技能的DPS相加即可得出其真正的平均DPS`}</small>
         </div>
         <div className='table-responsive'>
-          <table id='attackSkill_table' ref={attackSkillTableRef} className="table table-bordered table-hover display table-light"></table>
+          <table ref={attackSkillTableRef} className="table table-bordered table-hover display table-light"></table>
         </div>        
       </div>           
-      <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='defSkill_table'>
         <div className='row justify-content-center row-gap-1'>
           <small className="col-12 text-center">{`以下表格的持續時間為-1表示其為強力擊類型的技能，
           此類技能的HPS計算方式不屬於通常算法(攻擊力/攻速)，而是改用(治療量/冷卻時間)的方式計算`}</small>
           <small className="col-12 text-center">{`因此對於使用強力擊技能的幹員，將其無技能的HPS和強力擊技能的HPS相加即可得出其真正的平均HPS`}</small>
         </div> 
         <div className='table-responsive'>
-          <table id='defSkill_table' ref={defSkillTableRef} className="table table-bordered table-hover display table-light"></table>
-        </div> 
+          <table ref={defSkillTableRef} className="table table-bordered table-hover display table-light"></table>
+        </div>
       </div>  
     </div> 
   );

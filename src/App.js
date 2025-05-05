@@ -33,20 +33,31 @@ function App() {
       {/* 電腦版呈現在右邊的的固定按鈕 */}
       <div className="d-none d-md-block position-fixed" style={{ top: '15%', right: '-10px' }}>
         <div className='d-flex flex-column gap-2'>
-        <a className="btn btn-danger" href='#enemy_form'>EnemyData</a>
-        <a className="btn btn-success" href='#member_table'>MemberData</a>
-        <a className="btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
-        <a className="btn btn-primary" href='#defSkill_table'>DefSkillData</a>
+          <a className="btn btn-danger" href='#enemy_form'>EnemyData</a>
+          <a className="btn btn-success" href='#member_table'>MemberData</a>
+          <a className="btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
+          <a className="btn btn-primary" href='#defSkill_table'>DefSkillData</a>
         </div>
       </div>
       {/* 手機版呈現在底部的的固定按鈕 */}
       <div className="d-block d-md-none position-fixed" style={{ bottom: '0' }}>
         <div className='row justify-content-around justify-content-center m-0'>
-        <a className="col-6 p-0 rounded-0 btn btn-danger" href='#enemy_form'>EnemyData</a>
-        <a className="col-6 p-0 rounded-0 btn btn-success" href='#member_table'>MemberData</a>
-        <a className="col-6 p-0 rounded-0 btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
-        <a className="col-6 p-0 rounded-0 btn btn-primary" href='#defSkill_table'>DefSkillData</a>
+          <a className="col-6 p-0 rounded-0 btn btn-danger" href='#enemy_form'>EnemyData</a>
+          <a className="col-6 p-0 rounded-0 btn btn-success" href='#member_table'>MemberData</a>
+          <a className="col-6 p-0 rounded-0 btn btn-warning" href='#attackSkill_table'>AttackSkillData</a>
+          <a className="col-6 p-0 rounded-0 btn btn-primary" href='#defSkill_table'>DefSkillData</a>
         </div>
+      </div>
+      {/* 電腦版呈現在底部的的裝飾圖片 */}
+      <div className="d-none d-md-block position-fixed" style={{ bottom: '0', left: '-7.5%' }}>
+        <video src={`${process.env.PUBLIC_URL}/video/安赛尔-悠然假日 HDm06-基建-Special-x1.webm`} autoPlay loop muted className='h-auto opacity-75' style={{ width: '500px' }}>
+          您的瀏覽器不支持 HTML5 video 標籤。
+        </video>
+      </div>
+      <div className="d-none d-md-block position-fixed" style={{ bottom: '0', right: '-7.5%' }}>
+        <video src={`${process.env.PUBLIC_URL}/video/水月-永恒玩家-基建-Special-x1.webm`} autoPlay loop muted className='h-auto opacity-75' style={{ width: '500px', transform: 'scaleX(-1)' }}>
+          您的瀏覽器不支持 HTML5 video 標籤。
+        </video>  
       </div>
     </div>    
   );
