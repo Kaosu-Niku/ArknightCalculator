@@ -94,25 +94,60 @@ const MemberSpecial = {
         dps = (dph / row.spd);
       break;     
       case "卡達":
-        // 職業特性為每次攻擊附加額外浮游單元傷害，且浮游單元攻擊同個單位還會疊加傷害
+        // 職業特性為每次攻擊附加額外浮游單元傷害
+        // 浮游單元攻擊一個新對象的首次攻擊倍率為20%攻擊力，之後每次+15%，攻擊7次達到最高110%，換對象則清除疊加
         dph = row.attack * ((100 - emenyData.enemyRes) / 100);
         if(dph < row.attack / 20){
           dph = row.attack / 20;
         }
-        if('mod' in row){
-          // Y模組為浮游單元疊加更多傷害
-          otherDph = (row.attack * 1.2) * ((100 - emenyData.enemyRes) / 100);
-          if(otherDph < (row.attack * 1.2) / 20){
-            otherDph = (row.attack * 1.2) / 20;
+        // 為方便計算，DPS算法改為 (敵人總血量 / 擊殺時間)
+        let enemyHpCopy = emenyData.enemyHp;
+        let attackCount = 0;
+        while(enemyHpCopy > 0){              
+          if(attackCount < 7){
+            // 浮游單元疊加期間的計算
+            otherDph = (row.attack * (0.2 + (0.15 * attackCount))) * ((100 - emenyData.enemyRes) / 100);
+            if(otherDph < (row.attack * (0.2 + (0.15 * attackCount))) / 20){
+              otherDph = (row.attack * (0.2 + (0.15 * attackCount))) / 20;
+            }
+            enemyHpCopy -= dph;
+            enemyHpCopy -= otherDph;
+            attackCount += 1;
+
+            // Y模組為浮游單元最高倍率提升為120%，所以還要算第8次，為方便計算，在第7次時一併計算            
+            if(attackCount == 7){
+              if('mod' in row){
+                otherDph = (row.attack * 1.2) * ((100 - emenyData.enemyRes) / 100);
+                if(otherDph < (row.attack * 1.2) / 20){
+                  otherDph = (row.attack * 1.2) / 20;
+                }
+                enemyHpCopy -= dph;
+                enemyHpCopy -= otherDph;
+                attackCount += 1;
+              }  
+            }
           }
-        }    
-        else{
-          otherDph = (row.attack * 1.1) * ((100 - emenyData.enemyRes) / 100);
-          if(otherDph < (row.attack * 1.1) / 20){
-            otherDph = (row.attack * 1.1) / 20;
+          else{
+            // 浮游單元疊加完畢的計算
+            if('mod' in row){
+              otherDph = (row.attack * 1.2) * ((100 - emenyData.enemyRes) / 100);
+              if(otherDph < (row.attack * 1.2) / 20){
+                otherDph = (row.attack * 1.2) / 20;
+              }
+            }
+            else{
+              otherDph = (row.attack * 1.1) * ((100 - emenyData.enemyRes) / 100);
+              if(otherDph < (row.attack * 1.1) / 20){
+                otherDph = (row.attack * 1.1) / 20;
+              }
+            }            
+            enemyHpCopy -= dph;
+            enemyHpCopy -= otherDph;
+            attackCount += 1;
           }
         }
-        dps = ((dph + otherDph) / row.spd);
+        
+        dps = (emenyData.enemyHp / (row.spd * attackCount));
       break;
       case "巫役小車":
         // 天賦為部署後的40秒內每次攻擊附帶60凋亡損傷，且期間還會使攻擊範圍內所有敵人+10%法術脆弱和+10%元素脆弱
