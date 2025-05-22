@@ -1,7 +1,7 @@
 import MemberSpecial from './MemberSpecial';
 
 const Calculator = {
-  // 當前流派
+  //當前流派
   type: (type) => {
     let witchPhases = 0;
     let witchAttributesKeyFrames = 0;
@@ -35,16 +35,16 @@ const Calculator = {
 
     return { witchPhases: witchPhases, witchAttributesKeyFrames: witchAttributesKeyFrames,};
   },
-  // 我方名稱
+  //我方名稱
   memberNameRender: (memberRow) => {
     let newName = memberRow.name; 
-    // 如果是四星隊，在名字後面標註模組
-    if('mod' in memberRow){
-      newName += `(${memberRow.mod})`;
-    }
+    //如果是四星隊，在名字後面標註模組
+    // if('mod' in memberRow){
+    //   newName += `(${memberRow.mod})`;
+    // }
     return newName; 
   },
-  // 我方星級
+  //我方星級
   memberRarity: (memberRow) => {
     const rarity = memberRow.rarity;
     switch(rarity){
@@ -65,14 +65,14 @@ const Calculator = {
   //我方職業
   memberProfession: (memberRow, professionJsonData) => {
     const profession = memberRow.profession;
-    return professionJsonData[profession]?.chineseName ?? "無";
+    return professionJsonData[profession];
   },
   //我方分支
   memberSubProfessionId: (memberRow, subProfessionIdJsonData) => {
     const subProfessionId = memberRow.subProfessionId;
-    return subProfessionIdJsonData[subProfessionId]?.chineseName ?? "無";
+    return subProfessionIdJsonData[subProfessionId];
   },
-  // 我方計算完後的最終數據
+  //我方計算完後的最終數據
   memberData: (type, memberRow) => {
     //流派
     const witchPhases = Calculator.type(type).witchPhases;
@@ -90,89 +90,117 @@ const Calculator = {
     const potentialRanksData = memberRow.potentialRanks ?? null;
     potentialRanksData?.forEach((element, index) => { 
       if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "MAX_HP"){
-        //生命潛
+        //生命
         maxHp += element.buff?.attributes?.attributeModifiers[0]?.value;       
       }
       if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "ATK"){
-        //攻擊潛
+        //攻擊
         atk += element.buff?.attributes?.attributeModifiers[0]?.value;
       }     
       if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "DEF"){
-        //防禦潛
+        //防禦
         def += element.buff?.attributes?.attributeModifiers[0]?.value;
       } 
-      if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "ATTACK_SPEED"){
-        //攻速潛
-        attackSpeed += element.buff?.attributes?.attributeModifiers[0]?.value;
+      if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "MAGIC_RESISTANCE"){
+        //法抗
+        magicResistance += element.buff?.attributes?.attributeModifiers[0]?.value;
       } 
-      
+      if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "ATTACK_SPEED"){
+        //攻速
+        attackSpeed += element.buff?.attributes?.attributeModifiers[0]?.value;
+      }    
     });
+    //信賴數值
+    const favorKeyFrames = memberRow.favorKeyFrames ?? null;
+    favorKeyFrames?.forEach((element, index) => { 
+      if(element.level === 50){
+        //生命
+        maxHp += element.data?.maxHp;   
+        //攻擊
+        atk += element.data?.atk;    
+        //防禦
+        def += element.data?.def;  
+        //法抗
+        magicResistance += element.data?.magicResistance;  
+      }  
+    });
+    
     return { maxHp, atk, def, magicResistance, baseAttackTime, attackSpeed};
   },
   // 我方DPH
-  dph: (type, memberRow, enemyData) => {
+  dph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
+    const attackType = Calculator.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
     const attack = Calculator.memberData(type, memberRow).atk;
     let dph = 0;
-    let attackType = "物傷";
     switch(attackType){
-      case "物傷":
+      case "物理":
         dph = attack - enemyData.enemyDef;
         if(dph < attack / 20){
           dph = attack / 20;
         }
       break;
-      case "法傷":
+      case "法術":
         dph = attack * ((100 - enemyData.enemyRes) / 100);
         if(dph < attack / 20){
           dph = attack / 20;
         }
-      break;
+      break;     
     }
     return dph;
   },
   // 我方DPS
-  memberDps: (type, memberRow, enemyData) => {
-    const spd = Calculator.memberData(type, memberRow).baseAttackTime;
-    const dps = Calculator.dph(type, memberRow, enemyData) / spd;
+  memberDps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
+    const dph = Calculator.dph(type, memberRow, enemyData, subProfessionIdJsonData);
+    const baseAttackTime = Calculator.memberData(type, memberRow).baseAttackTime;
+    const attackSpeed = Calculator.memberData(type, memberRow).attackSpeed;
+    const finalSpd = baseAttackTime / (attackSpeed / 100);
+    const dps = dph / finalSpd;
     return dps;//MemberSpecial.memberDpsSpecial(memberRow, enemyData, dps);
   },
-  // 我方HPS
-  memberHps: (memberRow) => {
-    let hps = 0;
-    switch(memberRow.attackType){
+  // 我方HPH
+  hph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
+    const attackType = Calculator.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
+    const attack = Calculator.memberData(type, memberRow).atk;
+    let hph = 0;
+    switch(attackType){
       case "治療":
-        hps = memberRow.attack / memberRow.spd;
-      break;
+        hph = attack;
+      break;     
     }
-    return MemberSpecial.memberHpsSpecial(memberRow, hps);
+    //咒癒師是透過攻擊造成傷害來治療的分支，需另外處理
+    //無模組的咒癒師的治療量是所造成傷害的50%
+    if(memberRow.subProfessionId === "incantationmedic"){
+      const dph = Calculator.dph(type, memberRow, enemyData, subProfessionIdJsonData);
+      hph = dph * 0.5;
+    }
+    return hph;
   },
-  // 擊殺所需時間
-  // memberKillTime: (memberRow, enemyData) => {
-  //   let dps = Calculator.memberDps(memberRow, enemyData);  
-  //   switch(memberRow.attackType){
-  //     case "物傷":       
-  //     return (Math.ceil(enemyData.enemyHp / dps));
-  //     case "法傷":
-  //     return (Math.ceil(enemyData.enemyHp / dps));
-  //     default:
-  //     return Infinity; // Infinity屬於number的一個值，此值必定會被視為最大值
-  //   }
-  // },
+  // 我方HPS
+  memberHps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
+    const hph = Calculator.hph(type, memberRow, enemyData, subProfessionIdJsonData);
+    const baseAttackTime = Calculator.memberData(type, memberRow).baseAttackTime;
+    const attackSpeed = Calculator.memberData(type, memberRow).attackSpeed;
+    const finalSpd = baseAttackTime / (attackSpeed / 100);
+    const hps = hph / finalSpd;
+    return hps;//MemberSpecial.memberHpsSpecial(memberRow, hps);
+  },
   // 敵方DPS
-  enemyDps: (memberRow, enemyData) => {
+  enemyDps: (type, memberRow, enemyData) => {
     // 計算平A的DPS
     let dph = 0;
     let dps = 0;      
+    const def = Calculator.memberData(type, memberRow).def
+    const magicResistance = Calculator.memberData(type, memberRow).magicResistance
     switch(enemyData.enemyAttackType){
       case "物傷":
-        dph = enemyData.enemyAttack - memberRow.def;
+        dph = enemyData.enemyAttack - def;
         if(dph < enemyData.enemyAttack / 20){
           dph = enemyData.enemyAttack / 20;
         }
         dps = (dph / enemyData.enemySpd);
       break;
       case "法傷":
-        dph = enemyData.enemyAttack * ((100 - memberRow.res) / 100);
+        dph = enemyData.enemyAttack * ((100 - magicResistance) / 100);
         if(dph < enemyData.enemyAttack / 20){
           dph = enemyData.enemyAttack / 20;
         } 
@@ -193,13 +221,13 @@ const Calculator = {
       enemyData.enemySkill.forEach((item) => {
         switch(item.enemySkillType){
           case "物傷":
-            skillDph = item.enemySkillDamage - memberRow.def;
+            skillDph = item.enemySkillDamage - def;
             if(skillDph < item.enemySkillDamage / 20){
               skillDph = item.enemySkillDamage / 20;              
             }  
           break;
           case "法傷":
-            skillDph = item.enemySkillDamage * ((100 - memberRow.res) / 100);
+            skillDph = item.enemySkillDamage * ((100 - magicResistance) / 100);
             if(skillDph < item.enemySkillDamage / 20){
               skillDph = item.enemySkillDamage / 20;              
             }     

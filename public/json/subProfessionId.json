@@ -338,7 +338,7 @@
   },
   "incantationmedic": {
     "chineseName": "咒癒師",
-    "attackType": "法術&治療",
+    "attackType": "法術",
     "position": "高台"
   }  
 }

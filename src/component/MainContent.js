@@ -6,6 +6,7 @@ import Calculator from '../model/Calculator';
 
 function MainContent() {
   const [whichType, setWhichType] = useState(getCookie('type'));
+  const [checkRarity, setCheckRarity] = useState(getCookie('rarity'));
   
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
@@ -23,20 +24,42 @@ function MainContent() {
   //取得Cookie
   function getCookie(name) {
     const cookies = document.cookie.split('; ');
+    //取得
     for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].split('=');
+      const cookie = cookies[i].trim().split('=');
       if (cookie[0] === name) {
-        return cookie[1] || '精零1級';
+        try{
+          return JSON.parse(cookie[1]);
+        }
+        catch (e) {
+          return cookie[1];
+        } 
       }
     }
-    return '精零1級'; 
+    //沒取得的預設值
+    switch(name){
+      case 'type':
+        return '精零1級';
+      case 'rarity':
+        return { "TIER_1":true, "TIER_2":true, "TIER_3":true, "TIER_4":true, "TIER_5":true, "TIER_6":true,};
+    }
   }
   //設置Cookie
-  function setCookie(type) {
+  function setCookie(key, value) {
     let expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 7); //設定Cookier在7天後過期
-    document.cookie = `type=${type}; expires=${expirationDate.toUTCString()}; path=/;`;
+    expirationDate.setDate(expirationDate.getDate() + 7); // 设置Cookier在7天后过期
+    const expires = `expires=${expirationDate.toUTCString()}`;
+    const path = 'path=/';
+  
+    let cookieValue = value;
+    if (typeof value === 'object' && value !== null) {
+      cookieValue = JSON.stringify(value);
+    } 
+
+    // 組合完整的Cookie字串
+    document.cookie = `${key}=${cookieValue}; ${expires}; ${path};`;
   }
+  
   //處理數值資料
   function numberFilter(number) {
     //數值資料如為整數，則回傳原值，如有小數點，則無條件捨去至整數
@@ -80,6 +103,7 @@ function MainContent() {
       //幹員職業
       const professionResponse = await fetch(`${process.env.PUBLIC_URL}/json/profession.json`);
       const professionJsonData = await professionResponse.json();
+
       //幹員分支
       const subProfessionIdResponse = await fetch(`${process.env.PUBLIC_URL}/json/subProfessionId.json`);
       const subProfessionIdJsonData = await subProfessionIdResponse.json();
@@ -87,9 +111,10 @@ function MainContent() {
       //幹員數據 
       const characterResponse = await fetch(`${process.env.PUBLIC_URL}/json/character_table.json`);
       const characterJsonData = await characterResponse.json();
+
       //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換
       let processedData = Object.values(characterJsonData);
-      //資料處理，移除一些非正常幹員的數據
+      //資料處理，移除一些不屬於幹員的數據
       processedData = processedData.filter(item => {
         switch(item.profession){
           case "TRAP": //道具
@@ -98,6 +123,19 @@ function MainContent() {
             return false;
           default:
             return true;
+        }
+      });
+      //資料處理，移除取消勾選星級的數據
+      Object.keys(checkRarity).forEach(key => {
+        if(checkRarity[key] === false){
+          processedData = processedData.filter(item => {
+            switch(item.rarity){
+              case key:
+                return false;
+              default:
+                return true;
+            }
+          });
         }
       });
       
@@ -110,20 +148,20 @@ function MainContent() {
           //{ title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, desJsonData)}" alt='icon' width='40' height='40' />`; } },
           { title: "名稱", data: "name", },
           { title: "星級", data: "rarity", render: function (data, type, row) { return Calculator.memberRarity(row); } },
-          { title: "職業", data: "profession", render: function (data, type, row) { return Calculator.memberProfession(row, professionJsonData); } },
-          { title: "分支", data: "subProfessionId", render: function (data, type, row) { return Calculator.memberSubProfessionId(row, subProfessionIdJsonData); } },
+          { title: "職業", data: "profession", render: function (data, type, row) { return Calculator.memberProfession(row, professionJsonData).chineseName; } },
+          { title: "分支", data: "subProfessionId", render: function (data, type, row) { return Calculator.memberSubProfessionId(row, subProfessionIdJsonData).chineseName; } },
           //phases陣列對應了幹員所有階段，[0] = 精零、[1] = 精一、[2] = 精二
           //phases.attributesKeyFrames陣列對應了幹員1級與滿級的數據，[0] = 1級、[1] = 滿級
           { title: "生命", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).maxHp); } },
-          //{ title: "傷害類型", data: "attackType" },
+          { title: "傷害類型", data: null, render: function (data, type, row) { return Calculator.memberSubProfessionId(row, subProfessionIdJsonData).attackType; } },
           { title: "攻擊", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).atk); } },
           { title: "防禦", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).def); } },
           { title: "法抗", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).magicResistance); } },
           { title: "攻擊間隔", data: "phases", render: function (data, type, row) { return Calculator.memberData(whichType, row).baseAttackTime; } },
           { title: "攻速", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).attackSpeed); } },
-          { title: "DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberDps(whichType, row, enemyData)); } },
-          // { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(row, enemyData); } },
-          //{ title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(row, enemyData)); } },
+          { title: "DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberDps(whichType, row, enemyData, subProfessionIdJsonData)); } },
+          { title: "HPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberHps(whichType, row, enemyData, subProfessionIdJsonData)); } },
+          { title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(whichType, row, enemyData)); } },
         ],
         drawCallback: function(settings) {
           $(memberTableRef.current).find('th').css({
@@ -196,8 +234,10 @@ function MainContent() {
       // })
       // .catch(error => console.log('Error loading JSON:', error));
     };
+    setCookie('type', whichType);
+    setCookie('rarity', checkRarity);
     loadData(whichType);
-  }, [whichType, enemyData]); // 每次修改敵人數值或是改變流派時就更新網頁並重新初始化表格
+  }, [whichType, checkRarity, enemyData]); // 每次修改敵人數值或改變流派選擇或勾選星級時就更新網頁並重新初始化表格
 
   return (
     <div className='container'>  
@@ -302,17 +342,31 @@ function MainContent() {
       </div> 
       <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
         <div className="row justify-content-around row-gap-1 p-2">     
-          <button className={ `${whichType === '精零1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('精零1級'); setWhichType('精零1級'); }}>精零1級</button>
-          <button className={ `${whichType === '精零滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('精零滿級'); setWhichType('精零滿級'); }}>精零滿級</button>
-          <button className={ `${whichType === '精一1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('精一1級'); setWhichType('精一1級'); }}>精一1級</button>
+          <button className={ `${whichType === '精零1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精零1級'); }}>精零1級</button>
+          <button className={ `${whichType === '精零滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精零滿級'); }}>精零滿級</button>
+          <button className={ `${whichType === '精一1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精一1級'); }}>精一1級</button>
         </div>
         <div className="row justify-content-around row-gap-1 p-2">     
-          <button className={ `${whichType === '精一滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('精一滿級'); setWhichType('精一滿級'); }}>精一滿級</button>
-          <button className={ `${whichType === '精二1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('精二1級'); setWhichType('精二1級'); }}>精二1級</button>
-          <button className={ `${whichType === '精二滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('精二滿級'); setWhichType('精二滿級'); }}>精二滿級</button>
+          <button className={ `${whichType === '精一滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精一滿級'); }}>精一滿級</button>
+          <button className={ `${whichType === '精二1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精二1級'); }}>精二1級</button>
+          <button className={ `${whichType === '精二滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精二滿級'); }}>精二滿級</button>
+        </div>
+        <div className="row justify-content-around row-gap-1 p-2">     
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_1"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_1"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>一星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_2"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_2"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>二星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_3"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_3"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>三星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_4"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_4"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>四星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_5"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_5"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>五星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_6"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_6"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>六星</label>
         </div>
         <div className='row justify-content-center row-gap-1'>
-          <small className="col-12 text-center">{`目前表格呈現的數據已包含生命攻擊防禦攻速潛，未包含其餘未提及潛能以及信賴加成`}</small>
+          <small className="col-12 text-center">{`目前表格呈現的數據已包含:(生命、攻擊、防禦、法抗、攻速)潛能加成、滿信賴加成`}</small>
           <small className="col-12 text-center">{``}</small>
           <small className="col-12 text-center">{``}</small>
         </div> 
