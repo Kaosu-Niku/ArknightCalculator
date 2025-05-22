@@ -11,7 +11,7 @@ function App() {
       <header>
         <title>Arknight Calculator</title>
         <link rel="icon" href="圖片URL" type="image/x-icon"></link>
-        <meta charset="UTF-8"></meta>
+        <meta charSet="UTF-8"></meta>
         <meta name="author" content="Kaosu-Niku"></meta>
         {/* 響應式設計 */}
         <meta name="viewport" content="width=device-width, initial-scale=1.0"></meta>

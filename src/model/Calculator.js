@@ -1,43 +1,111 @@
 import MemberSpecial from './MemberSpecial';
 
 const Calculator = {
+  // 當前流派
+  type: (type) => {
+    let witchPhases = 0;
+    let witchAttributesKeyFrames = 0;
+
+    switch(type){
+      case '精零1級':
+        witchPhases = 0;
+        witchAttributesKeyFrames = 0;
+      break;
+      case '精零滿級':
+        witchPhases = 0;
+        witchAttributesKeyFrames = 1;
+      break;
+      case '精一1級':
+        witchPhases = 1;
+        witchAttributesKeyFrames = 0;
+      break;
+      case '精一滿級':
+        witchPhases = 1;
+        witchAttributesKeyFrames = 1;
+      break;
+      case '精二1級':
+        witchPhases = 2;
+        witchAttributesKeyFrames = 0;
+      break;
+      case '精二滿級':
+        witchPhases = 2;
+        witchAttributesKeyFrames = 1;
+      break;
+    }
+
+    return { witchPhases: witchPhases, witchAttributesKeyFrames: witchAttributesKeyFrames,};
+  },
   // 我方名稱
-  memberNameRender: (row) => {
-    let newName = row.name; 
+  memberNameRender: (memberRow) => {
+    let newName = memberRow.name; 
     // 如果是四星隊，在名字後面標註模組
-    if('mod' in row){
-      newName += `(${row.mod})`;
+    if('mod' in memberRow){
+      newName += `(${memberRow.mod})`;
     }
     return newName; 
   },
-  // 我方說明文字
-  memberDirection: (row, directionsJsonData) => {
-    let memberRow = directionsJsonData.Basic.find(item => item.name === row.name);
-    return memberRow.direction;
+  // 我方星級
+  memberRarity: (memberRow) => {
+    const rarity = memberRow.rarity;
+    switch(rarity){
+      case "TIER_1":
+        return "1";
+      case "TIER_2":
+        return "2";
+      case "TIER_3":
+        return "3";
+      case "TIER_4":
+        return "4";
+      case "TIER_5":
+        return "5";
+      case "TIER_6":
+        return "6";
+    }
+  },
+  //我方職業
+  memberProfession: (memberRow, professionJsonData) => {
+    const profession = memberRow.profession;
+
+  },
+  //我方分支
+  memberSubProfessionId: (memberRow, subProfessionIdJsonData) => {
+    const subProfessionId = memberRow.subProfessionId;
+    return subProfessionIdJsonData[subProfessionId]?.chineseName ?? "無";
+  },
+  // 我方當前數據
+  memberData: (type, memberRow) => {
+    const witchPhases = Calculator.type(type).witchPhases;
+    const witchAttributesKeyFrames = Calculator.type(type).witchAttributesKeyFrames;
+    const maxPhases = memberRow.phases.length;
+    const data = memberRow.phases[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data ?? memberRow.phases[maxPhases - 1]?.attributesKeyFrames[1]?.data;
+    return data;
   },
   // 我方DPH
-  dph: (memberRow, enemyData) => {
+  dph: (type, memberRow, enemyData) => {
+    const attack = Calculator.memberData(type, memberRow).atk;
     let dph = 0;
-    switch(memberRow.attackType){
+    let attackType = "物傷";
+    switch(attackType){
       case "物傷":
-        dph = memberRow.attack - enemyData.enemyDef;
-        if(dph < memberRow.attack / 20){
-          dph = memberRow.attack / 20;
+        dph = attack - enemyData.enemyDef;
+        if(dph < attack / 20){
+          dph = attack / 20;
         }
       break;
       case "法傷":
-        dph = memberRow.attack * ((100 - enemyData.enemyRes) / 100);
-        if(dph < memberRow.attack / 20){
-          dph = memberRow.attack / 20;
+        dph = attack * ((100 - enemyData.enemyRes) / 100);
+        if(dph < attack / 20){
+          dph = attack / 20;
         }
       break;
     }
     return dph;
   },
   // 我方DPS
-  memberDps: (memberRow, enemyData) => {
-    let dps = Calculator.dph(memberRow, enemyData) / memberRow.spd;
-    return MemberSpecial.memberDpsSpecial(memberRow, enemyData, dps);
+  memberDps: (type, memberRow, enemyData) => {
+    const spd = Calculator.memberData(type, memberRow).baseAttackTime;
+    const dps = Calculator.dph(type, memberRow, enemyData) / spd;
+    return dps;//MemberSpecial.memberDpsSpecial(memberRow, enemyData, dps);
   },
   // 我方HPS
   memberHps: (memberRow) => {
