@@ -77,6 +77,9 @@ function MainContent() {
         break;
       }
 
+      //幹員職業
+      const professionResponse = await fetch(`${process.env.PUBLIC_URL}/json/profession.json`);
+      const professionJsonData = await professionResponse.json();
       //幹員分支
       const subProfessionIdResponse = await fetch(`${process.env.PUBLIC_URL}/json/subProfessionId.json`);
       const subProfessionIdJsonData = await subProfessionIdResponse.json();
@@ -107,16 +110,17 @@ function MainContent() {
           //{ title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, desJsonData)}" alt='icon' width='40' height='40' />`; } },
           { title: "名稱", data: "name", },
           { title: "星級", data: "rarity", render: function (data, type, row) { return Calculator.memberRarity(row); } },
-          { title: "職業", data: "profession" },
+          { title: "職業", data: "profession", render: function (data, type, row) { return Calculator.memberProfession(row, professionJsonData); } },
           { title: "分支", data: "subProfessionId", render: function (data, type, row) { return Calculator.memberSubProfessionId(row, subProfessionIdJsonData); } },
           //phases陣列對應了幹員所有階段，[0] = 精零、[1] = 精一、[2] = 精二
           //phases.attributesKeyFrames陣列對應了幹員1級與滿級的數據，[0] = 1級、[1] = 滿級
-          { title: "生命", data: "phases", render: function (data, type, row) { const maxPhases = data.length; const value = data[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data.maxHp; return value ?? data[maxPhases - 1]?.attributesKeyFrames[1]?.data.maxHp; } },
+          { title: "生命", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).maxHp); } },
           //{ title: "傷害類型", data: "attackType" },
-          { title: "攻擊", data: "phases", render: function (data, type, row) { const maxPhases = data.length; const value = data[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data.atk; return value ?? data[maxPhases - 1]?.attributesKeyFrames[1]?.data.atk; } },
-          { title: "防禦", data: "phases", render: function (data, type, row) { const maxPhases = data.length; const value = data[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data.def; return value ?? data[maxPhases - 1]?.attributesKeyFrames[1]?.data.def; } },
-          { title: "法抗", data: "phases", render: function (data, type, row) { const maxPhases = data.length; const value = data[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data.magicResistance; return value ?? data[maxPhases - 1]?.attributesKeyFrames[1]?.data.magicResistance; } },
-          { title: "攻速", data: "phases", render: function (data, type, row) { const maxPhases = data.length; const value = data[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data.baseAttackTime; return value ?? data[maxPhases - 1]?.attributesKeyFrames[1]?.data.baseAttackTime; } },
+          { title: "攻擊", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).atk); } },
+          { title: "防禦", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).def); } },
+          { title: "法抗", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).magicResistance); } },
+          { title: "攻擊間隔", data: "phases", render: function (data, type, row) { return Calculator.memberData(whichType, row).baseAttackTime; } },
+          { title: "攻速", data: "phases", render: function (data, type, row) { return numberFilter(Calculator.memberData(whichType, row).attackSpeed); } },
           { title: "DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberDps(whichType, row, enemyData)); } },
           // { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(row, enemyData); } },
           //{ title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(row, enemyData)); } },
@@ -308,10 +312,9 @@ function MainContent() {
           <button className={ `${whichType === '精二滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('精二滿級'); setWhichType('精二滿級'); }}>精二滿級</button>
         </div>
         <div className='row justify-content-center row-gap-1'>
-          <small className="col-12 text-center">{`以下表格的我方面板數值皆以滿潛能滿信賴(四星隊3級模組)為準`}</small>
-          <small className="col-12 text-center">{`幹員會有許多的因素會影響實際數值或是傷害計算結果`}</small>
-          <small className="col-12 text-center">{`(ex: 香草的天賦加攻擊力、夜煙的天賦減法抗、刻刀的職業特性攻擊都是二連擊...等等)`}</small>
-          <small className="col-12 text-center">{`可將滑鼠懸停在幹員頭像圖示上，會彈出提示訊息，經由提示訊息可確認詳細資訊`}</small>
+          <small className="col-12 text-center">{`目前表格呈現的數據已包含生命攻擊防禦攻速潛，未包含其餘未提及潛能以及信賴加成`}</small>
+          <small className="col-12 text-center">{``}</small>
+          <small className="col-12 text-center">{``}</small>
         </div> 
       </div>  
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='member_table'>

@@ -65,20 +65,49 @@ const Calculator = {
   //我方職業
   memberProfession: (memberRow, professionJsonData) => {
     const profession = memberRow.profession;
-
+    return professionJsonData[profession]?.chineseName ?? "無";
   },
   //我方分支
   memberSubProfessionId: (memberRow, subProfessionIdJsonData) => {
     const subProfessionId = memberRow.subProfessionId;
     return subProfessionIdJsonData[subProfessionId]?.chineseName ?? "無";
   },
-  // 我方當前數據
+  // 我方計算完後的最終數據
   memberData: (type, memberRow) => {
+    //流派
     const witchPhases = Calculator.type(type).witchPhases;
     const witchAttributesKeyFrames = Calculator.type(type).witchAttributesKeyFrames;
-    const maxPhases = memberRow.phases.length;
-    const data = memberRow.phases[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data ?? memberRow.phases[maxPhases - 1]?.attributesKeyFrames[1]?.data;
-    return data;
+    //基礎數值
+    const maxPhases = memberRow.phases.length; 
+    const basicData = memberRow.phases[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data ?? memberRow.phases[maxPhases - 1]?.attributesKeyFrames[1]?.data;
+    let maxHp = basicData.maxHp; //生命
+    let atk = basicData.atk; //攻擊
+    let def = basicData.def; //防禦
+    let magicResistance = basicData.magicResistance; //法抗
+    let baseAttackTime = basicData.baseAttackTime; //攻擊間隔
+    let attackSpeed = basicData.attackSpeed; //攻速
+    //潛能數值
+    const potentialRanksData = memberRow.potentialRanks ?? null;
+    potentialRanksData?.forEach((element, index) => { 
+      if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "MAX_HP"){
+        //生命潛
+        maxHp += element.buff?.attributes?.attributeModifiers[0]?.value;       
+      }
+      if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "ATK"){
+        //攻擊潛
+        atk += element.buff?.attributes?.attributeModifiers[0]?.value;
+      }     
+      if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "DEF"){
+        //防禦潛
+        def += element.buff?.attributes?.attributeModifiers[0]?.value;
+      } 
+      if(element.buff?.attributes?.attributeModifiers[0]?.attributeType === "ATTACK_SPEED"){
+        //攻速潛
+        attackSpeed += element.buff?.attributes?.attributeModifiers[0]?.value;
+      } 
+      
+    });
+    return { maxHp, atk, def, magicResistance, baseAttackTime, attackSpeed};
   },
   // 我方DPH
   dph: (type, memberRow, enemyData) => {
