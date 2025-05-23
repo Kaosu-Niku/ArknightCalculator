@@ -49,7 +49,7 @@ function App() {
         </div>
       </div>
       {/* 電腦版呈現在底部的的裝飾圖片 */}
-      <div className="d-none d-md-block position-fixed" style={{ bottom: '0', left: '-7.5%', pointerEvents: 'none' }}>
+      {/* <div className="d-none d-md-block position-fixed" style={{ bottom: '0', left: '-7.5%', pointerEvents: 'none' }}>
         <video src={`${process.env.PUBLIC_URL}/video/安赛尔-悠然假日 HDm06-基建-Special-x1.webm`} autoPlay loop muted className='h-auto opacity-75' style={{ width: '500px' }}>
           您的瀏覽器不支持 HTML5 video 標籤。
         </video>
@@ -58,7 +58,7 @@ function App() {
         <video src={`${process.env.PUBLIC_URL}/video/水月-永恒玩家-基建-Special-x1.webm`} autoPlay loop muted className='h-auto opacity-75' style={{ width: '500px', transform: 'scaleX(-1)' }}>
           您的瀏覽器不支持 HTML5 video 標籤。
         </video>  
-      </div>
+      </div> */}
     </div>    
   );
 }
