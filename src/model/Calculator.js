@@ -39,7 +39,8 @@ const CalculatorModel = {
   //我方名稱
   memberNameRender: (memberRow) => {
     let newName = memberRow.name; 
-    //如果是四星隊，在名字後面標註模組
+
+    //如果是四星以上的，在名字後面標註模組
     // if('mod' in memberRow){
     //   newName += `(${memberRow.mod})`;
     // }
@@ -77,13 +78,39 @@ const CalculatorModel = {
     return subProfessionIdJsonData[subProfessionId];
   },
 
+  //我方模組 (回傳object array類型，因為一個幹員會有多個模組)
+  memberUniequip: (memberRow, uniequipJsonData) => {
+    //由於幹員數據的potentialItemId的格式是: p_char_[數字]_[英文名稱]
+    //模組數據的charId的格式是: char_[數字]_[英文名稱]
+    //因此在比對id查詢之前，先刪除前面的p_兩字    
+    const memberId = memberRow.potentialItemId?.substring(2);
+
+    //charEquip是object型別，每個key值都對應一個幹員id，而每個value都是array型別，包含所有此幹員的模組id
+    const uniequipIdList = uniequipJsonData.charEquip[memberId];
+    
+    const uniequipContentList = [];
+
+    //一些幹員沒有模組，需要判斷undefined
+    uniequipIdList === undefined ? 
+    //對於無模組的幹員，至少給一個uniEquipName的假資料防止undefined
+    uniequipContentList.push({ uniEquipName: "無模組" }) : 
+    //有模組的幹員，遍歷屬於他的每一個模組
+    uniequipIdList.forEach(e => {
+      //equipDict是object型別，每個key值都對應一個模組id
+      const uniequip = uniequipJsonData.equipDict[e];
+      uniequipContentList.push(uniequip);
+    });        
+    
+    return uniequipContentList;
+  },
+
   //我方計算完後的最終數據
   memberData: (type, memberRow) => {
     //流派
     const witchPhases = CalculatorModel.type(type).witchPhases;
     const witchAttributesKeyFrames = CalculatorModel.type(type).witchAttributesKeyFrames;
-    //phases陣列對應了幹員所有階段，[0] = 精零、[1] = 精一、[2] = 精二
-    //phases.attributesKeyFrames陣列對應了幹員1級與滿級的數據，[0] = 1級、[1] = 滿級
+    //phases是array型別，對應幹員所有階段，[0] = 精零、[1] = 精一、[2] = 精二
+    //phases.attributesKeyFrames是array型別，對應幹員1級與滿級的數據，[0] = 1級、[1] = 滿級
     const maxPhases = memberRow.phases.length; //3星幹員沒有精二，1、2星幹員沒有精一精二，此用於輔助判斷
     //基礎數值
     const basicData = memberRow.phases[witchPhases]?.attributesKeyFrames[witchAttributesKeyFrames]?.data ?? memberRow.phases[maxPhases - 1]?.attributesKeyFrames[1]?.data;
@@ -132,6 +159,12 @@ const CalculatorModel = {
         magicResistance += element.data.magicResistance;  
       }  
     });
+    //模組數值
+    const uniequip = memberRow.uniequip
+    //不是[精二1級]與[精二滿級]流派就沒有辦法開模組，需要判斷
+    if(witchPhases === 2){
+      
+    }
     
     return { maxHp, atk, def, magicResistance, baseAttackTime, attackSpeed};
   },

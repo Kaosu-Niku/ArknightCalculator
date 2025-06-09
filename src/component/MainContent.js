@@ -66,22 +66,45 @@ function MainContent() {
       const characterResponse = await fetch(`${process.env.PUBLIC_URL}/json/character_table.json`);
       const characterJsonData = await characterResponse.json();
 
+      //幹員模組
+      const uniequipResponse = await fetch(`${process.env.PUBLIC_URL}/json/uniequip_table.json`);
+      const uniequipJsonData = await uniequipResponse.json();
+      console.log(uniequipJsonData);
+
+      
       //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換     
-      let processedCharacterData = Object.values(characterJsonData);
-      //資料處理
-      processedCharacterData = FilterModel.characterDataFilter(processedCharacterData, checkRarity);     
+      let filterCharacterData = Object.values(characterJsonData);
+      //幹員數據過濾處
+      filterCharacterData = FilterModel.characterDataFilter(filterCharacterData, checkRarity); 
+      
+      //幹員數據與模組數據結合
+      //由於現在有模組系統，幹員的數據計算避不開模組加成
+      //但是幹員和模組之間屬於一對多的關係，因此無法只遍歷幹員資料來呈現表格
+      //有幾個模組就要再重複增添對應的幾筆幹員資料，讓資料最終依然能以一對一關係呈現
+      const processedCharacterData = [];
+      for (const key in filterCharacterData) {
+          if (filterCharacterData.hasOwnProperty(key)) {
+              const originalMember = filterCharacterData[key];  
+              const uniequipContentList = CalculatorModel.memberUniequip(filterCharacterData[key], uniequipJsonData);            
+              uniequipContentList.forEach(e => {               
+                const MemberCopy = { ...originalMember, uniequip: e };
+                processedCharacterData.push(MemberCopy);
+              });
+          }
+      }
       
       //基礎數值表格
       $(memberTableRef.current).DataTable({
         destroy: true,
         data: processedCharacterData,
-        pageLength: 100,
+        pageLength: 20,
         columns: [
           //{ title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, desJsonData)}" alt='icon' width='40' height='40' />`; } },
           { title: "名稱", data: "name", },
           { title: "星級", data: "rarity", render: function (data, type, row) { return CalculatorModel.memberRarity(row); } },
           { title: "職業", data: "profession", render: function (data, type, row) { return CalculatorModel.memberProfession(row, professionJsonData).chineseName; } },
           { title: "分支", data: "subProfessionId", render: function (data, type, row) { return CalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).chineseName; } },
+          { title: "模組", data: "uniequip", render: function (data, type, row) { return row.uniequip.uniEquipName;} },
           { title: "生命", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(CalculatorModel.memberData(whichType, row).maxHp); } },
           { title: "傷害類型", data: null, render: function (data, type, row) { return CalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).attackType; } },
           { title: "攻擊", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(CalculatorModel.memberData(whichType, row).atk); } },
@@ -114,7 +137,7 @@ function MainContent() {
       $(attackSkillTableRef.current).DataTable({
         destroy: true,
         data: processedSkillData,
-        pageLength: 100,
+        pageLength: 20,
         columns: [
           { title: "名稱", data: null, render: function (data, type, row) { return CalculatorModel.skillFromMember(row, characterJsonData).name; } },
           { title: "技能名稱", data: null, render: function (data, type, row) { return CalculatorModel.skillData(whichType, row).name; } },
@@ -145,7 +168,7 @@ function MainContent() {
       $(defSkillTableRef.current).DataTable({
         destroy: true,
         data: processedSkillData,
-        pageLength: 100,
+        pageLength: 20,
         columns: [
           { title: "名稱", data: null, render: function (data, type, row) { return CalculatorModel.skillFromMember(row, characterJsonData).name; } },
           { title: "技能名稱", data: null, render: function (data, type, row) { return CalculatorModel.skillData(whichType, row).name; } },

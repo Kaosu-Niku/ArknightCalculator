@@ -8,6 +8,7 @@ const FilterModel = {
         // 如要使用其他方法，無條件進位 = ceil()，無條件捨去 = trunc()，四捨五入 = round()
         return Number.isInteger(number) ? number : Math.trunc(number);
     },
+
     //幹員數據過濾
     characterDataFilter: (processedCharacterData, checkRarity) => {
         let finalData = processedCharacterData;
@@ -40,6 +41,7 @@ const FilterModel = {
 
         return finalData;
     },
+    
     //技能數據過濾
     skillDataFilter: (processedSkillData, characterJsonData, checkRarity) => {
         let finalData = processedSkillData;
