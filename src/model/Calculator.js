@@ -104,8 +104,8 @@ const CalculatorModel = {
     return uniequipContentList;
   },
 
-  //我方計算完後的最終數據
-  memberData: (type, memberRow) => {
+  //我方計算完各種加成後的最終數據
+  memberNumeric: (type, memberRow) => {
     //流派
     const witchPhases = CalculatorModel.type(type).witchPhases;
     const witchAttributesKeyFrames = CalculatorModel.type(type).witchAttributesKeyFrames;
@@ -172,7 +172,7 @@ const CalculatorModel = {
   // 我方DPH
   dph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const attackType = CalculatorModel.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
-    const attack = CalculatorModel.memberData(type, memberRow).atk;
+    const attack = CalculatorModel.memberNumeric(type, memberRow).atk;
     let dph = 0;
     switch(attackType){
       case "物理":
@@ -194,8 +194,8 @@ const CalculatorModel = {
   // 我方DPS
   memberDps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const dph = CalculatorModel.dph(type, memberRow, enemyData, subProfessionIdJsonData);
-    const baseAttackTime = CalculatorModel.memberData(type, memberRow).baseAttackTime;
-    const attackSpeed = CalculatorModel.memberData(type, memberRow).attackSpeed;
+    const baseAttackTime = CalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
+    const attackSpeed = CalculatorModel.memberNumeric(type, memberRow).attackSpeed;
     const finalSpd = baseAttackTime / (attackSpeed / 100);
     const dps = dph / finalSpd;
     return dps;//MemberSpecial.memberDpsSpecial(memberRow, enemyData, dps);
@@ -204,7 +204,7 @@ const CalculatorModel = {
   // 我方HPH
   hph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const attackType = CalculatorModel.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
-    const attack = CalculatorModel.memberData(type, memberRow).atk;
+    const attack = CalculatorModel.memberNumeric(type, memberRow).atk;
     let hph = 0;
     switch(attackType){
       case "治療":
@@ -223,11 +223,11 @@ const CalculatorModel = {
   // 我方HPS
   memberHps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const hph = CalculatorModel.hph(type, memberRow, enemyData, subProfessionIdJsonData);
-    const baseAttackTime = CalculatorModel.memberData(type, memberRow).baseAttackTime;
-    const attackSpeed = CalculatorModel.memberData(type, memberRow).attackSpeed;
+    const baseAttackTime = CalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
+    const attackSpeed = CalculatorModel.memberNumeric(type, memberRow).attackSpeed;
     const finalSpd = baseAttackTime / (attackSpeed / 100);
     const hps = hph / finalSpd;
-    return hps;//MemberSpecial.memberHpsSpecial(memberRow, hps);
+    return hps;
   },
 
   // 敵方DPS
@@ -235,8 +235,8 @@ const CalculatorModel = {
     // 計算平A的DPS
     let dph = 0;
     let dps = 0;      
-    const def = CalculatorModel.memberData(type, memberRow).def
-    const magicResistance = CalculatorModel.memberData(type, memberRow).magicResistance
+    const def = CalculatorModel.memberNumeric(type, memberRow).def
+    const magicResistance = CalculatorModel.memberNumeric(type, memberRow).magicResistance
     switch(enemyData.enemyAttackType){
       case "物傷":
         dph = enemyData.enemyAttack - def;
@@ -333,31 +333,99 @@ const CalculatorModel = {
   },
 
   // 技能期間我方DPS
-  skillMemberDps: (skillRow, characterJsonData, enemyData) => {
+  skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
     const memberData = CalculatorModel.skillFromMember(skillRow, characterJsonData);
-    return 1;
-  },
-  // 技能總傷
-  memberSkillTotal: (skillRow, memberJsonData, enemyData) => { 
-    const newMemberRow = CalculatorModel.skillMemberRow(skillRow, memberJsonData);
-    let dps = 0;
+    const memberNumeric = CalculatorModel.memberNumeric(type, memberData);
+
+    const attackType = CalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
     let dph = 0;
-    let total = 0;
-    if(skillRow.skillTime !== -1){
-      // 正常類型技能
-      dps = CalculatorModel.memberDps(newMemberRow, enemyData);
-      total = dps * skillRow.skillTime;
+    let attackMulti = CalculatorModel.skillAttribute(type, skillRow, 'atk');
+    let attackScale = CalculatorModel.skillAttribute(type, skillRow, 'atk_scale');
+    //[攻擊倍率]需要判斷是否 > 0，確保原資料是0的不會跟著變成0
+    attackScale = attackScale > 0 ? attackScale : 1;
+    let damageMulti = CalculatorModel.skillAttribute(type, skillRow, 'damage_scale');
+    let finalDamage = 0
+
+    switch(attackType){
+      case "物理":
+        //物理DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) - (敵人防禦 * (1 - 削減敵方防禦[比例]) - 削減敵方防禦[固定] - 無視防禦)) * 傷害倍率)
+        
+        //[削減敵方防禦]需要判斷 < 0 才是削減敵人，若 > 0 是我方加防禦    
+        let defDivide = CalculatorModel.skillAttribute(type, skillRow, 'def') < 0 ? CalculatorModel.skillAttribute(type, skillRow, 'def') : 0;
+        //再判斷值大小，通常來說絕對值 < 1 的值是比例值，而絕對值 > 1 的值是固定值
+        let defDivideA = 0; //比例
+        let defDivideB = 0; //固定
+        if(defDivide > -1){
+          defDivideA = defDivide;
+        }
+        else{
+          defDivideB = defDivide;
+        }
+        let defSub = CalculatorModel.skillAttribute(type, skillRow, 'def_penetrate_fixed');
+        let finalEnemyDef = enemyData.enemyDef * (1 + defDivideA) + defDivideB - defSub;
+        //需要判斷削弱防禦與無視防禦後的剩餘防禦是否 < 0
+        finalEnemyDef = finalEnemyDef < 0 ? 0 : finalEnemyDef;          
+        finalDamage = ((memberNumeric.atk * (1 + attackMulti) * attackScale) - finalEnemyDef);
+      break;
+      case "法術":
+        //法術DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) * ((100 - 敵人法抗) / 100)) * 傷害倍率)
+
+        //[削減敵方法抗]需要判斷 < 0 才是削減敵人，若 > 0 是我方加法抗  
+        let resDivide = CalculatorModel.skillAttribute(type, skillRow, 'magic_resistance') < 0 ? CalculatorModel.skillAttribute(type, skillRow, 'magic_resistance') : 0;
+        //再判斷值大小，通常來說絕對值 < 1 的值是比例值，而絕對值 > 1 的值是固定值
+        let resDivideA = 0; //比例
+        let resDivideB = 0; //固定
+        if(resDivide > -1){
+          resDivideA = resDivide;
+        }
+        else{
+          resDivideB = resDivide;
+        }
+        let finalEnemyRes = enemyData.enemyRes * (1 + resDivideA) + resDivideB;
+        //需要判斷削弱法抗後的剩餘法抗是否 < 0
+        finalEnemyRes = finalEnemyRes < 0 ? 0 : finalEnemyRes;
+        finalDamage = ((memberNumeric.atk * (1 + attackMulti) * attackScale) * ((100 - finalEnemyRes) / 100));
+      break;     
+    }
+
+    //finalDamage是原定造成傷害，而傷害公式會確保傷害過低時會至少有5%保底傷害
+    finalDamage = finalDamage < memberNumeric.atk / 20 ? memberNumeric.atk / 20 : finalDamage;
+    //[傷害倍率]需要判斷是否 > 0，確保原資料是0的不會跟著變成0
+    damageMulti = damageMulti > 0 ? damageMulti : 1
+    dph = finalDamage * damageMulti;
+
+    let attackTimeRevise = CalculatorModel.skillAttribute(type, skillRow, 'base_attack_time');
+    let attackSpeedRevise = CalculatorModel.skillAttribute(type, skillRow, 'attack_speed');
+
+    //最終攻擊間隔 = (幹員攻擊間隔 + 攻擊間隔調整) / ((幹員攻速 + 攻擊速度加算) / 100)
+    let finalAttackTime = (memberNumeric.baseAttackTime + attackTimeRevise) / ((memberNumeric.attackSpeed + attackSpeedRevise) / 100);
+
+    let times = CalculatorModel.skillAttribute(type, skillRow, 'times');
+    //[攻擊次數]需要判斷是否 > 0 ，用於區分出固定次數傷害或彈藥類的技能
+    if(times > 0){
+      //對於這類技能，直接以總傷來表示DPS
+      return dph * times;
     }
     else{
-      // 強力擊類型技能
-      dph = CalculatorModel.dph(newMemberRow, enemyData);
-      total = dph;
+      return dph / finalAttackTime; 
     } 
-    // 刻刀的一技能算法太破壞公式，只能獨立處理
-    if(newMemberRow.name == '刻刀' && skillRow.whichSkill.includes('一技能')){
-      total = dph * 4;
+    
+  },
+  // 技能總傷
+  skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => { 
+    const dps = CalculatorModel.skillMemberDps(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData);
+    let duration = CalculatorModel.skillData(type, skillRow).duration;
+    //[技能持續時間]需要判斷是否 < 1 ，確保強力擊、脫手類、永續類的技能不會計算錯誤
+    duration = duration < 1 ? 1 : duration;
+    let times = CalculatorModel.skillAttribute(type, skillRow, 'times');
+    //[攻擊次數]需要判斷是否 > 0 ，用於區分出固定次數傷害或彈藥類的技能  
+    if(times > 0){
+      //對於這類技能，直接以DPS來表示總傷
+      return dps;
+    }
+    else{
+      return dps * duration; 
     } 
-    return total; 
   },
 }
 
