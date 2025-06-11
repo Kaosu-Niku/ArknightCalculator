@@ -128,16 +128,15 @@ const SkillCalculatorModel = {
     //最終攻擊間隔 = (幹員攻擊間隔 + 攻擊間隔調整) / ((幹員攻速 + 攻擊速度加算) / 100)
     let finalAttackTime = (memberNumeric.baseAttackTime + attackTimeRevise) / ((memberNumeric.attackSpeed + attackSpeedRevise) / 100);
 
+    
+    //[攻擊次數]需要判斷是否 > 0 ，用於區分出固定次數傷害的技能
     let times = SkillCalculatorModel.skillAttribute(type, skillRow, 'times');
-    //[攻擊次數]需要判斷是否 > 0 ，用於區分出固定次數傷害或彈藥類的技能
     if(times > 0){
       //對於這類技能，直接以總傷來表示DPS
       return dph * times;
     }
-    else{
-      return dph / finalAttackTime; 
-    } 
-    
+  
+    return dph / finalAttackTime;
   },
   // 技能總傷
   skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => { 
@@ -145,15 +144,27 @@ const SkillCalculatorModel = {
     let duration = SkillCalculatorModel.skillData(type, skillRow).duration;
     //[技能持續時間]需要判斷是否 < 1 ，確保強力擊、脫手類、永續類的技能不會計算錯誤
     duration = duration < 1 ? 1 : duration;
-    let times = SkillCalculatorModel.skillAttribute(type, skillRow, 'times');
-    //[攻擊次數]需要判斷是否 > 0 ，用於區分出固定次數傷害或彈藥類的技能  
+
+    //[攻擊次數]需要判斷是否 > 0 ，用於區分出固定次數傷害或彈藥類的技能 
+    let times = SkillCalculatorModel.skillAttribute(type, skillRow, 'times');    
     if(times > 0){
-      //對於這類技能，直接以DPS來表示總傷
+      //對於這類技能，直接以得出的DPS來表示總傷
       return dps;
     }
-    else{
-      return dps * duration; 
-    } 
+
+    //[彈藥數量]需要判斷是否 > 0 ，用於區分出彈藥類的的技能
+    let trigger_time = SkillCalculatorModel.skillAttribute(type, skillRow, 'attack@trigger_time');
+    if(trigger_time > 0){
+      //對於這類技能，重新計算最終攻擊間隔以回推出DPH，並乘上彈藥數量來計算總傷
+      const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
+      const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
+      let attackTimeRevise = SkillCalculatorModel.skillAttribute(type, skillRow, 'base_attack_time');
+      let attackSpeedRevise = SkillCalculatorModel.skillAttribute(type, skillRow, 'attack_speed');
+      let finalAttackTime = (memberNumeric.baseAttackTime + attackTimeRevise) / ((memberNumeric.attackSpeed + attackSpeedRevise) / 100);
+      return (dps * finalAttackTime) * trigger_time;
+    }
+    
+    return dps * duration; 
   },
 }
 
