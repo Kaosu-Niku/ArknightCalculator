@@ -42,17 +42,17 @@ const BasicCalculatorModel = {
     const rarity = memberRow.rarity;
     switch(rarity){
       case "TIER_1":
-        return "1";
+        return 1;
       case "TIER_2":
-        return "2";
+        return 2;
       case "TIER_3":
-        return "3";
+        return 3;
       case "TIER_4":
-        return "4";
+        return 4;
       case "TIER_5":
-        return "5";
+        return 5;
       case "TIER_6":
-        return "6";
+        return 6;
     }
   },
 
@@ -183,7 +183,7 @@ const BasicCalculatorModel = {
     return { maxHp, atk, def, magicResistance, baseAttackTime, attackSpeed};
   },
 
-  // 我方DPH
+  //我方DPH
   dph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const attackType = BasicCalculatorModel.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
     const attack = BasicCalculatorModel.memberNumeric(type, memberRow).atk;
@@ -205,17 +205,17 @@ const BasicCalculatorModel = {
     return dph;
   },
 
-  // 我方DPS
+  //我方DPS
   memberDps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const dph = BasicCalculatorModel.dph(type, memberRow, enemyData, subProfessionIdJsonData);
     const baseAttackTime = BasicCalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
     const attackSpeed = BasicCalculatorModel.memberNumeric(type, memberRow).attackSpeed;
     const finalSpd = baseAttackTime / (attackSpeed / 100);
     const dps = dph / finalSpd;
-    return dps;//MemberSpecial.memberDpsSpecial(memberRow, enemyData, dps);
+    return dps;
   },
 
-  // 我方HPH
+  //我方HPH
   hph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const attackType = BasicCalculatorModel.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
     const attack = BasicCalculatorModel.memberNumeric(type, memberRow).atk;
@@ -234,7 +234,7 @@ const BasicCalculatorModel = {
     return hph;
   },
 
-  // 我方HPS
+  //我方HPS
   memberHps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
     const hph = BasicCalculatorModel.hph(type, memberRow, enemyData, subProfessionIdJsonData);
     const baseAttackTime = BasicCalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
@@ -244,9 +244,9 @@ const BasicCalculatorModel = {
     return hps;
   },
 
-  // 敵方DPS
+  //敵方DPS
   enemyDps: (type, memberRow, enemyData) => {
-    // 計算平A的DPS
+    //計算平A的DPS
     let dph = 0;
     let dps = 0;      
     const def = BasicCalculatorModel.memberNumeric(type, memberRow).def
@@ -273,7 +273,7 @@ const BasicCalculatorModel = {
         dps = 0;
       break;
     }   
-    // 計算技能的DPS
+    //計算技能的DPS
     let skillDph = 0;
     let skillDps = 0;
     let skillDpsTotal = 0;

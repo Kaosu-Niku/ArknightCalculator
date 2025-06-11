@@ -5,8 +5,8 @@ const TalentsCalculatorModel = {
   memberTalent: (type, memberRow, attribute) => {
     let addTotal = 0;
 
-    //一個幹員可能會同時有多個天賦
-    memberRow.talents.forEach(t => {
+    //一個幹員可能會同時有多個天賦也可能完全沒天賦
+    memberRow.talents?.forEach(t => {
 
       //一個天賦可能會同時有多個階段，同時還有包含各階段解鎖需達成的階級以及等級
       //因此需根據當前所選的流派去判斷是否達到解鎖標準
@@ -17,13 +17,27 @@ const TalentsCalculatorModel = {
 
       //天賦階段需要反向遍歷，從最大階段判斷回去以找到符合階級以及等級的最大階段
       for(let l = t.candidates.length - 1; l > -1; l--){
-        //phases是array型別，對應幹員所有階段，[0] = 精零、[1] = 精一、[2] = 精二
-        //phases.attributesKeyFrames是array型別，對應幹員1級與滿級的數據，[0] = 1級、[1] = 滿級
 
         //判斷階段
-        if (t.candidates[l].unlockCondition.phase === `PHASE_${witchPhases}`) {
+        let candidatesCheck = false;
+        const phaseNum = parseInt(t.candidates[l].unlockCondition.phase.replace('PHASE_', ''), 10);
+        //通用的階段判斷邏輯
+        if(phaseNum === witchPhases){
+          candidatesCheck = true;
+        }
+        //特殊的階段判斷邏輯，因為三星以下幹員沒有精二，這導致用精二以上的流派來判斷，通用邏輯將無法得出三星以下幹員的最大階段技能
+        //因此在使用精二流派判斷時，三星以下幹員直接於第一次判斷時取得
+        const memberRarity = BasicCalculatorModel.memberRarity(memberRow);
+        if(memberRarity < 4 && witchPhases == 2){
+          candidatesCheck = true;
+        }
+        
+        if (candidatesCheck) {
           //判斷等級
-          if (witchAttributesKeyFrames >= t.candidates[l].unlockCondition.level) {
+          //大部分幹員的天賦解鎖都是與階段相關，但依然有少部分幹員的天賦解鎖與等級相關，ex: 三星幹員在精一1級與精1滿級各有天賦階段
+          //因此為了方便判斷，1級解鎖一律視為0，非1級解鎖一律視為1，以此來配合流派的判斷
+          //const levelN = t.candidates[l].unlockCondition.level > 1 ? 1 : 0;
+          //if (witchAttributesKeyFrames >= levelN) {
             //一個天賦可能會同時有多個強化效果，甚至可能重複     
             t.candidates[l].blackboard.forEach(b => {
               if (b.key === attribute) {
@@ -42,7 +56,7 @@ const TalentsCalculatorModel = {
             });
               
             break;          
-          }
+          //}
         }
       }
     });

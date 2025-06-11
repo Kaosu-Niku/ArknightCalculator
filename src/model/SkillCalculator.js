@@ -24,16 +24,34 @@ const SkillCalculatorModel = {
 
   //最高的技能數據
   skillData: (type, skillrow) => {
+    //流派
     const witchPhases = BasicCalculatorModel.type(type).witchPhases;
-    const skillLength = skillrow.levels.length;
-    switch(witchPhases){
-      case 0: //精零
-        return skillrow.levels[skillLength - 3];
-      case 1: //精一
-        return skillrow.levels[skillLength - 1];
-      case 2: //精二
-        return skillrow.levels[skillLength - 1];
-    }
+    const witchAttributesKeyFrames = BasicCalculatorModel.type(type).witchAttributesKeyFrames;
+    const maxLevel = skillrow.levels.length; //3星以下幹員的技能沒有辦法專精，技能只能到7級，此用於輔助判斷
+
+    if(maxLevel > 7){
+        //四星以上的幹員
+        switch(witchPhases){
+          case 0: //精零
+            return skillrow.levels[maxLevel - 7];
+          case 1: //精一
+            return skillrow.levels[maxLevel - 4];
+          case 2: //精二
+            return skillrow.levels[maxLevel - 1];
+        }
+      }
+      else{
+        //三星以下的幹員
+        switch(witchPhases){
+          case 0: //精零
+            return skillrow.levels[maxLevel - 4];
+          case 1: //精一
+            return skillrow.levels[maxLevel - 1];
+          case 2: //精二
+            return skillrow.levels[maxLevel - 1];
+        }
+      }
+    
   },
 
   //技能屬性加成
