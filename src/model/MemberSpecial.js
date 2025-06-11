@@ -5,20 +5,6 @@ const MemberSpecial = {
     let dph = 0;
     let otherDph = 0;
     switch(row.name){
-      case "刻刀":
-        // 職業特性為攻擊皆是二連擊
-        if('mod' in row){
-          // Y模組為無視防禦力
-          dph = row.attack - (emenyData.enemyDef - 70);
-        }    
-        else{
-          dph = row.attack - emenyData.enemyDef;
-        }
-        if(dph < row.attack / 20){
-          dph = row.attack / 20;
-        }
-        dps = (dph / (row.spd / 2));
-      break;
       case "騁風":
         // 天賦為攻擊力滿疊層，攻擊附加額外傷害
         dph = row.attack - emenyData.enemyDef;
@@ -36,23 +22,6 @@ const MemberSpecial = {
           if(otherDph < (row.attack * 0.28) / 20){
             otherDph = (row.attack * 0.28) / 20;
           }
-        }
-        dps = ((dph + otherDph) / row.spd);
-      break;
-      case "霜葉":        
-        dph = row.attack - emenyData.enemyDef;
-        if(dph < row.attack / 20){
-          dph = row.attack / 20;
-        }
-        if('mod' in row){
-          // Y模組為攻擊附加額外法術傷害
-          otherDph = (row.attack * 0.1) * ((100 - emenyData.enemyRes) / 100);
-          if(otherDph < (row.attack * 0.1) / 20){
-            otherDph = (row.attack * 0.1) / 20;
-          }
-        }    
-        else{
-          otherDph = 0;
         }
         dps = ((dph + otherDph) / row.spd);
       break;
@@ -93,62 +62,6 @@ const MemberSpecial = {
         } 
         dps = (dph / row.spd);
       break;     
-      case "卡達":
-        // 職業特性為每次攻擊附加額外浮游單元傷害
-        // 浮游單元攻擊一個新對象的首次攻擊倍率為20%攻擊力，之後每次+15%，攻擊7次達到最高110%，換對象則清除疊加
-        dph = row.attack * ((100 - emenyData.enemyRes) / 100);
-        if(dph < row.attack / 20){
-          dph = row.attack / 20;
-        }
-        // 為方便計算，DPS算法改為 (敵人總血量 / 擊殺時間)
-        let enemyHpCopy = emenyData.enemyHp;
-        let attackCount = 0;
-        while(enemyHpCopy > 0){              
-          if(attackCount < 7){
-            // 浮游單元疊加期間的計算
-            otherDph = (row.attack * (0.2 + (0.15 * attackCount))) * ((100 - emenyData.enemyRes) / 100);
-            if(otherDph < (row.attack * (0.2 + (0.15 * attackCount))) / 20){
-              otherDph = (row.attack * (0.2 + (0.15 * attackCount))) / 20;
-            }
-            enemyHpCopy -= dph;
-            enemyHpCopy -= otherDph;
-            attackCount += 1;
-
-            // Y模組為浮游單元最高倍率提升為120%，所以還要算第8次，為方便計算，在第7次時一併計算            
-            if(attackCount == 7){
-              if('mod' in row){
-                otherDph = (row.attack * 1.2) * ((100 - emenyData.enemyRes) / 100);
-                if(otherDph < (row.attack * 1.2) / 20){
-                  otherDph = (row.attack * 1.2) / 20;
-                }
-                enemyHpCopy -= dph;
-                enemyHpCopy -= otherDph;
-                attackCount += 1;
-              }  
-            }
-          }
-          else{
-            // 浮游單元疊加完畢的計算
-            if('mod' in row){
-              otherDph = (row.attack * 1.2) * ((100 - emenyData.enemyRes) / 100);
-              if(otherDph < (row.attack * 1.2) / 20){
-                otherDph = (row.attack * 1.2) / 20;
-              }
-            }
-            else{
-              otherDph = (row.attack * 1.1) * ((100 - emenyData.enemyRes) / 100);
-              if(otherDph < (row.attack * 1.1) / 20){
-                otherDph = (row.attack * 1.1) / 20;
-              }
-            }            
-            enemyHpCopy -= dph;
-            enemyHpCopy -= otherDph;
-            attackCount += 1;
-          }
-        }
-        
-        dps = (emenyData.enemyHp / (row.spd * attackCount));
-      break;
       case "巫役小車":
         // 天賦為部署後的40秒內每次攻擊附帶60凋亡損傷，且期間還會使攻擊範圍內所有敵人+10%法術脆弱和+10%元素脆弱
         // 而小車40秒內可以打25下，所以造成凋亡損傷的總值為1500

@@ -1,7 +1,6 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 
-const subProfessionIdCalculatorModel = {
-  
+const subProfessionIdCalculatorModel = { 
   subProfessionIdDPH: (type, memberRow, enemyData, dph) => {
     const attack = BasicCalculatorModel.memberNumeric(type, memberRow).atk;
     switch(memberRow.subProfessionId){
@@ -22,28 +21,20 @@ const subProfessionIdCalculatorModel = {
     }
     return dph
   },
-  subProfessionIdDPS: (type, memberRow, enemyData, dps) => {
+  subProfessionIdDPS: (type, memberRow, enemyData, subProfessionIdJsonData, dps) => {
     const attack = BasicCalculatorModel.memberNumeric(type, memberRow).atk;
     const baseAttackTime = BasicCalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
     const attackSpeed = BasicCalculatorModel.memberNumeric(type, memberRow).attackSpeed;
     const finalSpd = baseAttackTime / (attackSpeed / 100);
-    let dph = 0;
+    const dph = BasicCalculatorModel.dph(type, memberRow, enemyData, subProfessionIdJsonData);
     let dphOther = 0;
     switch(memberRow.subProfessionId){
       case "sword": //劍豪
         //普攻造成兩次傷害
-        dph = attack - enemyData.enemyDef;
-        if(dph < attack / 20){
-          dph = attack / 20;
-        }
         dps = (dph * 2) / finalSpd;
       break;
       case "bombarder": //投擲手
         //普攻造成兩次傷害，第二次為攻擊力一半的傷害
-        dph = attack - enemyData.enemyDef;
-        if(dph < attack / 20){
-          dph = attack / 20;
-        }
         dphOther = (attack / 2) - enemyData.enemyDef;
         if(dphOther < (attack / 2) / 20){
           dphOther = (attack / 2) / 20;
@@ -53,10 +44,6 @@ const subProfessionIdCalculatorModel = {
       case "funnel": //御械術師
         //使用浮游單元造成額外傷害
         //浮游單元攻擊一個新對象的首次攻擊倍率為20%攻擊力，之後每次+15%，攻擊7次達到最高110%，換對象則清除疊加
-        dph = attack * ((100 - enemyData.enemyRes) / 100);
-        if(dph < attack / 20){
-          dph = attack / 20;
-        }
 
         //為方便計算，DPS算法改為 (敵人總血量 / 擊殺時間)
         let enemyHpCopy = enemyData.enemyHp;
@@ -104,6 +91,26 @@ const subProfessionIdCalculatorModel = {
       break;        
     }
     return dps
+  },
+  subProfessionIdHPH: (type, memberRow, enemyData, hph) => {
+    const attack = BasicCalculatorModel.memberNumeric(type, memberRow).atk;
+    let dph = 0;
+    switch(memberRow.subProfessionId){
+      case "incantationmedic": //咒癒師
+        //可攻擊造成法術傷害並回復所造成的傷害50%的治療量
+        dph = attack * ((100 - enemyData.enemyRes) / 100);
+        if(dph < attack / 20){
+          dph = attack / 20;
+        }
+        hph = dph * 0.5;
+      break;
+      case "blessing": //護佑者
+        //平時攻擊造成法術傷害但開技能轉為進行治療(75%攻擊力)
+        hph = attack * 0.75;
+      break; 
+      
+    }
+    return hph
   },
   
 }

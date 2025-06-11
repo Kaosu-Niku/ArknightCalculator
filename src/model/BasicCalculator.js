@@ -216,7 +216,7 @@ const BasicCalculatorModel = {
     const finalSpd = baseAttackTime / (attackSpeed / 100);
     let dps = dph / finalSpd;
     //針對特定分支重新計算並傳回新的DPS，其餘分支則傳回原本的DPS
-    dps = subProfessionIdCalculatorModel.subProfessionIdDPS(type, memberRow, enemyData, dps);
+    dps = subProfessionIdCalculatorModel.subProfessionIdDPS(type, memberRow, enemyData, subProfessionIdJsonData, dps);
     return dps;
   },
 
@@ -230,12 +230,8 @@ const BasicCalculatorModel = {
         hph = attack;
       break;     
     }
-    //咒癒師是透過攻擊造成傷害來治療的分支，需另外處理
-    //無模組的咒癒師的治療量是所造成傷害的50%
-    if(memberRow.subProfessionId === "incantationmedic"){
-      const dph = BasicCalculatorModel.dph(type, memberRow, enemyData, subProfessionIdJsonData);
-      hph = dph * 0.5;
-    }
+    //針對特定分支重新計算並傳回新的DPH，其餘分支則傳回原本的DPH
+    hph = subProfessionIdCalculatorModel.subProfessionIdHPH(type, memberRow, enemyData, hph);
     return hph;
   },
 
