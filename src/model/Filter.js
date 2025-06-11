@@ -1,4 +1,5 @@
-import CalculatorModel from './Calculator';
+import BasicCalculatorModel from './BasicCalculator';
+import SkillCalculatorModel from './SkillCalculator';
 
 const FilterModel = {
 
@@ -48,7 +49,7 @@ const FilterModel = {
 
         //過濾掉找不到所屬幹員的數據
         finalData = finalData.filter(item => {
-            const data = CalculatorModel.skillFromMember(item, characterJsonData);
+            const data = SkillCalculatorModel.skillFromMember(item, characterJsonData);
             if(data !== null){
                 return true;
             }
@@ -59,7 +60,7 @@ const FilterModel = {
 
         //過濾掉不是幹員的數據
         finalData = finalData.filter(item => {
-            const profession = CalculatorModel.skillFromMember(item, characterJsonData)?.profession
+            const profession = SkillCalculatorModel.skillFromMember(item, characterJsonData)?.profession
             switch(profession){
             case "TRAP": //道具
                 return false;
@@ -74,7 +75,7 @@ const FilterModel = {
         Object.keys(checkRarity).forEach(key => {
             if(checkRarity[key] === false){
             finalData = finalData.filter(item => {
-                const rarity = CalculatorModel.skillFromMember(item, characterJsonData)?.rarity
+                const rarity = SkillCalculatorModel.skillFromMember(item, characterJsonData)?.rarity
                 switch(rarity){
                 case key:
                     return false;
