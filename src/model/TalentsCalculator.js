@@ -19,25 +19,32 @@ const TalentsCalculatorModel = {
       for(let l = t.candidates.length - 1; l > -1; l--){
 
         //判斷階段
-        let candidatesCheck = false;
+        let phaseCheck = false;
         const phaseNum = parseInt(t.candidates[l].unlockCondition.phase.replace('PHASE_', ''), 10);
         //通用的階段判斷邏輯
         if(phaseNum === witchPhases){
-          candidatesCheck = true;
+          phaseCheck = true;
         }
-        //特殊的階段判斷邏輯，因為三星以下幹員沒有精二，這導致用精二以上的流派來判斷，通用邏輯將無法得出三星以下幹員的最大階段技能
-        //因此在使用精二流派判斷時，三星以下幹員直接於第一次判斷時取得
+        //特殊的階段判斷邏輯
+        //因為三星以下幹員沒有精二，這導致使用精二以上的流派來判斷，通用邏輯將無法得出三星以下幹員的最大階段技能
+        //因此在使用精二流派判斷時，三星以下幹員直接於第一次判斷時取得階段
         const memberRarity = BasicCalculatorModel.memberRarity(memberRow);
-        if(memberRarity < 4 && witchPhases == 2){
-          candidatesCheck = true;
+        if(memberRarity < 4 && witchPhases === 2){
+          phaseCheck = true;
         }
         
-        if (candidatesCheck) {
-          //判斷等級
-          //大部分幹員的天賦解鎖都是與階段相關，但依然有少部分幹員的天賦解鎖與等級相關，ex: 三星幹員在精一1級與精1滿級各有天賦階段
-          //因此為了方便判斷，1級解鎖一律視為0，非1級解鎖一律視為1，以此來配合流派的判斷
-          //const levelN = t.candidates[l].unlockCondition.level > 1 ? 1 : 0;
-          //if (witchAttributesKeyFrames >= levelN) {
+        if (phaseCheck) {
+          //特殊的等級判斷邏輯
+          let levelCheck = true;
+          const levelN = t.candidates[l].unlockCondition.level > 1 ? 1 : 0;
+          //四星以上幹員的天賦解鎖都只與階段相關，因此其實只要判斷階段就可以
+          //而三星以下幹員的天賦解鎖還會與等級相關，ex: 三星幹員在精一1級與精1滿級各有天賦階段
+          //因此為了方便判斷，1級解鎖一律視為0，非1級解鎖一律視為1，以此來配合流派做判斷
+          if(memberRarity < 4 && witchPhases !== 2 && levelN === 1 && witchAttributesKeyFrames === 0){
+            levelCheck = false;
+          }
+
+          if(levelCheck){          
             //一個天賦可能會同時有多個強化效果，甚至可能重複     
             t.candidates[l].blackboard.forEach(b => {
               if (b.key === attribute) {
@@ -56,7 +63,7 @@ const TalentsCalculatorModel = {
             });
               
             break;          
-          //}
+          }
         }
       }
     });

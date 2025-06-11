@@ -1,4 +1,5 @@
 import TalentsCalculatorModel from './TalentsCalculator';
+import subProfessionIdCalculatorModel from './subProfessionIdCalculator';
 import MemberSpecial from './MemberSpecial';
 
 const BasicCalculatorModel = {
@@ -202,6 +203,8 @@ const BasicCalculatorModel = {
         }
       break;     
     }
+    //針對特定分支重新計算並傳回新的DPH，其餘分支則傳回原本的DPH
+    dph = subProfessionIdCalculatorModel.subProfessionIdDPH(type, memberRow, enemyData, dph);
     return dph;
   },
 
@@ -211,7 +214,9 @@ const BasicCalculatorModel = {
     const baseAttackTime = BasicCalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
     const attackSpeed = BasicCalculatorModel.memberNumeric(type, memberRow).attackSpeed;
     const finalSpd = baseAttackTime / (attackSpeed / 100);
-    const dps = dph / finalSpd;
+    let dps = dph / finalSpd;
+    //針對特定分支重新計算並傳回新的DPS，其餘分支則傳回原本的DPS
+    dps = subProfessionIdCalculatorModel.subProfessionIdDPS(type, memberRow, enemyData, dps);
     return dps;
   },
 
