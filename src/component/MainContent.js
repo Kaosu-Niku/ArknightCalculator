@@ -96,7 +96,7 @@ function MainContent() {
       // }
       
       //基礎數值表格
-      $(memberTableRef.current).DataTable({
+      $(memberTableRef.current).DataTable({ 
         destroy: true,
         data: processedCharacterData,
         pageLength: 20,
