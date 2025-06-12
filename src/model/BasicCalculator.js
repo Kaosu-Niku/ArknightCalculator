@@ -192,15 +192,11 @@ const BasicCalculatorModel = {
     switch(attackType){
       case "物理":
         dph = attack - enemyData.enemyDef;
-        if(dph < attack / 20){
-          dph = attack / 20;
-        }
+        dph = dph < attack / 20 ? attack / 20 : dph;
       break;
       case "法術":
         dph = attack * ((100 - enemyData.enemyRes) / 100);
-        if(dph < attack / 20){
-          dph = attack / 20;
-        }
+        dph = dph < attack / 20 ? attack / 20 : dph;
       break;     
     }
     //針對特定分支重新計算並傳回新的DPH，其餘分支則傳回原本的DPH
@@ -230,7 +226,7 @@ const BasicCalculatorModel = {
         hph = attack;
       break;     
     }
-    //針對特定分支重新計算並傳回新的DPH，其餘分支則傳回原本的DPH
+    //針對特定分支重新計算並傳回新的HPH，其餘分支則傳回原本的HPH
     hph = subProfessionIdCalculatorModel.subProfessionIdHPH(type, memberRow, enemyData, hph);
     return hph;
   },
@@ -255,16 +251,12 @@ const BasicCalculatorModel = {
     switch(enemyData.enemyAttackType){
       case "物傷":
         dph = enemyData.enemyAttack - def;
-        if(dph < enemyData.enemyAttack / 20){
-          dph = enemyData.enemyAttack / 20;
-        }
+        dph = dph < enemyData.enemyAttack / 20 ? enemyData.enemyAttack / 20 : dph;
         dps = (dph / enemyData.enemySpd);
       break;
       case "法傷":
         dph = enemyData.enemyAttack * ((100 - magicResistance) / 100);
-        if(dph < enemyData.enemyAttack / 20){
-          dph = enemyData.enemyAttack / 20;
-        } 
+        dph = dph < enemyData.enemyAttack / 20 ? enemyData.enemyAttack / 20 : dph;
         dps = (dph / enemyData.enemySpd);
       break;
       case "真傷":
@@ -283,15 +275,11 @@ const BasicCalculatorModel = {
         switch(item.enemySkillType){
           case "物傷":
             skillDph = item.enemySkillDamage - def;
-            if(skillDph < item.enemySkillDamage / 20){
-              skillDph = item.enemySkillDamage / 20;              
-            }  
+            skillDph = skillDph < item.enemySkillDamage / 20 ? item.enemySkillDamage / 20 : skillDph;
           break;
           case "法傷":
             skillDph = item.enemySkillDamage * ((100 - magicResistance) / 100);
-            if(skillDph < item.enemySkillDamage / 20){
-              skillDph = item.enemySkillDamage / 20;              
-            }     
+            skillDph = skillDph < item.enemySkillDamage / 20 ? item.enemySkillDamage / 20 : skillDph;    
           break;
           case "真傷":
             skillDph = item.enemySkillDamage;

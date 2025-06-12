@@ -1,5 +1,6 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import MemberSpecial from './MemberSpecial';
+import TalentsCalculatorModel from './TalentsCalculator';
 
 const SkillCalculatorModel = {
   //技能所屬的幹員數據
@@ -67,6 +68,8 @@ const SkillCalculatorModel = {
 
     const attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
     let dph = 0;
+    //天賦額外倍率
+    const memberTalent = TalentsCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
     let attackMulti = SkillCalculatorModel.skillAttribute(type, skillRow, 'atk');
     let attackScale = SkillCalculatorModel.skillAttribute(type, skillRow, 'atk_scale');
     //[攻擊倍率]需要判斷是否 > 0，確保原資料是0的不會跟著變成0
@@ -96,7 +99,7 @@ const SkillCalculatorModel = {
         finalDamage = ((memberNumeric.atk * (1 + attackMulti) * attackScale) - finalEnemyDef);
       break;
       case "法術":
-        //法術DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) * ((100 - 敵人法抗) / 100)) * 傷害倍率)
+        //法術DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) * ((100 - (敵人法抗 * (1 + 削減敵方法抗[比例]) + 削減敵方法抗[固定])) / 100)) * 傷害倍率)
 
         //[削減敵方法抗]需要判斷 < 0 才是削減敵人，若 > 0 是我方加法抗  
         let resDivide = SkillCalculatorModel.skillAttribute(type, skillRow, 'magic_resistance') < 0 ? SkillCalculatorModel.skillAttribute(type, skillRow, 'magic_resistance') : 0;
@@ -109,7 +112,18 @@ const SkillCalculatorModel = {
         else{
           resDivideB = resDivide;
         }
-        let finalEnemyRes = enemyData.enemyRes * (1 + resDivideA) + resDivideB;
+        //天賦額外倍率
+        let talentResDivideA = 0; //比例
+        let talentResDivideB = 0; //固定
+        if(memberTalent?.magic_resistance < 0){
+          if(memberTalent?.magic_resistance > -1){
+            talentResDivideA = memberTalent?.magic_resistance;
+          }
+          else{
+            talentResDivideB = memberTalent?.magic_resistance;
+          }
+        }
+        let finalEnemyRes = enemyData.enemyRes * (1 + resDivideA + talentResDivideA) + resDivideB + talentResDivideB;
         //需要判斷削弱法抗後的剩餘法抗是否 < 0
         finalEnemyRes = finalEnemyRes < 0 ? 0 : finalEnemyRes;
         finalDamage = ((memberNumeric.atk * (1 + attackMulti) * attackScale) * ((100 - finalEnemyRes) / 100));

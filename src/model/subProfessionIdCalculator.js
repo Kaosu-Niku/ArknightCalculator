@@ -7,16 +7,12 @@ const subProfessionIdCalculatorModel = {
       case "librator": //解放者
         //非技能期間持續提升攻擊力，最高提升至300%
         dph = (attack * 3) - enemyData.enemyDef;
-        if(dph < (attack * 3) / 20){
-          dph = (attack * 3) / 20;
-        }
+        dph = dph < (attack * 3) / 20 ? (attack * 3) / 20 : dph;
       break; 
       case "hunter": //獵手
         //攻擊消耗子彈但攻擊倍率提升至120%
         dph = (attack * 1.2) - enemyData.enemyDef;
-        if(dph < (attack * 1.2) / 20){
-          dph = (attack * 1.2) / 20;
-        }
+        dph = dph < (attack * 1.2) / 20 ? (attack * 1.2) / 20 : dph;
       break; 
     }
     return dph
@@ -36,9 +32,7 @@ const subProfessionIdCalculatorModel = {
       case "bombarder": //投擲手
         //普攻造成兩次傷害，第二次為攻擊力一半的傷害
         dphOther = (attack / 2) - enemyData.enemyDef;
-        if(dphOther < (attack / 2) / 20){
-          dphOther = (attack / 2) / 20;
-        }
+        dphOther = dphOther < (attack / 2) / 20 ? (attack / 2) / 20 : dphOther;
         dps = (dph + dphOther) / finalSpd;
       break;
       case "funnel": //御械術師
@@ -52,9 +46,7 @@ const subProfessionIdCalculatorModel = {
           if(attackCount < 7){
             // 浮游單元疊加期間的計算
             dphOther = (attack * (0.2 + (0.15 * attackCount))) * ((100 - enemyData.enemyRes) / 100);
-            if(dphOther < (attack * (0.2 + (0.15 * attackCount))) / 20){
-              dphOther = (attack * (0.2 + (0.15 * attackCount))) / 20;
-            }
+            dphOther = dphOther < (attack * (0.2 + (0.15 * attackCount))) / 20 ? (attack * (0.2 + (0.15 * attackCount))) / 20 : dphOther;
             // Y模組為浮游單元最高倍率提升為120%，所以還要算第8次，為方便計算，在第7次時一併計算            
             // if(attackCount == 7){
             //   if('mod' in row){
@@ -78,9 +70,7 @@ const subProfessionIdCalculatorModel = {
             // }
             // else{
               dphOther = (attack * 1.1) * ((100 - enemyData.enemyRes) / 100);
-              if(dphOther < (attack * 1.1) / 20){
-                dphOther = (attack * 1.1) / 20;
-              }
+              dphOther = dphOther < (attack * 1.1) / 20 ? (attack * 1.1) / 20 : dphOther;
             //}                       
           }
           enemyHpCopy -= dph;
@@ -99,9 +89,7 @@ const subProfessionIdCalculatorModel = {
       case "incantationmedic": //咒癒師
         //可攻擊造成法術傷害並回復所造成的傷害50%的治療量
         dph = attack * ((100 - enemyData.enemyRes) / 100);
-        if(dph < attack / 20){
-          dph = attack / 20;
-        }
+        dph = dph < attack / 20 ? attack / 20 : dph;
         hph = dph * 0.5;
       break;
       case "blessing": //護佑者

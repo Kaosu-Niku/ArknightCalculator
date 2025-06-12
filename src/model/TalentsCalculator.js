@@ -54,8 +54,8 @@ const TalentsCalculatorModel = {
                 //鉛踝天賦的攻擊範圍有隱匿單位就加攻的key也是atk
                 //泡泡天賦的對攻擊對象減攻擊的key也是atk
                 //這導致若是不判斷的話會有許多錯誤引用的數值添加
-                if(memberRow.name in TalentsCalculatorModel.talentNotList){
-                  if(TalentsCalculatorModel.talentNotList[memberRow.name].has(attribute)){
+                if(memberRow.name in TalentsCalculatorModel.talentNotListToBasic){
+                  if(TalentsCalculatorModel.talentNotListToBasic[memberRow.name].has(attribute)){
                     addTotal -= (b.value ?? 0);
                   }
                 }
@@ -70,8 +70,8 @@ const TalentsCalculatorModel = {
     return addTotal;
   },
 
-  //此處記錄了所有不應該被用於幹員數據計算的天賦數值加成的天賦key
-  talentNotList: {
+  //此處記錄了所有不應該被用於幹員基礎數據計算的天賦數值加成的天賦key
+  talentNotListToBasic: {
     //四星
     '红豆': new Set(['atk']), //概率暴擊
     '清道夫': new Set(['atk','def']), //周圍沒有友方單位，提升攻擊力、防禦力
@@ -83,6 +83,18 @@ const TalentsCalculatorModel = {
     '泡泡': new Set(['atk']), //降低攻擊對象的攻擊力
     '嘉维尔': new Set(['atk','def']), //部屬後15秒內所有醫療幹員提升攻擊力、防禦力
     //五星
+  },
+
+  //此處記錄了所有會對攻擊技能的傷害計算造成影響的天賦所屬幹員
+  //object內的每個key都會對應到傷害公式裡的一個參數，只需要在原本的傷害公式內在所有對應參數上再添加上此處的天賦額外倍率，即可在傷害公式上達成對每個幹員的天賦特製化
+  talentListToAttackSkill: (type, memberRow) =>{
+    //{ atk: "攻擊乘算", atk_scale: "攻擊倍率", def_penetrate_fixed: "削減敵方防禦[比例或固定]", magic_resistance: "削減敵方法抗[比例或固定]", damage_scale: "傷害倍率"}
+    return {
+      //四星
+      '夜烟': { atk: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'), damage_scale: 0}
+    }
+    
+    
   }
 }
 
