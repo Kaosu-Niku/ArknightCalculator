@@ -70,7 +70,6 @@ function MainContent() {
       //幹員模組
       const uniequipResponse = await fetch(`${process.env.PUBLIC_URL}/json/uniequip_table.json`);
       const uniequipJsonData = await uniequipResponse.json();
-      console.log(uniequipJsonData);
 
       
       //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換     
@@ -114,9 +113,9 @@ function MainContent() {
           { title: "法抗", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).magicResistance); } },
           { title: "攻擊間隔", data: "phases", render: function (data, type, row) { return BasicCalculatorModel.memberNumeric(whichType, row).baseAttackTime; } },
           { title: "攻速", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).attackSpeed); } },
-          { title: "DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberDps(whichType, row, enemyData, subProfessionIdJsonData)); } },
-          { title: "HPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberHps(whichType, row, enemyData, subProfessionIdJsonData)); } },
-          { title: "敵方DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.enemyDps(whichType, row, enemyData)); } },
+          //{ title: "DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberDps(whichType, row, enemyData, subProfessionIdJsonData)); } },
+          //{ title: "HPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberHps(whichType, row, enemyData, subProfessionIdJsonData)); } },
+          //{ title: "敵方DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.enemyDps(whichType, row, enemyData)); } },
         ],
         drawCallback: function(settings) {
           $(memberTableRef.current).find('th').css({
@@ -349,6 +348,7 @@ function MainContent() {
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='attackSkill_table'>
         <div className='row justify-content-center row-gap-1'>
           <small className="col-12 text-center">{`持續時間為-1或0表示其為強力擊、永續類、子彈類的技能`}</small>
+          <small className="col-12 text-center">{`技能與天賦中含有概率或是條件觸發的一律不計算，默認全程沒有觸發`}</small>
         </div>
         <div className='table-responsive'>
           <table ref={attackSkillTableRef} className="table table-bordered table-hover display table-light"></table>
@@ -357,6 +357,7 @@ function MainContent() {
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='defSkill_table'>
         <div className='row justify-content-center row-gap-1'>
           <small className="col-12 text-center">{`持續時間為-1或0表示其為強力擊、永續類、子彈類的技能`}</small>
+          <small className="col-12 text-center">{`技能與天賦中含有概率或是條件觸發的一律不計算，默認全程沒有觸發`}</small>
         </div>
         <div className='table-responsive'>
           <table ref={defSkillTableRef} className="table table-bordered table-hover display table-light"></table>
