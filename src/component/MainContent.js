@@ -141,6 +141,7 @@ function MainContent() {
         pageLength: 20,
         columns: [
           { title: "名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillFromMember(row, processedCharacterData).name; } },
+          { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(SkillCalculatorModel.skillFromMember(row, processedCharacterData), professionJsonData).chineseName; } },
           { title: "技能名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).name; } },
           { title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
           { title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },

@@ -61,22 +61,34 @@ const SkillCalculatorModel = {
     return skillData.blackboard?.find(entry => entry.key === attribute)?.value ?? 0;
   },
 
-  //計算幹員在技能期間的DPS
-  skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
+  //計算幹員在技能期間的DPH
+  skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, other = null) => {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
     const memberTalent = TalentsCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
     const attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
-    let dph = 0; 
-    let finalDamage = 0;
+
+    let finalAttack = 0;
+
     //攻擊乘算
     let attackMulti = SkillCalculatorModel.skillAttribute(type, skillRow, 'atk'); //技能倍率
     let talentAttackMulti = memberTalent?.atk || 0; //天賦倍率
+
     //攻擊倍率
     let attackScale = SkillCalculatorModel.skillAttribute(type, skillRow, 'atk_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     attackScale = attackScale > 0 ? attackScale : 1;
+    //如果other有帶值，則表示此DPH計算是用於造成額外傷害    
+    if(other !== null){
+      //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
+      //因此為方便計算，一律將(造成一定比例傷害)以攻擊倍率的方式來調整
+      //(一定比例傷害不一定都低於1倍，也可能會有好幾倍的，但基本不可能會有超過10倍的，因此以10倍為界線)
+      if(other < 10){
+        attackScale = other;
+      }     
+    }
     let talentAttackScale = memberTalent?.atk_scale || 0; //天賦倍率   
+
     //傷害倍率
     let damageMulti = SkillCalculatorModel.skillAttribute(type, skillRow, 'damage_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
@@ -121,7 +133,17 @@ const SkillCalculatorModel = {
         //需要判斷削弱防禦與無視防禦後的敵人剩餘防禦是否 < 0
         finalEnemyDef = finalEnemyDef < 0 ? 0 : finalEnemyDef;  
 
-        finalDamage = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) - finalEnemyDef);
+        finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) - finalEnemyDef);
+        //如果other有帶值，則表示此DPH計算是用於造成額外傷害    
+        if(other !== null){
+          //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
+          //因此為方便計算，一律將(造成固定傷害)視為不可被任何攻擊乘算跟攻擊倍率提升的物理或法術固定傷害
+          //因此需要和敵人防禦和法抗做傷害計算，且可以被傷害倍率拐
+          //(一定比例傷害不一定都低於1倍，也可能會有好幾倍的，但基本不可能會有超過10倍的，因此以10倍為界線)
+          if(other > 10){
+            finalAttack = (other - finalEnemyDef);
+          }     
+        }
       break;
       case "法術":
         //法術DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) * ((100 - (敵人法抗 * (1 + 削減敵方法抗[比例]) + 削減敵方法抗[固定])) / 100)) * 傷害倍率)
@@ -157,14 +179,42 @@ const SkillCalculatorModel = {
         //需要判斷削弱法抗後的敵人剩餘法抗是否 < 0
         finalEnemyRes = finalEnemyRes < 0 ? 0 : finalEnemyRes;
 
-        finalDamage = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) * ((100 - finalEnemyRes) / 100));
-      break;     
+        finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) * ((100 - finalEnemyRes) / 100));
+        //如果other有帶值，則表示此DPH計算是用於造成額外傷害    
+        if(other !== null){
+          //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
+          //因此為方便計算，一律將(造成固定傷害)視為不可被任何攻擊乘算跟攻擊倍率提升的物理或法術固定傷害
+          //因此需要和敵人防禦和法抗做傷害計算，且可以被傷害倍率拐
+          //(一定比例傷害不一定都低於1倍，也可能會有好幾倍的，但基本不可能會有超過10倍的，因此以10倍為界線)
+          if(other > 10){
+            finalAttack = (other * ((100 - finalEnemyRes) / 100));
+          }     
+        }
+      break;   
     }
+    
+    //保底傷害倍率
+    let talentEnsureDamage = memberTalent?.ensure_damage || 0.05; //天賦倍率  
 
-    //finalDamage是原定造成傷害，而傷害公式要確保傷害過低時會至少有5%攻擊力的保底傷害
-    let ensureDamage = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) / 20;
-    finalDamage = finalDamage < ensureDamage ? ensureDamage : finalDamage;
-    dph = finalDamage * (damageMulti + talentDamageMulti);
+    //finalAttack是計算完攻擊力加成以及扣除敵方防禦法抗後的原定傷害，而傷害公式要確保原定傷害過低時會至少有5%攻擊力的保底傷害 
+    //(極少數角色具有保底傷害天賦，不只會有5%，而talentEnsureDamage就是為此處理的特別屬性)
+    let ensureDamage = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) * talentEnsureDamage;
+    finalAttack = finalAttack < ensureDamage ? ensureDamage : finalAttack;
+
+    switch(attackType){
+      case "治療":
+        finalAttack = 0;
+      break;
+    }
+    return finalAttack * (damageMulti + talentDamageMulti);
+  },
+
+  //計算幹員在技能期間的DPS
+  skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
+    const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
+    const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
+    const memberTalent = TalentsCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
+    const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData);
 
     let attackTimeRevise = SkillCalculatorModel.skillAttribute(type, skillRow, 'base_attack_time'); //技能倍率
     let talentAttackTimeRevise = memberTalent?.base_attack_time || 0; //天賦倍率
@@ -174,15 +224,17 @@ const SkillCalculatorModel = {
     //最終攻擊間隔 = (幹員攻擊間隔 + 攻擊間隔調整) / ((幹員攻速 + 攻擊速度調整) / 100)
     let finalAttackTime = (memberNumeric.baseAttackTime + attackTimeRevise + talentAttackTimeRevise) / ((memberNumeric.attackSpeed + attackSpeedRevise + talentAttackSpeedRevise) / 100);
 
+    //部分幹員具有造成額外傷害的能力，對於這部分幹員，需要再計算一次額外傷害的DPH，並與原本的DPH相加後再計算DPS
+    const talentOtherDph = memberTalent?.other || 0; //天賦倍率
     
     //[攻擊次數]需要判斷 > 0 ，用於區分出固定次數傷害的技能
     let times = SkillCalculatorModel.skillAttribute(type, skillRow, 'times');
     if(times > 0){
       //對於這類技能，直接以總傷來表示DPS
-      return dph * times;
+      return (dph + talentOtherDph) * times;
     }
   
-    return dph / finalAttackTime;
+    return (dph + talentOtherDph) / finalAttackTime;
   },
   //計算幹員的技能總傷
   skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => { 
@@ -212,6 +264,24 @@ const SkillCalculatorModel = {
     
     return dps * duration; 
   },
+  //部分四星的技能DPS計算還不正確
+  //白雪2技能: 無法得到額外法傷的傷害倍率
+  //松果2技能: 無法得到攻擊乘算
+  //酸糖2技能: 無法得到2連擊
+  //鉛踝2技能: 無法得到攻擊倍率
+  //躍躍2技能: 無法得到2連擊
+  //斷罪者1技能: 無法得到暴擊的攻擊乘算
+  //斷罪者2技能: 無法得到轉法傷的攻擊倍率
+  //芳汀1技能: 2連擊和傷害倍率都無法得到
+  //芳汀2技能: 無法得到轉法傷的傷害倍率
+  //獵蜂2技能: 攻擊間隔是減百分比卻被視為減固定間隔
+  //石英2技能: 1.25是自身受傷的倍率，卻被視為傷害倍率
+  //騁風2技能: 無法得到傷害倍率
+  //泡泡2技能: 泡泡反傷
+  //露托2技能: 無法得到轉法傷的傷害倍率  
+  //深墊1&2技能: 攻擊間隔是減百分比卻被視為減固定間隔
+  //深海色1: 攻擊乘算是給觸手的，不是深海色的
+
 }
 
 export default SkillCalculatorModel;
