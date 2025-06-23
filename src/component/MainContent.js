@@ -67,9 +67,14 @@ function MainContent() {
       const characterResponse = await fetch(`${process.env.PUBLIC_URL}/json/character_table.json`);
       const characterJsonData = await characterResponse.json();
 
-      //幹員模組
+      //幹員模組資訊
       const uniequipResponse = await fetch(`${process.env.PUBLIC_URL}/json/uniequip_table.json`);
       const uniequipJsonData = await uniequipResponse.json();
+
+      //幹員模組數據
+      const battleEquipResponse = await fetch(`${process.env.PUBLIC_URL}/json/battle_equip_table.json`);
+      const battleEquipJsonData = await uniequipResponse.json();
+      console.log(battleEquipJsonData);
 
       
       //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換     
