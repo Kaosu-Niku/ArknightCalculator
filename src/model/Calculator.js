@@ -125,8 +125,6 @@ const Calculator = {
     let memberRow = memberJsonData.find(item => item.name === skillRow.name);
     let copyMemberRow = JSON.parse(JSON.stringify(memberRow));
 
-    console.log('copyMemberRow', copyMemberRow);
-    console.log('skillRow', skillRow);
     // 由於有些幹員開啟技能會轉換傷害類型，因此需要修改特定資料後才能使得後續能計算出HPS
     switch(copyMemberRow.name){
       case "芳汀":
@@ -142,8 +140,7 @@ const Calculator = {
         if(skillRow.whichSkill.includes("二技能")){
           copyMemberRow.attackType = "法傷";
         }
-      break;
-      
+      break;     
     }
 
     switch(skillRow.skillType){
