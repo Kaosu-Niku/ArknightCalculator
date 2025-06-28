@@ -124,6 +124,25 @@ const Calculator = {
   skillMemberRow: (skillRow, memberJsonData) => {
     let memberRow = memberJsonData.find(item => item.name === skillRow.name);
     let copyMemberRow = JSON.parse(JSON.stringify(memberRow));
+
+    // 由於有些幹員開啟技能會轉換傷害類型，因此需要修改特定資料後才能使得後續能計算出HPS
+    switch(copyMemberRow.name){
+      case "芳汀":
+        if(skillRow.whichSkill.includes("二技能")){
+          copyMemberRow.attackType = "法傷";
+        }
+      case "宴":
+        if(skillRow.whichSkill.includes("二技能")){
+          copyMemberRow.attackType = "法傷";
+        }
+      break;
+      case "維荻":
+        if(skillRow.whichSkill.includes("二技能")){
+          copyMemberRow.attackType = "法傷";
+        }
+      break;     
+    }
+
     switch(skillRow.skillType){
       case "攻擊":   
         // 最終攻擊力 = (((原始攻擊力 + 直接固定加算) * 直接倍率乘算) + 最終固定加算) * 最終倍率乘算
