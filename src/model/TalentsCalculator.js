@@ -1,4 +1,5 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
+import CookieModel from './Cookie';
 
 const TalentsCalculatorModel = {
   //依照指定key名嘗試查詢幹員對應的天賦，並回傳此天賦的加成值 (若查詢不到則默認回傳0)
@@ -95,7 +96,7 @@ const TalentsCalculatorModel = {
       //?標記的為較少人使用的屬性，可以只在那些人的object裡宣告該屬性即可 (會順便在旁邊標註有誰使用了這個屬性)
       //def_penetrate_fixed的值必須是正數，否則會反過來幫敵方加防禦，絕對值<1的以比例計算，絕對值>1的以固定計算
       //magic_resistance的值必須是負數，否則會反過來幫敵方加法抗，絕對值<1的以比例計算，絕對值>1的以固定計算
-      //otherDamage，絕對值<1的以比例計算，絕對值>1的以固定計算
+      //other，絕對值<1的以比例計算，絕對值>1的以固定計算
       'default': { atk: "攻擊乘算", atk_scale: "攻擊倍率", def_penetrate_fixed: "削減敵方防禦[比例或固定]", magic_resistance: "削減敵方法抗[比例或固定]", 
         damage_scale: "傷害倍率", base_attack_time: "攻擊間隔調整", attack_speed: "攻擊速度調整", 
         other: "?額外造成傷害[比例或固定] (騁風)", ensure_damage: "?保底傷害 (酸糖)" },      

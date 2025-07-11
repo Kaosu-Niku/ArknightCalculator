@@ -73,8 +73,23 @@ function MainContent() {
 
       //幹員模組數據
       const battleEquipResponse = await fetch(`${process.env.PUBLIC_URL}/json/battle_equip_table.json`);
-      const battleEquipJsonData = await uniequipResponse.json();
+      const battleEquipJsonData = await battleEquipResponse.json();
       console.log(battleEquipJsonData);
+
+      //編輯JSON用參考代碼
+      // const abcResponse = await fetch(`${process.env.PUBLIC_URL}/json/技能數據簡化版.json`);
+      // const abcJsonData = await abcResponse.json();
+      // Object.values(abcJsonData).forEach(item => {
+      //   if (item.levels && Array.isArray(item.levels) && item.levels.length > 0) {
+      //     // 將 item.levels 替換為一個只包含其最後一個元素的新陣列
+      //     item.levels = [item.levels[item.levels.length - 1]];
+      //   } else {
+      //     // 如果 levels 陣列是空的、不存在，或不是陣列，則將其設置為一個空陣列 []
+      //     item.levels = []; 
+      //   }
+      // });
+      // console.log(abcJsonData);
+      
 
       
       //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換     
@@ -146,15 +161,15 @@ function MainContent() {
         pageLength: 20,
         columns: [
           { title: "名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillFromMember(row, processedCharacterData).name; } },
-          { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(SkillCalculatorModel.skillFromMember(row, processedCharacterData), professionJsonData).chineseName; } },
+          //{ title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(SkillCalculatorModel.skillFromMember(row, processedCharacterData), professionJsonData).chineseName; } },
           { title: "技能名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).name; } },
-          { title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
-          { title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },
+          //{ title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
+          //{ title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },
           { title: "彈藥數量", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, 'attack@trigger_time'); } },  
           { title: "技能類型", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(SkillCalculatorModel.skillFromMember(row, processedCharacterData), subProfessionIdJsonData).attackType; } },          
-          //{ title: "原始攻擊力", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).atk); } },
-          //{ title: "原始攻擊間隔", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).baseAttackTime; } },
-          //{ title: "原始攻速", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).attackSpeed); } },
+          { title: "原始攻擊力", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).atk); } },
+          { title: "原始攻擊間隔", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).baseAttackTime; } },
+          { title: "原始攻速", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).attackSpeed); } },
           { title: "攻擊乘算", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, 'atk'); } },
           { title: "攻擊倍率", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, 'atk_scale'); } },
           { title: "攻擊間隔調整", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, 'base_attack_time'); } },           

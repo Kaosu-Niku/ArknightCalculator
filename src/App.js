@@ -1,11 +1,15 @@
 import 'bootstrap/dist/css/bootstrap.min.css';
 import 'bootstrap/dist/js/bootstrap.bundle.min.js';
+import React, { useState, useEffect, useRef } from 'react';
 import './App.css';
 import Header from './component/Header.js';
 import MainContent from './component/MainContent.js';
 import Footer from './component/Footer.js';
+import CookieModel from './model/Cookie';
 
 function App() {
+  const [cookieMemberName, setCookieMemberName] = useState(CookieModel.getCookie('memberName'));
+
   return (
     <div>
       <header>
@@ -30,6 +34,31 @@ function App() {
       <Header />
       <MainContent />
       <Footer />
+      {/* 電腦版呈現在左邊的的Collapse */}
+      <div className="d-none d-md-block position-fixed" style={{ top: '15%', left: '10px' }}>
+        <p>
+          <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
+            輸出幹員數據計算log
+          </a>
+        </p>
+        <div class="collapse w-50" id="collapseExample">
+          <div class="card card-body">
+            <div className='row justify-content-center row-gap-1'>
+              <small className="col-12 text-center">{`(此為電腦版才能使用的功能)`}</small>
+              <small className="col-12 text-center">{`此功能可用於輸出指定幹員的所有相關數據計算的log`}</small>
+              <small className="col-12 text-center">{`請於下方輸入欄輸入指定幹員的名稱並點擊確認按鈕後刷新網頁`}</small>
+              <small className="col-12 text-center">{`(以簡體中文名稱為準，其他語言的名稱將無法指定)`}</small>
+              <input className="col-3 text-center" type="text" id="cookieMemberName" name="cookieMemberName" 
+              value={cookieMemberName} onChange={(e) => setCookieMemberName(e.target.value)} required/>
+              <span className="col-12"></span>
+              <button className="col-2 btn btn-primary" onClick={() => { CookieModel.setCookie('memberName', cookieMemberName); }}>確認</button>
+              <small className="col-12 mt-4 text-center">{`如何查看log?`}</small>
+              <small className="col-12 text-center">{`點擊鍵盤的F12默認可以開啟開發人員工具介面`}</small>
+              <small className="col-12 text-center">{`介面頂部的頁籤切換到[主控台]，即可查看到log`}</small>
+            </div>             
+          </div>
+        </div>
+      </div>
       {/* 電腦版呈現在右邊的的固定按鈕 */}
       <div className="d-none d-md-block position-fixed" style={{ top: '15%', right: '-10px' }}>
         <div className='d-flex flex-column gap-2'>

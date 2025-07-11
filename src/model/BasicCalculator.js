@@ -1,4 +1,5 @@
 import TalentsCalculatorModel from './TalentsCalculator';
+import CookieModel from './Cookie';
 import subProfessionIdCalculatorModel from './subProfessionIdCalculator';
 import MemberSpecial from './MemberSpecial';
 
@@ -99,7 +100,7 @@ const BasicCalculatorModel = {
 
   //計算幹員的基礎數據在經過各種加成後的最終數據 (回傳object，key對應某個屬性)
   //(maxHp = 生命、atk = 攻擊、def = 防禦、magicResistance = 法抗、baseAttackTime = 攻擊間隔、attackSpeed = 攻速)
-  memberNumeric: (type, memberRow) => {
+  memberNumeric: (type, memberRow, showLog = false) => {
     //流派
     const witchPhases = BasicCalculatorModel.type(type).witchPhases;
     const witchAttributesKeyFrames = BasicCalculatorModel.type(type).witchAttributesKeyFrames;
@@ -183,66 +184,54 @@ const BasicCalculatorModel = {
     //攻速
     attackSpeed += TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed');        
     
-    
+    //打印log
+    if(showLog === true){
+      if(memberRow.name === CookieModel.getCookie('memberName')){
+        console.log(
+        `${memberRow.name}的基礎數據以及加成後數據log`,
+        {
+          "1.1.原始生命": basicData.maxHp,
+          "1.2.原始攻擊": basicData.atk,
+          "1.3.原始防禦": basicData.def,
+          "1.4.原始法抗": basicData.magicResistance,
+          "1.5.原始攻擊間隔": basicData.baseAttackTime,
+          "1.6.原始攻速": basicData.attackSpeed,
+          "1.-----": "-----",   
+          "2.1.潛能生命": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP"))
+          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP")?.value || 0,
+          "2.2.潛能攻擊": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK"))
+          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK")?.value || 0,
+          "2.3.潛能防禦": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF"))
+          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF")?.value || 0,
+          "2.4.潛能法抗": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE"))
+          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE")?.value || 0,
+          "2.5.潛能攻速": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED"))
+          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED")?.value || 0,
+          "2.-----": "-----",
+          "3.1.信賴生命": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.maxHp || 0,
+          "3.2.信賴攻擊": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.atk || 0,
+          "3.3.信賴防禦": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.def || 0,
+          "3.4.信賴法抗": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.magicResistance || 0,
+          "3.-----": "-----",
+          "4.1.天賦生命": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'max_hp')),
+          "4.2.天賦攻擊": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'atk')),
+          "4.3.天賦防禦": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'def')),
+          "4.4.天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'),
+          "4.5.天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, 'base_attack_time'),
+          "4.6.天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed'),
+          "4.-----": "-----",
+          "5.1.加成後生命": maxHp,
+          "5.2.加成後攻擊": atk,
+          "5.3.加成後防禦": def,
+          "5.4.加成後法抗": magicResistance,
+          "5.5.加成後攻擊間隔": baseAttackTime,
+          "5.6.加成後攻速": attackSpeed,
+        })   
+      }   
+    }
+
     return { maxHp, atk, def, magicResistance, baseAttackTime, attackSpeed};
   },
-
-  //計算幹員的DPH
-  // dph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
-  //   const attackType = BasicCalculatorModel.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
-  //   const attack = BasicCalculatorModel.memberNumeric(type, memberRow).atk;
-  //   let dph = 0;
-  //   switch(attackType){
-  //     case "物理":
-  //       dph = attack - enemyData.enemyDef;
-  //       dph = dph < attack / 20 ? attack / 20 : dph;
-  //     break;
-  //     case "法術":
-  //       dph = attack * ((100 - enemyData.enemyRes) / 100);
-  //       dph = dph < attack / 20 ? attack / 20 : dph;
-  //     break;     
-  //   }
-  //   //針對特定分支重新計算並傳回新的DPH，其餘分支則傳回原本的DPH
-  //   dph = subProfessionIdCalculatorModel.subProfessionIdDPH(type, memberRow, enemyData, dph);
-  //   return dph;
-  // },
-
-  //計算幹員的DPS
-  // memberDps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
-  //   const dph = BasicCalculatorModel.dph(type, memberRow, enemyData, subProfessionIdJsonData);
-  //   const baseAttackTime = BasicCalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
-  //   const attackSpeed = BasicCalculatorModel.memberNumeric(type, memberRow).attackSpeed;
-  //   const finalSpd = baseAttackTime / (attackSpeed / 100);
-  //   let dps = dph / finalSpd;
-  //   //針對特定分支重新計算並傳回新的DPS，其餘分支則傳回原本的DPS
-  //   dps = subProfessionIdCalculatorModel.subProfessionIdDPS(type, memberRow, enemyData, subProfessionIdJsonData, dps);
-  //   return dps;
-  // },
-
-  //計算幹員的HPH
-  // hph: (type, memberRow, enemyData, subProfessionIdJsonData) => {
-  //   const attackType = BasicCalculatorModel.memberSubProfessionId(memberRow, subProfessionIdJsonData).attackType;
-  //   const attack = BasicCalculatorModel.memberNumeric(type, memberRow).atk;
-  //   let hph = 0;
-  //   switch(attackType){
-  //     case "治療":
-  //       hph = attack;
-  //     break;     
-  //   }
-  //   //針對特定分支重新計算並傳回新的HPH，其餘分支則傳回原本的HPH
-  //   hph = subProfessionIdCalculatorModel.subProfessionIdHPH(type, memberRow, enemyData, hph);
-  //   return hph;
-  // },
-
-  //計算幹員的HPS
-  // memberHps: (type, memberRow, enemyData, subProfessionIdJsonData) => {
-  //   const hph = BasicCalculatorModel.hph(type, memberRow, enemyData, subProfessionIdJsonData);
-  //   const baseAttackTime = BasicCalculatorModel.memberNumeric(type, memberRow).baseAttackTime;
-  //   const attackSpeed = BasicCalculatorModel.memberNumeric(type, memberRow).attackSpeed;
-  //   const finalSpd = baseAttackTime / (attackSpeed / 100);
-  //   const hps = hph / finalSpd;
-  //   return hps;
-  // },
 
   //計算敵方的DPS
   enemyDps: (type, memberRow, enemyData) => {
