@@ -37,8 +37,22 @@ const CookieModel = {
 
         // 組合完整的Cookie字串
         document.cookie = `${key}=${cookieValue}; ${expires}; ${path};`;
-    }
-
+    },
+    //log
+    //此處用於輸出log功能，為防止重複輸出，需要用判斷值來判斷是否已輸出
+    logList: {
+        "memberNumeric": false,
+        "skillMemberDph": false,
+        "skillMemberDps": false,
+    },
+    //取得log
+    getLog: (name) => {
+        return CookieModel.logList[name];
+    },
+    //設置log
+    setLog: (name, value) => {
+        return CookieModel.logList[name] = value;
+    },
 }
 
 export default CookieModel;

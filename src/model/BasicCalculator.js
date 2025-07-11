@@ -100,7 +100,7 @@ const BasicCalculatorModel = {
 
   //計算幹員的基礎數據在經過各種加成後的最終數據 (回傳object，key對應某個屬性)
   //(maxHp = 生命、atk = 攻擊、def = 防禦、magicResistance = 法抗、baseAttackTime = 攻擊間隔、attackSpeed = 攻速)
-  memberNumeric: (type, memberRow, showLog = false) => {
+  memberNumeric: (type, memberRow) => {
     //流派
     const witchPhases = BasicCalculatorModel.type(type).witchPhases;
     const witchAttributesKeyFrames = BasicCalculatorModel.type(type).witchAttributesKeyFrames;
@@ -185,8 +185,9 @@ const BasicCalculatorModel = {
     attackSpeed += TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed');        
     
     //打印log
-    if(showLog === true){
+    if(CookieModel.getLog('memberNumeric') === false){
       if(memberRow.name === CookieModel.getCookie('memberName')){
+        CookieModel.setLog('memberNumeric', true);
         console.log(
         `${memberRow.name}的基礎數據以及加成後數據log`,
         {

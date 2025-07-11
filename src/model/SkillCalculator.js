@@ -14,9 +14,9 @@ const SkillCalculatorModel = {
       if (characterJsonData.hasOwnProperty(key)){
         const currentCharacter = characterJsonData[key];
         checkSkill = currentCharacter.skills.some((item) => {
-          return item.skillId == skillId
+          return item.skillId === skillId
         });
-        if(checkSkill == true){
+        if(checkSkill === true){
           return currentCharacter;
         }
       }
@@ -52,8 +52,7 @@ const SkillCalculatorModel = {
           case 2: //精二
             return skillrow.levels[maxLevel - 1];
         }
-      }
-    
+      }   
   },
 
   //依照指定key名嘗試查詢幹員對應的技能屬性，，並回傳此技能屬性的加成值 (若查詢不到則默認回傳0)
@@ -63,7 +62,7 @@ const SkillCalculatorModel = {
   },
 
   //計算幹員在技能期間的DPH
-  skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, showLog = false) => {
+  skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
     const memberTalent = TalentsCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
@@ -215,8 +214,9 @@ const SkillCalculatorModel = {
     }
 
     //打印log
-    if(showLog === true){
+    if(CookieModel.getLog('skillMemberDph') === false){
       if(memberData.name === CookieModel.getCookie('memberName')){
+        CookieModel.setLog('skillMemberDph', true);
         console.log(
         `${memberData.name}的「${SkillCalculatorModel.skillData(type, skillRow).name}」的DPH算法各項數據log`,
         {
@@ -246,11 +246,11 @@ const SkillCalculatorModel = {
   },
 
   //計算幹員在技能期間的DPS
-  skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, showLog = false) => {
+  skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
-    const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, showLog);
+    const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
     const memberTalent = TalentsCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
-    const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, showLog);
+    const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData);
     let dps = 0;
 
     //攻擊間隔調整
@@ -279,8 +279,9 @@ const SkillCalculatorModel = {
     }
 
     //打印log
-    if(showLog === true){
+    if(CookieModel.getLog('skillMemberDps') === false){
       if(memberData.name === CookieModel.getCookie('memberName')){
+        CookieModel.setLog('skillMemberDps', true);
         console.log(
         `${memberData.name}的「${SkillCalculatorModel.skillData(type, skillRow).name}」的DPS算法各項數據log`,
         {

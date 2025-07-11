@@ -57,6 +57,11 @@ function MainContent() {
         break;
       }
 
+      //初始化log輸出狀態
+      CookieModel.setLog('memberNumeric', false);
+      CookieModel.setLog('skillMemberDph', false);
+      CookieModel.setLog('skillMemberDps', false);
+
       //幹員職業
       const professionResponse = await fetch(`${process.env.PUBLIC_URL}/json/profession.json`);
       const professionJsonData = await professionResponse.json();
@@ -74,7 +79,7 @@ function MainContent() {
       //幹員模組數據
       const battleEquipResponse = await fetch(`${process.env.PUBLIC_URL}/json/battle_equip_table.json`);
       const battleEquipJsonData = await battleEquipResponse.json();
-      console.log(battleEquipJsonData);
+      console.log('模組數據JSON',battleEquipJsonData);
 
       //編輯JSON用參考代碼
       // const abcResponse = await fetch(`${process.env.PUBLIC_URL}/json/技能數據簡化版.json`);
@@ -89,8 +94,6 @@ function MainContent() {
       //   }
       // });
       // console.log(abcJsonData);
-      
-
       
       //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換     
       let filterCharacterData = Object.values(characterJsonData);

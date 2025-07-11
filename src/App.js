@@ -46,7 +46,7 @@ function App() {
             <div className='row justify-content-center row-gap-1'>
               <small className="col-12 text-center">{`(此為電腦版才能使用的功能)`}</small>
               <small className="col-12 text-center">{`此功能可用於輸出指定幹員的所有相關數據計算的log`}</small>
-              <small className="col-12 text-center">{`請於下方輸入欄輸入指定幹員的名稱並點擊確認按鈕後刷新網頁`}</small>
+              <small className="col-12 text-center">{`請於下方輸入欄輸入指定幹員的名稱並點擊確認按鈕`}</small>
               <small className="col-12 text-center">{`(以簡體中文名稱為準，其他語言的名稱將無法指定)`}</small>
               <input className="col-3 text-center" type="text" id="cookieMemberName" name="cookieMemberName" 
               value={cookieMemberName} onChange={(e) => setCookieMemberName(e.target.value)} required/>
