@@ -9,7 +9,7 @@ const TalentsCustomCalculatorModel = {
   // magic_resistance = 提升法抗
   // base_attack_time = 攻擊間隔調整
   // attack_speed = 攻速調整
-  //此處記錄了所有天賦中包含了以上的key，但是這些key卻不應該用來帶入幹員基礎數據計算的天賦key及其所屬幹員 (後面會標註不能用的理由) 
+  //此處是記錄所有幹員的天賦中包含了以上的key，但是卻不應該帶入幹員基礎數據計算的過濾清單 (後面會標註不能用的理由) 
   talentNotListToBasic: {
     //四星
     '红豆': new Set(['atk']), //概率暴擊
@@ -25,8 +25,7 @@ const TalentsCustomCalculatorModel = {
     //六星
   },
 
-  //此處記錄了所有會對攻擊技能的DPS傷害公式計算造成影響的天賦，並嘗試將這些天賦歸類到DPS傷害公式的一個乘區中
-  //(回傳雙層object，key對應傷害公式裡的某個乘區，只需要在原本的傷害公式的所有對應乘區上再添加天賦額外倍率，即可在傷害公式上達成對每個幹員的天賦特製化
+  //此處是記錄所有會對傷害公式計算造成影響的天賦，並嘗試將這些天賦歸類到傷害公式計算的一個乘區中的自定天賦數據
   talentListToAttackSkill: (type, memberRow) =>{    
     return {
       //?標記的為較少人使用的屬性，可以只在那些人的object裡宣告該屬性即可 (會順便在旁邊標註有誰使用了這個屬性)
@@ -45,15 +44,14 @@ const TalentsCustomCalculatorModel = {
       //'範例模板': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
 
       //四星
-      '骋风': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, other: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale') },
+      '骋风': { attack: 2 /*解放者磨刀*/, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, other: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale') },
       '宴': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: TalentsCalculatorModel.memberTalent(type, memberRow, 'min_attack_speed') },
       '猎蜂': { attack: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk') * TalentsCalculatorModel.memberTalent(type, memberRow, 'max_stack_cnt'), atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
       '酸糖': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, ensure_damage: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale_2') },
       '夜烟': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'), damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
+      '卡达': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, other: 1.1 /*浮游單元*/ },
       '云迹': { attack: 0, atk_scale: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale'), def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
     }
-    
-    
   }
 }
 

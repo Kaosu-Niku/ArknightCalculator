@@ -1,59 +1,84 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
+import SkillCalculatorModel from './SkillCalculator';
 
 const SkillCustomCalculatorModel = {
-  //目前在幹員基礎數據計算天賦加成時使用了這些key: 
-  // max_hp = 提升生命
-  // atk = 提升攻擊力
-  // def = 提升防禦
-  // magic_resistance = 提升法抗
+  //目前在傷害算法計算時使用了這些key: 
+  //CHANGE_attackType = 傷害類型轉換 ('物理')('法術')('治療')('不攻擊')
+  // atk = 攻擊乘算
+  // atk_scale = 攻擊倍率
+  // damage_scale = 傷害倍率
+  // def = 削減敵方防禦
+  // def_penetrate_fixed = 無視防禦
+  // magic_resistance = 削減敵方法抗
   // base_attack_time = 攻擊間隔調整
   // attack_speed = 攻速調整
-  //此處記錄了所有天賦中包含了以上的key，但是這些key卻不應該用來帶入幹員基礎數據計算的天賦key及其所屬幹員 (後面會標註不能用的理由) 
+  // ATTACK_COUNT = 連擊數
+  // times = 攻擊段數
+  // attack@trigger_time = 彈藥數量
+  //此處是記錄所有幹員的技能中包含了以上的key，但是卻不應該帶入傷害公式計算的過濾清單 (後面會標註不能用的理由) 
   skillNotListToBasic: {
     //四星
-    '红豆': new Set(['atk']), //概率暴擊
-    '清道夫': new Set(['atk','def']), //周圍沒有友方單位，提升攻擊力、防禦力
-    '讯使': new Set(['def']), //阻擋兩個以上敵人，提升防禦力
-    '猎蜂': new Set(['atk']), //攻擊同個敵人持續疊加攻擊力
-    '杜宾': new Set(['atk']), //在場時，三星幹員提升攻擊力        
-    '铅踝': new Set(['atk']), //攻擊範圍內存在隱匿單位時提升攻擊力
-    '远山': new Set(['max_hp', 'atk', 'attack_speed']), //部屬後隨機三選一BUFF，提升生命、提升攻擊力、提升攻速
-    '泡泡': new Set(['atk']), //降低攻擊對象的攻擊力
-    '嘉维尔': new Set(['atk','def']), //部屬後15秒內所有醫療幹員提升攻擊力、防禦力
+    '石英-全力相搏': new Set(['damage_scale']), //此技能的效果是自身受到的伤害提升    
+    '猎蜂-急速拳': new Set(['base_attack_time']), //傷害公式的攻擊間隔調整的算法是(攻擊間隔 + base_attack_time)，而此技能的效果卻是(攻擊間隔 + 攻擊間隔 * base_attack_time)，無法用於傷害公式計算
+    '断罪者-断罪': new Set(['atk_scale']), //原本的atk_scale是默認傷害，改成計算暴擊傷害
+    '深靛-灯塔守卫者': new Set(['base_attack_time']), //傷害公式的攻擊間隔調整的算法是(攻擊間隔 + base_attack_time)，而此技能的效果卻是(攻擊間隔 + 攻擊間隔 * base_attack_time)，無法用於傷害公式計算
+    '深靛-光影迷宫': new Set(['base_attack_time']), //傷害公式的攻擊間隔調整的算法是(攻擊間隔 + base_attack_time)，而此技能的效果卻是(攻擊間隔 * base_attack_time)，無法用於傷害公式計算
+    '深海色-光影之触': new Set(['atk']), //攻擊乘算只有給觸手，深海色本人沒有
+
     //五星
     //六星
   },
 
-  //此處記錄了所有會對攻擊技能的DPS傷害公式計算造成影響的天賦，並嘗試將這些天賦歸類到DPS傷害公式的一個乘區中
-  //(回傳雙層object，key對應傷害公式裡的某個乘區，只需要在原本的傷害公式的所有對應乘區上再添加天賦額外倍率，即可在傷害公式上達成對每個幹員的天賦特製化
-  skillListToAttackSkill: (type, memberRow) =>{    
+  //此處是記錄所有沒有包含在傷害公式計算中的key，並嘗試將這些key歸類到傷害公式計算中的一個已有key的自定技能數據
+  skillListToAttackSkill: (type, skillrow) => {
     return {
-      //?標記的為較少人使用的屬性，可以只在那些人的object裡宣告該屬性即可 (會順便在旁邊標註有誰使用了這個屬性)
-      'default': { 
-        attack: "攻擊乘算", 
-        atk_scale: "攻擊倍率", 
-        def_penetrate_fixed: "削減敵方防禦[比例或固定]", //def_penetrate_fixed的值必須是正數，否則會反過來幫敵方加防禦，絕對值 < 1 以比例計算，絕對值 > 1 以固定計算
-        magic_resistance: "削減敵方法抗[比例或固定]", //magic_resistance的值必須是負數，否則會反過來幫敵方加法抗，絕對值 < 1 以比例計算，絕對值 > 1 以固定計算
-        damage_scale: "傷害倍率", 
-        base_attack_time: "攻擊間隔調整", 
-        attack_speed: "攻擊速度調整", 
-        other: "?額外造成傷害[比例或固定] (騁風)", //other，絕對值 < 10 以比例計算，絕對值 > 10 以固定計算
-        ensure_damage: "?保底傷害 (酸糖)" 
-      },    
-
-      //'範例模板': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-
       //四星
-      '骋风': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, other: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale') },
-      '宴': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: TalentsCalculatorModel.memberTalent(type, memberRow, 'min_attack_speed') },
-      '猎蜂': { attack: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk') * TalentsCalculatorModel.memberTalent(type, memberRow, 'max_stack_cnt'), atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      '酸糖': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, ensure_damage: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale_2') },
-      '夜烟': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'), damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      '云迹': { attack: 0, atk_scale: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale'), def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-    }
-    
-    
+      '骋风-招无虚发': { 'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@atk_scale') },          
+      '休谟斯-高效处理': { 'atk': SkillCalculatorModel.skillAttribute(type, skillrow, 'humus_s_2[peak_2].peak_performance.atk') },       
+      '石英-全力相搏': { 'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@s2_atk_scale') }, 
+      '芳汀-小玩笑': { 
+        'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@atk_scale'),
+        'ATTACK_COUNT': 2,
+      },
+      '芳汀-致命恶作剧': { 
+        'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@atk_scale'),
+        'CHANGE_attackType': '法術',
+      },
+      '宴-落地斩·破门': { 'CHANGE_attackType': '法術' },
+      '猎蜂-急速拳': { 'base_attack_time': 0.78 * SkillCalculatorModel.skillAttribute(type, skillrow, 'base_attack_time') }, //猎蜂的原攻擊間隔是0.78
+      '杰克-全神贯注！': { 'CHANGE_attackType': '不攻擊' },
+      '断罪者-断罪': { 'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'atk_scale_fake') },  
+      '断罪者-创世纪': { 
+        'CHANGE_attackType': '法術',
+        'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'success.atk_scale'),
+      },
+      '跃跃-乐趣加倍': { 'ATTACK_COUNT': SkillCalculatorModel.skillAttribute(type, skillrow, 'cnt') },
+      '铅踝-破虹': { 'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@s2c.atk_scale') },  
+      '酸糖-扳机时刻': { 'ATTACK_COUNT': 2 },
+      '松果-电能过载': { 'atk': SkillCalculatorModel.skillAttribute(type, skillrow, 'pinecn_s_2[d].atk') }, 
+      //'白雪-凝武': { }, //額外法傷沒算          
+      '深靛-灯塔守卫者': { 
+        'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@atk_scale'),
+        'base_attack_time': 3 * SkillCalculatorModel.skillAttribute(type, skillrow, 'base_attack_time'), //深靛的原攻擊間隔是3
+      }, 
+      '深靛-光影迷宫': { 
+        'base_attack_time': 3 * (-1 + SkillCalculatorModel.skillAttribute(type, skillrow, 'base_attack_time')), //深靛的原攻擊間隔是3
+        //還有处于束缚状态的敌人每0.5秒受到相当于深靛攻击力20%的法术伤害的傷害沒算
+      },
+      '波登可-花香疗法': { 'CHANGE_attackType': '治療' },
+      '波登可-孢子扩散': { 'base_attack_time': -0.9 }, //此技能是每秒造成傷害，而波登可的原攻擊間隔是1.9 
+      '地灵-流沙化': { 'CHANGE_attackType': '不攻擊' },
+      '罗比菈塔-全自动造型仪': { 'CHANGE_attackType': '不攻擊' },
+      '古米-食粮烹制': { 'CHANGE_attackType': '治療' },
+      '蛇屠箱-壳状防御': { 'CHANGE_attackType': '不攻擊' },
+      '泡泡-“挨打”': { 'CHANGE_attackType': '不攻擊' },
+      '露托-强磁防卫': { 
+        'CHANGE_attackType': '法術',
+        'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'magic_atk_scale'),
+        'base_attack_time': 0.4, //此技能是每2秒造成傷害，而露托的原攻擊間隔是1.6
+      },    
+    }    
   }
 }
 
