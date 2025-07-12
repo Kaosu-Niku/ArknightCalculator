@@ -189,45 +189,46 @@ const BasicCalculatorModel = {
       if(memberRow.name === CookieModel.getCookie('memberName')){
         CookieModel.setLog('memberNumeric', true);
         console.log(
-        `${memberRow.name}的基礎數據以及加成後數據log`,
-        {
-          "1.1.原始生命": basicData.maxHp,
-          "1.2.原始攻擊": basicData.atk,
-          "1.3.原始防禦": basicData.def,
-          "1.4.原始法抗": basicData.magicResistance,
-          "1.5.原始攻擊間隔": basicData.baseAttackTime,
-          "1.6.原始攻速": basicData.attackSpeed,
-          "1.-----": "-----",   
-          "2.1.潛能生命": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP"))
-          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP")?.value || 0,
-          "2.2.潛能攻擊": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK"))
-          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK")?.value || 0,
-          "2.3.潛能防禦": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF"))
-          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF")?.value || 0,
-          "2.4.潛能法抗": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE"))
-          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE")?.value || 0,
-          "2.5.潛能攻速": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED"))
-          ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED")?.value || 0,
-          "2.-----": "-----",
-          "3.1.信賴生命": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.maxHp || 0,
-          "3.2.信賴攻擊": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.atk || 0,
-          "3.3.信賴防禦": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.def || 0,
-          "3.4.信賴法抗": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.magicResistance || 0,
-          "3.-----": "-----",
-          "4.1.天賦生命": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'max_hp')),
-          "4.2.天賦攻擊": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'atk')),
-          "4.3.天賦防禦": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'def')),
-          "4.4.天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'),
-          "4.5.天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, 'base_attack_time'),
-          "4.6.天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed'),
-          "4.-----": "-----",
-          "5.1.加成後生命": maxHp,
-          "5.2.加成後攻擊": atk,
-          "5.3.加成後防禦": def,
-          "5.4.加成後法抗": magicResistance,
-          "5.5.加成後攻擊間隔": baseAttackTime,
-          "5.6.加成後攻速": attackSpeed,
-        })   
+          `${memberRow.name}的基礎數據以及加成後數據log`,
+          {
+            "1.1.原始生命": basicData.maxHp,
+            "1.2.原始攻擊": basicData.atk,
+            "1.3.原始防禦": basicData.def,
+            "1.4.原始法抗": basicData.magicResistance,
+            "1.5.原始攻擊間隔": basicData.baseAttackTime,
+            "1.6.原始攻速": basicData.attackSpeed,
+            "1.-----": "-----",   
+            "2.1.潛能生命": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP"))
+            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP")?.value || 0,
+            "2.2.潛能攻擊": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK"))
+            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK")?.value || 0,
+            "2.3.潛能防禦": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF"))
+            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF")?.value || 0,
+            "2.4.潛能法抗": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE"))
+            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE")?.value || 0,
+            "2.5.潛能攻速": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED"))
+            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED")?.value || 0,
+            "2.-----": "-----",
+            "3.1.信賴生命": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.maxHp || 0,
+            "3.2.信賴攻擊": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.atk || 0,
+            "3.3.信賴防禦": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.def || 0,
+            "3.4.信賴法抗": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.magicResistance || 0,
+            "3.-----": "-----",
+            "4.1.天賦生命": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'max_hp')),
+            "4.2.天賦攻擊": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'atk')),
+            "4.3.天賦防禦": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'def')),
+            "4.4.天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'),
+            "4.5.天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, 'base_attack_time'),
+            "4.6.天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed'),
+            "4.-----": "-----",
+            "5.1.加成後生命": maxHp,
+            "5.2.加成後攻擊": atk,
+            "5.3.加成後防禦": def,
+            "5.4.加成後法抗": magicResistance,
+            "5.5.加成後攻擊間隔": baseAttackTime,
+            "5.6.加成後攻速": attackSpeed,
+          }
+        ); 
       }   
     }
 

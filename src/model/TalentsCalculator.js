@@ -1,10 +1,13 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
+import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import CookieModel from './Cookie';
 
 const TalentsCalculatorModel = {
   //依照指定key名嘗試查詢幹員對應的天賦，並回傳此天賦的加成值 (若查詢不到則默認回傳0)
   memberTalent: (type, memberRow, attribute) => {
     let addTotal = 0;
+    let logObject = {};
+    let logCount_talents = 1;
 
     //一個幹員可能會同時有多個天賦也可能完全沒天賦
     memberRow.talents?.forEach(t => {
@@ -45,9 +48,16 @@ const TalentsCalculatorModel = {
             levelCheck = false;
           }
 
-          if(levelCheck){          
+          //用於輸出log的計算
+          logObject[`${logCount_talents}.`] = t.candidates[l].name;              
+          t.candidates[l].blackboard.forEach(b => {
+            logObject[`${logCount_talents}. ${b.key}`] = b.value;
+          });
+          logCount_talents += 1;
+
+          if(levelCheck){         
             //一個天賦可能會同時有多個強化效果，甚至可能重複     
-            t.candidates[l].blackboard.forEach(b => {
+            t.candidates[l].blackboard.forEach(b => {              
               if (b.key === attribute) {
                 addTotal += (b.value ?? 0);
                 //判斷合理性，因為有太多key共用的不合理情況
@@ -55,8 +65,8 @@ const TalentsCalculatorModel = {
                 //鉛踝天賦的攻擊範圍有隱匿單位就加攻的key也是atk
                 //泡泡天賦的對攻擊對象減攻擊的key也是atk
                 //這導致若是不判斷的話會有許多錯誤引用的數值添加
-                if(memberRow.name in TalentsCalculatorModel.talentNotListToBasic){
-                  if(TalentsCalculatorModel.talentNotListToBasic[memberRow.name].has(attribute)){
+                if(memberRow.name in TalentsCustomCalculatorModel.talentNotListToBasic){
+                  if(TalentsCustomCalculatorModel.talentNotListToBasic[memberRow.name].has(attribute)){
                     addTotal -= (b.value ?? 0);
                   }
                 }
@@ -68,51 +78,20 @@ const TalentsCalculatorModel = {
         }
       }
     });
+
+    //打印log   
+    if(CookieModel.getLog('memberTalent') === false){
+      if(memberRow.name === CookieModel.getCookie('memberName')){
+        CookieModel.setLog('memberTalent', true); 
+        console.log(
+          `${memberRow.name}的天賦加成數據log`,
+          logObject
+        );
+      }   
+    }
+
     return addTotal;
   },
-
-  //目前在幹員基礎數據計算天賦加成時使用了這些key: max_hp、atk、def、magic_resistance、base_attack_time、attack_speed
-  //此處記錄所有包含以上的key，但是這些key卻不應該用來計算天賦加成的天賦所屬幹員 (後面會標註不能用的理由) 
-  talentNotListToBasic: {
-    //四星
-    '红豆': new Set(['atk']), //概率暴擊
-    '清道夫': new Set(['atk','def']), //周圍沒有友方單位，提升攻擊力、防禦力
-    '讯使': new Set(['def']), //阻擋兩個以上敵人，提升防禦力
-    '猎蜂': new Set(['atk']), //攻擊同個敵人持續疊加攻擊力
-    '杜宾': new Set(['atk']), //在場時，三星幹員提升攻擊力        
-    '铅踝': new Set(['atk']), //攻擊範圍內存在隱匿單位時提升攻擊力
-    '远山': new Set(['max_hp', 'atk', 'attack_speed']), //部屬後隨機三選一BUFF，提升生命、提升攻擊力、提升攻速
-    '泡泡': new Set(['atk']), //降低攻擊對象的攻擊力
-    '嘉维尔': new Set(['atk','def']), //部屬後15秒內所有醫療幹員提升攻擊力、防禦力
-    //五星
-    //六星
-  },
-
-  //此處記錄所有會對攻擊技能的DPS傷害公式計算造成影響的天賦，並嘗試將這些天賦歸類到DPS傷害公式的一個乘區中
-  //(回傳雙層object，key對應傷害公式裡的某個乘區，只需要在原本的傷害公式的所有對應乘區上再添加天賦額外倍率，即可在傷害公式上達成對每個幹員的天賦特製化
-  talentListToAttackSkill: (type, memberRow) =>{
-    
-    return {
-      //?標記的為較少人使用的屬性，可以只在那些人的object裡宣告該屬性即可 (會順便在旁邊標註有誰使用了這個屬性)
-      //def_penetrate_fixed的值必須是正數，否則會反過來幫敵方加防禦，絕對值<1的以比例計算，絕對值>1的以固定計算
-      //magic_resistance的值必須是負數，否則會反過來幫敵方加法抗，絕對值<1的以比例計算，絕對值>1的以固定計算
-      //other，絕對值<1的以比例計算，絕對值>1的以固定計算
-      'default': { atk: "攻擊乘算", atk_scale: "攻擊倍率", def_penetrate_fixed: "削減敵方防禦[比例或固定]", magic_resistance: "削減敵方法抗[比例或固定]", 
-        damage_scale: "傷害倍率", base_attack_time: "攻擊間隔調整", attack_speed: "攻擊速度調整", 
-        other: "?額外造成傷害[比例或固定] (騁風)", ensure_damage: "?保底傷害 (酸糖)" },      
-      //'範例': { atk: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      //四星
-      '骋风': { atk: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, other: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale') },
-      '宴': { atk: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: TalentsCalculatorModel.memberTalent(type, memberRow, 'min_attack_speed') },
-      '猎蜂': { atk: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk') * TalentsCalculatorModel.memberTalent(type, memberRow, 'max_stack_cnt'), atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      '酸糖': { atk: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, ensure_damage: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale_2') },
-      '夜烟': { atk: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'), damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      '云迹': { atk: 0, atk_scale: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale'), def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      //泡泡 atk 天賦是降低攻擊對象的攻擊力，暫時不知道怎麼應用於敵人的傷害公式 
-    }
-    
-    
-  }
 }
 
 export default TalentsCalculatorModel;

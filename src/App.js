@@ -51,7 +51,10 @@ function App() {
               <input className="col-3 text-center" type="text" id="cookieMemberName" name="cookieMemberName" 
               value={cookieMemberName} onChange={(e) => setCookieMemberName(e.target.value)} required/>
               <span className="col-12"></span>
-              <button className="col-2 btn btn-primary" onClick={() => { CookieModel.setCookie('memberName', cookieMemberName); }}>確認</button>
+              <button className="col-2 btn btn-primary" onClick={() => { 
+                 CookieModel.setCookie('memberName', cookieMemberName); 
+                 //alert(`已指定${cookieMemberName}`) 
+                }}>確認</button>
               <small className="col-12 mt-4 text-center">{`如何查看log?`}</small>
               <small className="col-12 text-center">{`點擊鍵盤的F12默認可以開啟開發人員工具介面`}</small>
               <small className="col-12 text-center">{`介面頂部的頁籤切換到[主控台]，即可查看到log`}</small>

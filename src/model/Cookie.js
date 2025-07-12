@@ -43,7 +43,10 @@ const CookieModel = {
     logList: {
         "memberNumeric": false,
         "skillMemberDph": false,
+        "skillMemberDph_check": [],
         "skillMemberDps": false,
+        "skillMemberDps_check": [],
+        "memberTalent": false,
     },
     //取得log
     getLog: (name) => {

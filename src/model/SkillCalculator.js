@@ -1,5 +1,7 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
+import SkillCustomCalculatorModel from './SkillCustomCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
+import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import CookieModel from './Cookie';
 import MemberSpecial from './MemberSpecial';
 
@@ -65,28 +67,20 @@ const SkillCalculatorModel = {
   skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
-    const memberTalent = TalentsCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
+    const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
     const attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
 
     let finalAttack = 0;
+    let finalAttackOther = 0;
 
     //攻擊乘算
     let attackMulti = SkillCalculatorModel.skillAttribute(type, skillRow, 'atk'); //技能倍率
-    let talentAttackMulti = memberTalent?.atk || 0; //天賦倍率
+    let talentAttackMulti = memberTalent?.attack || 0; //天賦倍率
 
     //攻擊倍率
     let attackScale = SkillCalculatorModel.skillAttribute(type, skillRow, 'atk_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     attackScale = attackScale > 0 ? attackScale : 1;
-    //如果other有帶值，則表示此DPH計算是用於造成額外傷害    
-    // if(other !== null){
-    //   //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
-    //   //因此為方便計算，一律將(造成一定比例傷害)以攻擊倍率的方式來調整
-    //   //(一定比例傷害不一定都低於1倍，也可能會有好幾倍的，但基本不可能會有超過10倍的，因此以10倍為界線)
-    //   if(other < 10){
-    //     attackScale = other;
-    //   }     
-    // }
     let talentAttackScale = memberTalent?.atk_scale || 0; //天賦倍率   
 
     //傷害倍率
@@ -105,6 +99,9 @@ const SkillCalculatorModel = {
     //削減敵方法抗       
     let resDivide = SkillCalculatorModel.skillAttribute(type, skillRow, 'magic_resistance'); //技能倍率
     let talentResDivide = memberTalent?.magic_resistance || 0; //天賦倍率
+
+    //額外造成傷害
+    let talentOther = memberTalent?.other || 0; //天賦倍率
     
     switch(attackType){
       case "物理":
@@ -140,16 +137,18 @@ const SkillCalculatorModel = {
         finalEnemyDef = finalEnemyDef < 0 ? 0 : finalEnemyDef;  
 
         finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) - finalEnemyDef);
-        //如果other有帶值，則表示此DPH計算是用於造成額外傷害    
-        // if(other !== null){
-        //   //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
-        //   //因此為方便計算，一律將(造成固定傷害)視為不可被任何攻擊乘算跟攻擊倍率提升的物理或法術固定傷害
-        //   //因此需要和敵人防禦和法抗做傷害計算，且可以被傷害倍率拐
-        //   //(一定比例傷害不一定都低於1倍，也可能會有好幾倍的，但基本不可能會有超過10倍的，因此以10倍為界線)
-        //   if(other > 10){
-        //     finalAttack = (other - finalEnemyDef);
-        //   }     
-        // }
+
+        //如果talentOther有值，則表示此DPH計算造成額外傷害    
+        if(talentOther !== null){
+          //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
+          //以10為界線區分，絕對值 < 10 的值是(造成一定比例傷害)，絕對值 > 10 的值是(造成固定傷害)          
+          if(talentOther < 10){
+            finalAttackOther = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale) * talentOther) - finalEnemyDef);
+          }
+          else{
+            finalAttackOther = (talentOther - finalEnemyDef);
+          }
+        }
       break;
       case "法術":
         //法術DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) * ((100 - (敵人法抗 * (1 + 削減敵方法抗[比例]) + 削減敵方法抗[固定])) / 100)) * 傷害倍率)
@@ -186,16 +185,18 @@ const SkillCalculatorModel = {
         finalEnemyRes = finalEnemyRes < 0 ? 0 : finalEnemyRes;
 
         finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) * ((100 - finalEnemyRes) / 100));
-        //如果other有帶值，則表示此DPH計算是用於造成額外傷害    
-        // if(other !== null){
-        //   //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
-        //   //因此為方便計算，一律將(造成固定傷害)視為不可被任何攻擊乘算跟攻擊倍率提升的物理或法術固定傷害
-        //   //因此需要和敵人防禦和法抗做傷害計算，且可以被傷害倍率拐
-        //   //(一定比例傷害不一定都低於1倍，也可能會有好幾倍的，但基本不可能會有超過10倍的，因此以10倍為界線)
-        //   if(other > 10){
-        //     finalAttack = (other * ((100 - finalEnemyRes) / 100));
-        //   }     
-        // }
+
+        //如果talentOther有值，則表示此DPH計算造成額外傷害    
+        if(talentOther !== null){
+          //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
+          //以10為界線區分，絕對值 < 10 的值是(造成一定比例傷害)，絕對值 > 10 的值是(造成固定傷害)          
+          if(talentOther < 10){
+            finalAttackOther = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale) * talentOther) * ((100 - finalEnemyRes) / 100));
+          }
+          else{
+            finalAttackOther = (talentOther * ((100 - finalEnemyRes) / 100));
+          }
+        }
       break;   
     }
     
@@ -207,6 +208,17 @@ const SkillCalculatorModel = {
     let ensureDamage = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) * talentEnsureDamage;
     finalAttack = finalAttack < ensureDamage ? ensureDamage : finalAttack;
 
+    let ensureDamageOther = 0;
+    if(talentOther !== null){
+      if(talentOther < 10){
+        ensureDamageOther = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale) * talentOther) * talentEnsureDamage;
+      }
+      else{
+        ensureDamageOther = talentOther * talentEnsureDamage;
+      }   
+      finalAttackOther = finalAttackOther < ensureDamageOther ? ensureDamageOther : finalAttackOther;
+    }   
+
     switch(attackType){
       case "治療":
         finalAttack = 0;
@@ -214,42 +226,65 @@ const SkillCalculatorModel = {
     }
 
     //打印log
-    if(CookieModel.getLog('skillMemberDph') === false){
-      if(memberData.name === CookieModel.getCookie('memberName')){
-        CookieModel.setLog('skillMemberDph', true);
-        console.log(
-        `${memberData.name}的「${SkillCalculatorModel.skillData(type, skillRow).name}」的DPH算法各項數據log`,
-        {
-          "0.1.幹員原始攻擊力": memberNumeric.atk,
-          "0.2.敵人原始防禦力": enemyData.enemyDef,
-          "0.3.敵人原始法抗": enemyData.enemyRes,
-          "1.1.攻擊乘算-技能倍率": attackMulti,
-          "1.2.攻擊乘算-天賦倍率": talentAttackMulti,
-          "2.1.攻擊倍率-技能倍率": attackScale,
-          "2.2.攻擊倍率-天賦倍率": talentAttackScale,
-          "3.1.傷害倍率-技能倍率": damageMulti,
-          "3.2.傷害倍率-天賦倍率": talentDamageMulti,
-          "4.1.削減敵方防禦-技能倍率": defDivide,
-          "4.2.削減敵方防禦-天賦倍率": talentDefDivide,
-          "5.1.無視防禦-技能倍率": defSub,
-          "5.2.無視防禦-天賦倍率": "無計算",
-          "6.1.削減敵方法抗-技能倍率": resDivide,
-          "6.2.削減敵方法抗-天賦倍率": talentResDivide,
-          "7.1.保底傷害倍率-技能倍率": "無計算",
-          "7.2.保底傷害倍率-天賦倍率": talentEnsureDamage,
-          "10.最終DPH": finalAttack,
-        }) 
+    if(memberData.name === CookieModel.getCookie('memberName')){  
+      const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
+      if(CookieModel.getLog('skillMemberDph_check').includes(skillName) === false){          
+        CookieModel.setLog('skillMemberDph', false);
+        if(CookieModel.getLog('skillMemberDph') === false){            
+          CookieModel.setLog('skillMemberDph', true);
+          CookieModel.getLog('skillMemberDph_check').push(skillName);
+
+          //技能加成數據log
+          const skillData = SkillCalculatorModel.skillData(type, skillRow);
+          let logObject = {};
+          let logCount_blackboard = 1;
+          skillData.blackboard?.forEach(b => {
+            logObject[`${logCount_blackboard}. ${b.key}`] = b.value;
+            logCount_blackboard += 1;
+          });
+          console.log(
+            `${memberData.name}的「${skillName}」的技能加成數據log`, 
+            logObject
+          );
+
+          //DPH算法各項數據log
+          console.log(
+            `${memberData.name}的「${skillName}」的DPH算法各項數據log`,
+            {
+              "0.1. 幹員原始攻擊力": memberNumeric.atk,
+              "0.2. 敵人原始防禦力": enemyData.enemyDef,
+              "0.3. 敵人原始法抗": enemyData.enemyRes,
+              "1.1. 攻擊乘算-技能倍率": attackMulti,
+              "1.2. 攻擊乘算-天賦倍率": talentAttackMulti,
+              "2.1. 攻擊倍率-技能倍率": attackScale,
+              "2.2. 攻擊倍率-天賦倍率": talentAttackScale,
+              "3.1. 傷害倍率-技能倍率": damageMulti,
+              "3.2. 傷害倍率-天賦倍率": talentDamageMulti,
+              "4.1. 削減敵方防禦-技能倍率": defDivide,
+              "4.2. 削減敵方防禦-天賦倍率": talentDefDivide,
+              "5.1. 無視防禦-技能倍率": defSub,
+              "5.2. 無視防禦-天賦倍率": "無計算",
+              "6.1. 削減敵方法抗-技能倍率": resDivide,
+              "6.2. 削減敵方法抗-天賦倍率": talentResDivide,
+              "7.1. 額外造成傷害-技能倍率": "無計算",
+              "7.2. 額外造成傷害-天賦倍率": talentOther,
+              "8.1. 保底傷害倍率-技能倍率": "無計算",
+              "8.2. 保底傷害倍率-天賦倍率": talentEnsureDamage,
+              "10. 最終DPH": finalAttack,
+            }
+          ); 
+        }
       }
     }
 
-    return finalAttack * (damageMulti + talentDamageMulti);
+    return (finalAttack + finalAttackOther) * (damageMulti + talentDamageMulti);
   },
 
   //計算幹員在技能期間的DPS
   skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
-    const memberTalent = TalentsCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
+    const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
     const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData);
     let dps = 0;
 
@@ -279,27 +314,32 @@ const SkillCalculatorModel = {
     }
 
     //打印log
-    if(CookieModel.getLog('skillMemberDps') === false){
-      if(memberData.name === CookieModel.getCookie('memberName')){
-        CookieModel.setLog('skillMemberDps', true);
-        console.log(
-        `${memberData.name}的「${SkillCalculatorModel.skillData(type, skillRow).name}」的DPS算法各項數據log`,
-        {
-          "0.1.幹員原始攻擊間隔": memberNumeric.baseAttackTime,
-          "0.2.幹員原始攻速": memberNumeric.attackSpeed,
-          "1.1.攻擊間隔調整-技能倍率": attackTimeRevise,
-          "1.2.攻擊間隔調整-天賦倍率": talentAttackTimeRevise,
-          "2.1.攻速調整-技能倍率": attackSpeedRevise,
-          "2.2.攻速調整-天賦倍率": talentAttackSpeedRevise,
-          "3.1.最終攻擊間隔": finalAttackTime,
-          "3.2.攻擊次數": times,
-          "5.最終DPS": dps,
-        }) 
+    if(memberData.name === CookieModel.getCookie('memberName')){  
+      const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
+      if(CookieModel.getLog('skillMemberDps_check').includes(skillName) === false){          
+        CookieModel.setLog('skillMemberDps', false);
+        if(CookieModel.getLog('skillMemberDps') === false){            
+          CookieModel.setLog('skillMemberDps', true);
+          CookieModel.getLog('skillMemberDps_check').push(skillName);
+          console.log(
+            `${memberData.name}的「${skillName}」的DPS算法各項數據log`,
+            {
+              "0.1. 幹員原始攻擊間隔": memberNumeric.baseAttackTime,
+              "0.2. 幹員原始攻速": memberNumeric.attackSpeed,
+              "1.1. 攻擊間隔調整-技能倍率": attackTimeRevise,
+              "1.2. 攻擊間隔調整-天賦倍率": talentAttackTimeRevise,
+              "2.1. 攻速調整-技能倍率": attackSpeedRevise,
+              "2.2. 攻速調整-天賦倍率": talentAttackSpeedRevise,
+              "3.1. 最終攻擊間隔": finalAttackTime,
+              "3.2. 攻擊次數": times,
+              "5. 最終DPS": dps,
+            }
+          ); 
+        }
       }
     }
 
-    return dps;
-    
+    return dps;    
   },
   //計算幹員的技能總傷
   skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => { 
