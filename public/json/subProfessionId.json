@@ -210,7 +210,7 @@
   },
   "bard": {
     "chineseName": "吟遊者",
-    "attackType": "無",
+    "attackType": "不攻擊",
     "position": "高台"
   },
   "craftsman": {

@@ -1,7 +1,5 @@
 import TalentsCalculatorModel from './TalentsCalculator';
 import CookieModel from './Cookie';
-import subProfessionIdCalculatorModel from './subProfessionIdCalculator';
-import MemberSpecial from './MemberSpecial';
 
 const BasicCalculatorModel = {
   //查詢當前所選流派 (回傳object，key有witchPhases、witchAttributesKeyFrames)
