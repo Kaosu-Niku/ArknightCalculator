@@ -1,11 +1,15 @@
 import React, { useState, useEffect, useRef } from 'react';
-import $ from "jquery";
+import $, { data } from "jquery";
 import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.min.css";
-import Calculator from '../model/Calculator';
+import BasicCalculatorModel from '../model/BasicCalculator';
+import SkillCalculatorModel from '../model/SkillCalculator';
+import CookieModel from '../model/Cookie';
+import FilterModel from '../model/Filter';
 
 function MainContent() {
-  const [whichType, setWhichType] = useState(getCookie('type'));
+  const [whichType, setWhichType] = useState(CookieModel.getCookie('type'));
+  const [checkRarity, setCheckRarity] = useState(CookieModel.getCookie('rarity'));
   
   const [enemyHp, setEnemyHp] = useState(10000);
   const [enemyAttackType, setEnemyAttackType] = useState('物傷');
@@ -20,160 +24,216 @@ function MainContent() {
   const attackSkillTableRef = useRef(null); 
   const defSkillTableRef = useRef(null); 
 
-  //取得Cookie
-  function getCookie(name) {
-    const cookies = document.cookie.split('; ');
-    for (let i = 0; i < cookies.length; i++) {
-      const cookie = cookies[i].split('=');
-      if (cookie[0] === name) {
-        return cookie[1] || '1604';
-      }
-    }
-    return '1604'; 
-  }
-  //設置Cookie
-  function setCookie(type) {
-    let expirationDate = new Date();
-    expirationDate.setDate(expirationDate.getDate() + 7); //設定Cookier在7天後過期
-    document.cookie = `type=${type}; expires=${expirationDate.toUTCString()}; path=/;`;
-  }
-  //處理數值資料
-  function numberFilter(number) {
-    //數值資料如為整數，則回傳原值，如有小數點，則無條件捨去至整數
-    // 如要使用其他方法，無條件進位 = ceil()，無條件捨去 = trunc()，四捨五入 = round()
-    return Number.isInteger(number) ? number : Math.trunc(number);
-  }
-
   useEffect(() => {
     const loadData = async (type) => {
-      let witchMember = 'member1604.json';
-      let witchAttackSkill = 'attackSkill1604.json';
-      let witchDefSkill = 'defSkill1604.json';
+      let witchPhases = 0;
+      let witchAttributesKeyFrames = 0;
       
-      //根據指定的流派獲取對應的JSON檔案
+      //指定階級與等級
       switch(type){
-        case '114':
-          witchMember = 'member114.json';
-          witchAttackSkill = 'attackSkill114.json';
-          witchDefSkill = 'defSkill114.json';
+        case '精零1級':
+          witchPhases = 0;
+          witchAttributesKeyFrames = 0;
         break;
-        case '1604':
-          witchMember = 'member1604.json';
-          witchAttackSkill = 'attackSkill1604.json';
-          witchDefSkill = 'defSkill1604.json';
+        case '精零滿級':
+          witchPhases = 0;
+          witchAttributesKeyFrames = 1;
         break;
-        case '2704':
-          witchMember = 'member2704.json';
-          witchAttackSkill = 'attackSkill2704.json';
-          witchDefSkill = 'defSkill2704.json';
+        case '精一1級':
+          witchPhases = 1;
+          witchAttributesKeyFrames = 0;
+        break;
+        case '精一滿級':
+          witchPhases = 1;
+          witchAttributesKeyFrames = 1;
+        break;
+        case '精二1級':
+          witchPhases = 2;
+          witchAttributesKeyFrames = 0;
+        break;
+        case '精二滿級':
+          witchPhases = 2;
+          witchAttributesKeyFrames = 1;
         break;
       }
-      //說明表格 
-      await fetch(`${process.env.PUBLIC_URL}/memberDirections.json`)
-      .then(response => response.json())
-      .then(directionJsonData => {
-        fetch(`${process.env.PUBLIC_URL}/${witchMember}`)
-        .then(response => response.json())
-        .then(memberJsonData => {
-          //基礎數值表格
-          if (memberJsonData) {
-            $(memberTableRef.current).DataTable({
-              destroy: true,
-              data: memberJsonData.Basic,
-              pageLength: 100,
-              columns: [
-                { title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
-                { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
-                { title: "職業", data: "type" },
-                { title: "生命", data: "hp" },
-                { title: "傷害類型", data: "attackType" },
-                { title: "攻擊", data: "attack" },
-                { title: "防禦", data: "def" },
-                { title: "法抗", data: "res" },
-                { title: "攻速", data: "spd" },
-                { title: "DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberDps(row, enemyData)); } },
-                // { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(row, enemyData); } },
-                { title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(row, enemyData)); } },
-              ],
-              drawCallback: function(settings) {
-                $(memberTableRef.current).find('th').css({
-                  'background-color': '#c5c5c5',
-                  'color': 'black'
-                });
-              }
-            });
-          }
 
-          //攻擊技能表格
-          fetch(`${process.env.PUBLIC_URL}/${witchAttackSkill}`)
-          .then(response => response.json())
-          .then(attackSkillJsonData => {
-            if (attackSkillJsonData) {
-              $(attackSkillTableRef.current).DataTable({
-                destroy: true,
-                data: attackSkillJsonData.Basic,
-                pageLength: 100,
-                columns: [
-                  //${Calculator.memberIcon(row, memberJsonData.Basic)}
-                  { title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
-                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
-                  { title: "技能", data: "whichSkill" },
-                  { title: "傷害類型", data: "attackType" },
-                  { title: "冷卻時間", data: "waitTime" },
-                  { title: "持續時間", data: "skillTime" },
-                  { title: "DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberDps(row, memberJsonData.Basic, enemyData)); } },
-                  { title: "技能總傷", data: null, render: function (data, type, row) { return numberFilter(Calculator.memberSkillTotal(row, memberJsonData.Basic, enemyData)); } },
-                  // { title: "擊殺所需時間", data: null, render: function (data, type, row) { return Calculator.memberKillTime(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData); } },
-                ],
-                drawCallback: function(settings) {
-                  $(attackSkillTableRef.current).find('th').css({
-                    'background-color': '#c5c5c5',
-                    'color': 'black'
-                  });
-                }
-              });
-            }
-          })
-          .catch(error => console.log('Error loading JSON:', error));
+      //初始化log輸出狀態
+      CookieModel.setLog('memberNumeric', false);
+      CookieModel.setLog('skillMemberDph', false);
+      CookieModel.setLog('skillMemberDph_check', []);
+      CookieModel.setLog('skillMemberDps', false);
+      CookieModel.setLog('skillMemberDps_check', []);
+      CookieModel.setLog('memberTalent', false);     
 
-          //防禦技能表格
-          fetch(`${process.env.PUBLIC_URL}/${witchDefSkill}`)
-          .then(response => response.json())
-          .then(defSkillJsonData => {
-            if (defSkillJsonData) {
-              $(defSkillTableRef.current).DataTable({
-                destroy: true,
-                data: defSkillJsonData.Basic,
-                pageLength: 100,
-                columns: [
-                  { title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, directionJsonData)}" alt='icon' width='40' height='40' />`; } },
-                  { title: "名稱", data: "name", render: function (data, type, row) { return Calculator.memberNameRender(row); } },
-                  { title: "技能", data: "whichSkill" },
-                  { title: "技能類型", data: "skillType" },
-                  { title: "冷卻時間", data: "waitTime" },
-                  { title: "持續時間", data: "skillTime" },
-                  { title: "我方防禦", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberRow(row, memberJsonData.Basic).def); } },
-                  { title: "我方HPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.skillMemberHps(row, memberJsonData.Basic, enemyData)); } },
-                  { title: "敵方DPS", data: null, render: function (data, type, row) { return numberFilter(Calculator.enemyDps(Calculator.skillMemberRow(row, memberJsonData.Basic), enemyData)); } },
-                ],
-                drawCallback: function(settings) {
-                  $(defSkillTableRef.current).find('th').css({
-                    'background-color': '#c5c5c5',
-                    'color': 'black'
-                  });
-                }
-              });
-            }
-          })
-          .catch(error => console.log('Error loading JSON:', error));
-        })
-        .catch(error => console.log('Error loading JSON:', error));
-      })
-      .catch(error => console.log('Error loading JSON:', error));
+      //幹員職業
+      const professionResponse = await fetch(`${process.env.PUBLIC_URL}/json/profession.json`);
+      const professionJsonData = await professionResponse.json();
+      //幹員分支
+      const subProfessionIdResponse = await fetch(`${process.env.PUBLIC_URL}/json/subProfessionId.json`);
+      const subProfessionIdJsonData = await subProfessionIdResponse.json();
+      //幹員數據 
+      const characterResponse = await fetch(`${process.env.PUBLIC_URL}/json/character_table.json`);
+      const characterJsonData = await characterResponse.json();
+
+      //幹員模組資訊
+      const uniequipResponse = await fetch(`${process.env.PUBLIC_URL}/json/uniequip_table.json`);
+      const uniequipJsonData = await uniequipResponse.json();
+
+      //幹員模組數據
+      const battleEquipResponse = await fetch(`${process.env.PUBLIC_URL}/json/battle_equip_table.json`);
+      const battleEquipJsonData = await battleEquipResponse.json();
+      console.log('模組數據JSON',battleEquipJsonData);
+
+      //編輯JSON用參考代碼
+      // const abcResponse = await fetch(`${process.env.PUBLIC_URL}/json/技能數據簡化版.json`);
+      // const abcJsonData = await abcResponse.json();
+      // Object.values(abcJsonData).forEach(item => {
+      //   if (item.levels && Array.isArray(item.levels) && item.levels.length > 0) {
+      //     // 將 item.levels 替換為一個只包含其最後一個元素的新陣列
+      //     item.levels = [item.levels[item.levels.length - 1]];
+      //   } else {
+      //     // 如果 levels 陣列是空的、不存在，或不是陣列，則將其設置為一個空陣列 []
+      //     item.levels = []; 
+      //   }
+      // });
+      // console.log(abcJsonData);
+      
+      //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換     
+      let filterCharacterData = Object.values(characterJsonData);
+      //幹員數據過濾處
+      filterCharacterData = FilterModel.characterDataFilter(filterCharacterData, checkRarity); 
+      
+      //幹員數據與模組數據結合
+      //由於現在有模組系統，幹員的數據計算避不開模組加成
+      //但是幹員和模組之間屬於一對多的關係，因此無法只遍歷幹員資料來呈現表格
+      //有幾個模組就要再重複增添對應的幾筆幹員資料，讓資料最終依然能以一對一關係呈現
+      const processedCharacterData = filterCharacterData;
+      // const processedCharacterData = [];
+      // for (const key in filterCharacterData) {
+      //     if (filterCharacterData.hasOwnProperty(key)) {
+      //         const originalMember = filterCharacterData[key];  
+      //         const uniequipContentList = BasicCalculatorModel.memberUniequip(filterCharacterData[key], uniequipJsonData);            
+      //         uniequipContentList.forEach(e => {               
+      //           const MemberCopy = { ...originalMember, uniequip: e };
+      //           processedCharacterData.push(MemberCopy);
+      //         });
+      //     }
+      // }
+      
+      //基礎數值表格
+      $(memberTableRef.current).DataTable({ 
+        destroy: true,
+        data: processedCharacterData,
+        pageLength: 20,
+        columns: [
+          //{ title: "", data: null, render: function (row) { return `<img src="${process.env.PUBLIC_URL}/image/member_icon/${row.name}.png" title="${Calculator.memberDirection(row, desJsonData)}" alt='icon' width='40' height='40' />`; } },
+          { title: "名稱", data: "name", },
+          { title: "星級", data: "rarity", render: function (data, type, row) { return BasicCalculatorModel.memberRarity(row); } },
+          { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(row, professionJsonData).chineseName; } },
+          { title: "分支", data: "subProfessionId", render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).chineseName; } },
+          //{ title: "模組", data: "uniequip", render: function (data, type, row) { return row.uniequip.uniEquipName;} },
+          { title: "生命", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).maxHp); } },
+          { title: "傷害類型", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).attackType; } },
+          { title: "攻擊", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).atk); } },
+          { title: "防禦", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).def); } },
+          { title: "法抗", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).magicResistance); } },
+          { title: "攻擊間隔", data: "phases", render: function (data, type, row) { return BasicCalculatorModel.memberNumeric(whichType, row).baseAttackTime; } },
+          { title: "攻速", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).attackSpeed); } },
+          //{ title: "DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberDps(whichType, row, enemyData, subProfessionIdJsonData)); } },
+          //{ title: "HPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberHps(whichType, row, enemyData, subProfessionIdJsonData)); } },
+          //{ title: "敵方DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.enemyDps(whichType, row, enemyData)); } },
+        ],
+        drawCallback: function(settings) {
+          $(memberTableRef.current).find('th').css({
+            'background-color': '#c5c5c5',
+            'color': 'black'
+          });
+        }
+      });
+
+      //技能數據 
+      const skillResponse = await fetch(`${process.env.PUBLIC_URL}/json/skill_table.json`);
+      const skillJsonData = await skillResponse.json();
+
+      //技能數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換
+      let processedSkillData = Object.values(skillJsonData);
+      //資料處理
+      processedSkillData = FilterModel.skillDataFilter(processedSkillData, characterJsonData, checkRarity);
+
+      //技能表格(傷害類)
+      $(attackSkillTableRef.current).DataTable({
+        destroy: true,
+        data: processedSkillData,
+        pageLength: 20,
+        columns: [
+          { title: "名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillFromMember(row, processedCharacterData).name; } },
+          { title: "星級", data: "rarity", render: function (data, type, row) { return BasicCalculatorModel.memberRarity(SkillCalculatorModel.skillFromMember(row, processedCharacterData)); } },
+          { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(SkillCalculatorModel.skillFromMember(row, processedCharacterData), professionJsonData).chineseName; } },
+          { title: "分支", data: "subProfessionId", render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(SkillCalculatorModel.skillFromMember(row, processedCharacterData), subProfessionIdJsonData).chineseName; } },
+          { title: "技能名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).name; } },
+          { title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
+          { title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },
+          { title: "彈藥數量", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'attack@trigger_time'); } },  
+          { title: "技能類型", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(SkillCalculatorModel.skillFromMember(row, processedCharacterData), subProfessionIdJsonData).attackType; } },          
+          //{ title: "原始攻擊力", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).atk); } },
+          //{ title: "原始攻擊間隔", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).baseAttackTime; } },
+          //{ title: "原始攻速", data: null, render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, SkillCalculatorModel.skillFromMember(row, processedCharacterData)).attackSpeed); } },
+          { title: "攻擊乘算", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'atk'); } },
+          { title: "攻擊倍率", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'atk_scale'); } },
+          { title: "攻擊間隔調整", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'base_attack_time'); } },           
+          { title: "攻擊速度調整", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'attack_speed'); } },
+          //{ title: "連擊數", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'ATTACK_COUNT'); } },          
+          { title: "攻擊段數", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'times'); } },
+          { title: "無視敵方防禦", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'def_penetrate_fixed'); } },
+          { title: "削減敵方防禦", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'def') < 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'def') : 0; } },
+          { title: "削減敵方法抗", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'magic_resistance') < 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'magic_resistance') : 0; } },
+          { title: "天賦效果提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'talent_scale'); } },
+          //{ title: "傷害倍率", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'damage_scale'); } },
+          //{ title: "力度", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, characterJsonData, 'force'); } },
+          { title: "技能期間DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(SkillCalculatorModel.skillMemberDps(whichType, row, processedCharacterData, enemyData, subProfessionIdJsonData)); } },
+          { title: "技能總傷", data: null, render: function (data, type, row) { return FilterModel.numberFilter(SkillCalculatorModel.skillMemberTotal(whichType, row, processedCharacterData, enemyData, subProfessionIdJsonData)); } },
+          
+        ],
+        drawCallback: function(settings) {
+          $(attackSkillTableRef.current).find('th').css({
+            'background-color': '#c5c5c5',
+            'color': 'black'
+          });
+        }
+      });
+      //技能表格(防禦類)
+      $(defSkillTableRef.current).DataTable({
+        destroy: true,
+        data: processedSkillData,
+        pageLength: 20,
+        columns: [
+          { title: "名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillFromMember(row, processedCharacterData).name; } },
+          { title: "技能名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).name; } },
+          { title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
+          { title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },
+          //{ title: "彈藥數量", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'attack@trigger_time'); } },
+          //{ title: "技能類型", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(SkillCalculatorModel.skillFromMember(row, processedCharacterData), subProfessionIdJsonData).attackType; } },   
+          //{ title: "生命提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'max_hp'); } },
+          //{ title: "防禦提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'def') > 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, 'def') : 0; } },
+          //{ title: "我方法抗提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'magic_resistance') > 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, 'magic_resistance') : 0; } },
+          //{ title: "閃避提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, characterJsonData, 'prob'); } }, 
+          //{ title: "生命回復", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'heal_scale'); } },
+          //{ title: "每秒固定回血", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'hp_recovery_per_sec'); } }, 
+          //{ title: "每秒百分比回血", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'hp_recovery_per_sec_by_max_hp_ratio'); } },
+       
+        ],
+        drawCallback: function(settings) {
+          $(attackSkillTableRef.current).find('th').css({
+            'background-color': '#c5c5c5',
+            'color': 'black'
+          });
+        }
+      });
     };
+    CookieModel.setCookie('type', whichType);
+    CookieModel.setCookie('rarity', checkRarity);
     loadData(whichType);
-    console.log(whichType);
-  }, [whichType, enemyData]); // 每次修改敵人數值或是改變流派時就更新網頁並重新初始化表格
+  }, [whichType, checkRarity, enemyData]); // 每次修改敵人數值或改變流派選擇或勾選星級時就更新網頁並重新初始化表格
 
   return (
     <div className='container'>  
@@ -277,16 +337,37 @@ function MainContent() {
         </div>
       </div> 
       <div className='p-2 m-1 border border-2 rounded-4 bg-light'>
-        <div className="row justify-content-around row-gap-1 p-2">
-          <button className={ `${whichType === '114'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('114'); setWhichType('114'); }}>精一1級四星隊</button>
-          <button className={ `${whichType === '1604'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('1604'); setWhichType('1604'); }}>精一滿級四星隊</button>
-          <button className={ `${whichType === '2704'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setCookie('2704'); setWhichType('2704'); }}>四星隊</button>
+        <div className="row justify-content-around row-gap-1 p-2">     
+          <button className={ `${whichType === '精零1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精零1級'); }}>精零1級</button>
+          <button className={ `${whichType === '精零滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精零滿級'); }}>精零滿級</button>
+          <button className={ `${whichType === '精一1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精一1級'); }}>精一1級</button>
+        </div>
+        <div className="row justify-content-around row-gap-1 p-2">     
+          <button className={ `${whichType === '精一滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精一滿級'); }}>精一滿級</button>
+          <button className={ `${whichType === '精二1級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精二1級'); }}>精二1級</button>
+          <button className={ `${whichType === '精二滿級'? 'btn btn-primary' : 'btn btn-secondary'} col-7 col-md-3` } onClick={() => { setWhichType('精二滿級'); }}>精二滿級</button>
+        </div>
+        <div className="row justify-content-around row-gap-1 p-2">     
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_1"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_1"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>一星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_2"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_2"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>二星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_3"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_3"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>三星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_4"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_4"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>四星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_5"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_5"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>五星</label>
+          <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_6"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_6"]: event.target.checked, })); }} />
+          <label className='col-2 col-md-1'>六星</label>
         </div>
         <div className='row justify-content-center row-gap-1'>
-          <small className="col-12 text-center">{`以下表格的我方面板數值皆以滿潛能滿信賴(四星隊3級模組)為準`}</small>
-          <small className="col-12 text-center">{`幹員會有許多的因素會影響實際數值或是傷害計算結果`}</small>
-          <small className="col-12 text-center">{`(ex: 香草的天賦加攻擊力、夜煙的天賦減法抗、刻刀的職業特性攻擊都是二連擊...等等)`}</small>
-          <small className="col-12 text-center">{`可將滑鼠懸停在幹員頭像圖示上，會彈出提示訊息，經由提示訊息可確認詳細資訊`}</small>
+          <small className="col-12 text-center">{`目前表格呈現的數據已包含以下加成:`}</small>
+          <small className="col-12 text-center">{`潛能加成 (生命、攻擊、防禦、法抗、攻速)`}</small>
+          <small className="col-12 text-center">{`滿信賴加成 (生命、攻擊、防禦、法抗)`}</small>
+          <small className="col-12 text-center">{`天賦加成 (生命、攻擊、防禦、法抗、攻擊間隔、攻速)`}</small>
+          <small className="col-12 text-center">{`(還未添加模組加成，以及天賦加成目前只處理了四星以下的數據)`}</small>
+          <small className="col-12 text-center">{`(因此精二以及五星六星的數據還不準，請勿參考)`}</small>
         </div> 
       </div>  
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='member_table'>
@@ -296,24 +377,22 @@ function MainContent() {
       </div>
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='attackSkill_table'>
         <div className='row justify-content-center row-gap-1'>
-          <small className="col-12 text-center">{`以下表格的持續時間為-1表示其為強力擊類型的技能，
-          此類技能的DPS計算方式不屬於通常算法(攻擊力/攻速)，而是改用(總傷/冷卻時間)的方式計算。`}</small>
-          <small className="col-12 text-center">{`因此對於使用強力擊技能的幹員，將其無技能的DPS和強力擊技能的DPS相加即可得出其真正的平均DPS`}</small>
+          <small className="col-12 text-center">{`持續時間為-1或0表示其為強力擊、永續類、子彈類的技能`}</small>
+          <small className="col-12 text-center">{`技能與天賦中含有概率或是條件觸發的一律不計算，默認全程沒有觸發`}</small>
         </div>
         <div className='table-responsive'>
           <table ref={attackSkillTableRef} className="table table-bordered table-hover display table-light"></table>
         </div>        
-      </div>           
+      </div> 
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='defSkill_table'>
         <div className='row justify-content-center row-gap-1'>
-          <small className="col-12 text-center">{`以下表格的持續時間為-1表示其為強力擊類型的技能，
-          此類技能的HPS計算方式不屬於通常算法(攻擊力/攻速)，而是改用(治療量/冷卻時間)的方式計算`}</small>
-          <small className="col-12 text-center">{`因此對於使用強力擊技能的幹員，將其無技能的HPS和強力擊技能的HPS相加即可得出其真正的平均HPS`}</small>
-        </div> 
+          <small className="col-12 text-center">{`持續時間為-1或0表示其為強力擊、永續類、子彈類的技能`}</small>
+          <small className="col-12 text-center">{`技能與天賦中含有概率或是條件觸發的一律不計算，默認全程沒有觸發`}</small>
+        </div>
         <div className='table-responsive'>
           <table ref={defSkillTableRef} className="table table-bordered table-hover display table-light"></table>
-        </div>
-      </div>  
+        </div>        
+      </div>              
     </div> 
   );
 }
