@@ -136,14 +136,24 @@ const SkillCalculatorModel = {
     attackScale = attackScale > 0 ? attackScale : 1;
     let talentAttackScale = memberTalent?.atk_scale || 1; //天賦倍率 
 
+    //獵手的攻擊消耗子彈並提升攻擊力至一定倍率
+    if(subProfessionName === "獵手"){
+      attackScale += 0.2;
+    }
+
     //額外傷害的攻擊倍率
     let other_attack_scale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'OTHER_atk_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     other_attack_scale = other_attack_scale > 0 ? other_attack_scale : 1;
-    
-    //獵手的攻擊消耗子彈並提升攻擊力至一定倍率
-    if(subProfessionName === "獵手"){
-      attackScale += 0.2;
+
+    //御械術師的使用浮游單元造成額外傷害
+    if(subProfessionName === "御械術師"){
+      other_attack_scale = 1.1;
+    }
+
+    //投擲手的餘震造成額外傷害
+    if(subProfessionName === "投擲手"){
+      other_attack_scale = 0.5;
     }
 
     //傷害倍率
