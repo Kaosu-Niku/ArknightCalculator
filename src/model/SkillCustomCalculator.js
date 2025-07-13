@@ -16,6 +16,7 @@ const SkillCustomCalculatorModel = {
   // ATTACK_COUNT = 連擊數
   // times = 攻擊段數
   // attack@trigger_time = 彈藥數量
+  // CHANGE_duration = 技能持續時間更新
   //此處是記錄所有幹員的技能中包含了以上的key，但是卻不應該帶入傷害公式計算的過濾清單 (後面會標註不能用的理由) 
   skillNotListToBasic: {
     //四星
@@ -45,7 +46,10 @@ const SkillCustomCalculatorModel = {
         'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@atk_scale'),
         'CHANGE_attackType': '法術',
       },
-      '宴-落地斩·破门': { 'CHANGE_attackType': '法術' },
+      '宴-落地斩·破门': { 
+        'CHANGE_attackType': '法術',
+        'CHANGE_duration': SkillCalculatorModel.skillAttribute(type, skillrow, 'duration'),
+      },
       '猎蜂-急速拳': { 'base_attack_time': 0.78 * SkillCalculatorModel.skillAttribute(type, skillrow, 'base_attack_time') }, //猎蜂的原攻擊間隔是0.78
       '杰克-全神贯注！': { 'CHANGE_attackType': '不攻擊' },
       '断罪者-断罪': { 'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'atk_scale_fake') },  
@@ -77,7 +81,9 @@ const SkillCustomCalculatorModel = {
         'CHANGE_attackType': '法術',
         'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'magic_atk_scale'),
         'base_attack_time': 0.4, //此技能是每2秒造成傷害，而露托的原攻擊間隔是1.6
-      },    
+      },   
+      '孑-断螯': { 'CHANGE_duration': 2 },
+      '孑-刺身拼盘': { 'CHANGE_duration': 2 },
     }    
   }
 }

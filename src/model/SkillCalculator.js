@@ -132,13 +132,13 @@ const SkillCalculatorModel = {
     let attackScale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'atk_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     attackScale = attackScale > 0 ? attackScale : 1;
-    let talentAttackScale = memberTalent?.atk_scale || 0; //天賦倍率   
+    let talentAttackScale = memberTalent?.atk_scale || 1; //天賦倍率   
 
     //傷害倍率
     let damageMulti = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'damage_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     damageMulti = damageMulti > 0 ? damageMulti : 1
-    let talentDamageMulti = memberTalent?.damage_scale || 0; //天賦倍率 
+    let talentDamageMulti = memberTalent?.damage_scale || 1; //天賦倍率 
     
     //削減敵方防禦
     let defDivide = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'def'); //技能倍率
@@ -196,14 +196,14 @@ const SkillCalculatorModel = {
         //需要判斷削弱防禦與無視防禦後的敵人剩餘防禦是否 < 0
         finalEnemyDef = finalEnemyDef < 0 ? 0 : finalEnemyDef;  
 
-        finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) - finalEnemyDef);
+        finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale)) - finalEnemyDef);
 
         //如果talentOther有值，則表示此DPH計算造成額外傷害    
         if(talentOther !== null){
           //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
           //以10為界線區分，絕對值 < 10 的值是(造成一定比例傷害)，絕對值 > 10 的值是(造成固定傷害)          
           if(talentOther < 10){
-            finalAttackOther = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale) * talentOther) - finalEnemyDef);
+            finalAttackOther = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale) * talentOther) - finalEnemyDef);
           }
           else{
             finalAttackOther = (talentOther - finalEnemyDef);
@@ -244,14 +244,14 @@ const SkillCalculatorModel = {
         finalEnemyRes = finalEnemyRes > 100 ? 100 : finalEnemyRes;
         finalEnemyRes = finalEnemyRes < 0 ? 0 : finalEnemyRes;
 
-        finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) * ((100 - finalEnemyRes) / 100));
+        finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale)) * ((100 - finalEnemyRes) / 100));
 
         //如果talentOther有值，則表示此DPH計算造成額外傷害    
         if(talentOther !== null){
           //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
           //以10為界線區分，絕對值 < 10 的值是(造成一定比例傷害)，絕對值 > 10 的值是(造成固定傷害)          
           if(talentOther < 10){
-            finalAttackOther = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale) * talentOther) * ((100 - finalEnemyRes) / 100));
+            finalAttackOther = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale) * talentOther) * ((100 - finalEnemyRes) / 100));
           }
           else{
             finalAttackOther = (talentOther * ((100 - finalEnemyRes) / 100));
@@ -265,13 +265,13 @@ const SkillCalculatorModel = {
 
     //finalAttack是計算完攻擊力加成以及扣除敵方防禦法抗後的原定傷害，而傷害公式要確保原定傷害過低時會至少有5%攻擊力的保底傷害 
     //(極少數角色具有保底傷害天賦，不只會有5%，而talentEnsureDamage就是為此處理的特別屬性)
-    let ensureDamage = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale)) * talentEnsureDamage;
+    let ensureDamage = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale)) * talentEnsureDamage;
     finalAttack = finalAttack < ensureDamage ? ensureDamage : finalAttack;
 
     let ensureDamageOther = 0;
     if(talentOther !== null){
       if(talentOther < 10){
-        ensureDamageOther = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale + talentAttackScale) * talentOther) * talentEnsureDamage;
+        ensureDamageOther = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale) * talentOther) * talentEnsureDamage;
       }
       else{
         ensureDamageOther = talentOther * talentEnsureDamage;
@@ -338,14 +338,14 @@ const SkillCalculatorModel = {
               "9.2. 敵人最終法抗": finalEnemyRes,
               "10.1. 最終主要傷害": finalAttack,
               "10.2. 最終額外傷害": finalAttackOther,
-              "10.3. 最終DPH": (finalAttack + finalAttackOther) * (damageMulti + talentDamageMulti),
+              "10.3. 最終DPH": (finalAttack + finalAttackOther) * (damageMulti * talentDamageMulti),
             }
           ); 
         }
       }
     }
 
-    return (finalAttack + finalAttackOther) * (damageMulti + talentDamageMulti);
+    return (finalAttack + finalAttackOther) * (damageMulti * talentDamageMulti);
   },
 
   //計算幹員在技能期間的DPS
@@ -369,15 +369,32 @@ const SkillCalculatorModel = {
     //連擊數
     let attackCount = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'ATTACK_COUNT'); //技能倍率
     attackCount = attackCount === 0 ? 1 : attackCount;
+
+    //預設的DPS算法: DPH / 最終攻擊間隔
+    dps = (dph * attackCount) / finalAttackTime;
+
+    //技能持續時間
+    let duration = SkillCalculatorModel.skillData(type, skillRow).duration;
+    //[技能持續時間]需要判斷 < 1 ，確保強力擊、脫手類、永續類的技能不會計算錯誤
+    duration = duration < 1 ? 1 : duration;
+    //技能持續時間更新 (ex: 宴2技能如果直接套原本的技能持續時間，則總傷會計算錯誤)
+    let change_duration = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_duration'); //技能倍率
+    if(change_duration){
+      duration = change_duration;
+    }
+    if(duration === 1){
+      //此處只適用於強力擊類型的DPS計算
+      //脫手類、永續類的技能需要透過自定技能屬性為技能添加CHANGE_duration將技能持續時間調整 > 1，則DPS才不會計算錯誤
+      //強力擊類型的DPS直接以DPH來表示 (因為是一次性傷害，所以沒帶入攻擊間隔做計算)
+      dps = (dph * attackCount);
+    }
+
     
     //攻擊段數 (ex: 陳3技能)
     let times = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'times');
     if(times > 0){
-      //對於攻擊段數類型的技能，直接以總傷來表示DPS
+      //攻擊段數類型的DPS算法: DPH * 段數
       dps = (dph * attackCount) * times;
-    }
-    else{
-      dps = (dph * attackCount) / finalAttackTime;
     }
 
     //打印log
@@ -412,15 +429,21 @@ const SkillCalculatorModel = {
   //計算幹員的技能總傷
   skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => { 
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
+
     const dps = SkillCalculatorModel.skillMemberDps(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, true);
     let duration = SkillCalculatorModel.skillData(type, skillRow).duration;
     //[技能持續時間]需要判斷 < 1 ，確保強力擊、脫手類、永續類的技能不會計算錯誤
     duration = duration < 1 ? 1 : duration;
+    //技能持續時間更新 (ex: 宴2技能如果直接套原本的技能持續時間，則總傷會計算錯誤)
+    let change_duration = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_duration'); //技能倍率
+    if(change_duration){
+      duration = change_duration;
+    }
 
     //攻擊段數 (ex: 陳3技能)
     let times = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'times');    
     if(times > 0){
-      //對於攻擊段數類型的技能，直接以得出的DPS來表示總傷
+      //攻擊段數類型的總傷直接以DPS來表示 (總傷實際上已於DPS算法中計算完成)
       return dps;
     }
 
