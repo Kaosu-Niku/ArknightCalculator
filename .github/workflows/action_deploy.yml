@@ -2,7 +2,7 @@ name: React GitHub Pages
 
 on:
   push:
-    branches: [ "master" ]
+    branches: [ "originGameData" ]
     paths:
       - "public/**"
       - "src/**"
