@@ -16,42 +16,37 @@ const UniequipCalculatorModel = {
     return currentCharEquip;
   },
 
-  //查詢幹員擁有的所有模組的資訊 (回傳object array，每個object都對應到一個uniequip_table.json的equipDict的資料)
+  //依照模組ID查詢幹員特定模組的資訊 (回傳object，詳細內容參考uniequip_table.json的equipDict)
   memberEquipData: (memberData, uniequipJsonData) => {
-  const equipDataList = [];
   const memberEquipID = UniequipCalculatorModel.memberEquipID(memberData, uniequipJsonData);
-
-    if(memberEquipID !== undefined){
+    if(memberEquipID){
       for (const id of memberEquipID) {
-        const currentData = uniequipJsonData.equipDict[id];
-        if(currentData !== undefined){
-          equipDataList.push(currentData);
+        if(memberData.equipid === id){          
+          return uniequipJsonData.equipDict[id];
         }
       }
-      return equipDataList;
     }
-    else{
-      return undefined;
-    }
+    return undefined;
   },
 
-  //查詢幹員擁有的所有模組的實際數據 (回傳object array，每個object都對應到一個battle_equip_table.json的資料)
-  memberEquipBattle: (memberData, uniequipJsonData, battleEquipJsonData) => {
-  const equipBattleList = [];
+  //依照模組ID查詢幹員特定模組的實際數據 (object，詳細內容參考battle_equip_table.json)
+  memberEquipBattle: (memberData, uniequipJsonData, battleEquipJsonData, customEquipid = null) => {
   const memberEquipID = UniequipCalculatorModel.memberEquipID(memberData, uniequipJsonData);
-
-    if(memberEquipID !== undefined){
+    if(memberEquipID){
       for (const id of memberEquipID) {
-        const currentBattle = battleEquipJsonData[id];
-        if(currentBattle !== undefined){
-          equipBattleList.push(currentBattle);
+        if(memberData.equipid === id){
+          //模組基本上會有3個升級階段，但只需要取最高階段的來做數值計算
+          const currentEquipBattle = battleEquipJsonData[id];
+          return currentEquipBattle.phases[currentEquipBattle.phases.length - 1];
         }
       }
-      return equipBattleList;
+      if(customEquipid){
+        //如果因為一些原因，參數memberData沒有辦法傳遞模組ID，替代方案於第三個參數手動添加模組ID以供查詢
+        const currentEquipBattle = battleEquipJsonData[customEquipid];
+        return currentEquipBattle.phases[currentEquipBattle.phases.length - 1];
+      }
     }
-    else{
-      return undefined;
-    }
+    return undefined;
   }
 }
 
