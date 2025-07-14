@@ -9,16 +9,31 @@ const SkillCalculatorModel = {
   skillFromMember: (skillrow, characterJsonData) => {
     const skillId = skillrow.skillId;
     let checkSkill = false;
+    let checkEquipid = false;
     
-    //遍歷所有幹員數據，並查詢技能數據中技能Id相符的幹員數據並回傳
+    //遍歷所有幹員數據，並查詢技能數據中技能Id和模組Id相符的幹員數據並回傳
     for (const key in characterJsonData) {
       if (characterJsonData.hasOwnProperty(key)){
         const currentCharacter = characterJsonData[key];
-        checkSkill = currentCharacter.skills.some((item) => {
-          return item.skillId === skillId
-        });
-        if(checkSkill === true){
-          return currentCharacter;
+        if(skillrow.equipid){
+          //有模組時，同時比對技能ID和模組ID的查詢方式
+          checkSkill = currentCharacter.skills.some((item) => {
+            return item.skillId === skillId 
+          });
+          checkEquipid = currentCharacter.equipid === skillrow.equipid;
+          if(checkSkill === true && checkEquipid === true){
+            return currentCharacter;
+          }
+          checkSkill = false;
+        }
+        else{
+          //無模組時，只比對技能ID的預設查詢方式
+          checkSkill = currentCharacter.skills.some((item) => {
+            return item.skillId === skillId
+          });
+          if(checkSkill === true){
+            return currentCharacter;
+          }
         }
       }
     }   
@@ -112,10 +127,10 @@ const SkillCalculatorModel = {
   },
 
   //計算幹員在技能期間的DPH
-  skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, other = null) => {
+  skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, other = null) => {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
-    const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
+    const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, uniequipJsonData, battleEquipJsonData);
     const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
     let attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
 
@@ -363,12 +378,12 @@ const SkillCalculatorModel = {
   },
 
   //計算幹員在技能期間的DPS
-  skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => {
+  skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData) => {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
-    const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData);
+    const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, uniequipJsonData, battleEquipJsonData, uniequipJsonData, battleEquipJsonData);
     const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
-    const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData);
+    const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData);
     let other_dph = 0; 
     let dps = 0;
     let other_dps = 0;
@@ -402,7 +417,7 @@ const SkillCalculatorModel = {
 
     //如果other_attackScale有值，則調用DPH計算額外造成傷害DPH    
     if(other_attack_scale !== 0){     
-      other_dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, true);
+      other_dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, true);
     }
 
     //額外傷害的攻擊間隔
@@ -480,10 +495,10 @@ const SkillCalculatorModel = {
     return (dps + other_dps);    
   },
   //計算幹員的技能總傷
-  skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData) => { 
+  skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData) => { 
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
 
-    const dps = SkillCalculatorModel.skillMemberDps(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, true);
+    const dps = SkillCalculatorModel.skillMemberDps(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, true);
     let duration = SkillCalculatorModel.skillData(type, skillRow).duration;
     //[技能持續時間]需要判斷 < 1 ，確保強力擊、脫手類、永續類的技能不會計算錯誤
     duration = duration < 1 ? 1 : duration;
@@ -504,7 +519,7 @@ const SkillCalculatorModel = {
     let trigger_time = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'attack@trigger_time');
     if(trigger_time > 0){
       //對於彈藥類型的技能，再次得出DPH，並乘上彈藥數量來計算總傷
-      const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData);
+      const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData);
       return dph * trigger_time;
     }
     

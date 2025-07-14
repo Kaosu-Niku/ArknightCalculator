@@ -1,4 +1,5 @@
 import TalentsCalculatorModel from './TalentsCalculator';
+import UniequipCalculatorModel from './UniequipCalculator';
 import CookieModel from './Cookie';
 
 const BasicCalculatorModel = {
@@ -70,35 +71,9 @@ const BasicCalculatorModel = {
     return subProfessionIdJsonData[subProfessionId];
   },
 
-  //查詢幹員的模組 (回傳object array類型，因為一個幹員可能會有多個模組，詳細內容參考uniequip_table.json)
-  memberUniequip: (memberRow, uniequipJsonData) => {
-    //由於幹員數據的potentialItemId的格式是: p_char_[數字]_[英文名稱]
-    //模組數據的charId的格式是: char_[數字]_[英文名稱]
-    //因此在比對id查詢之前，先刪除前面的p_兩字    
-    const memberId = memberRow.potentialItemId?.substring(2);
-
-    //charEquip是object型別，每個key值都對應一個幹員id，而每個value都是array型別，包含所有此幹員的模組id
-    const uniequipIdList = uniequipJsonData.charEquip[memberId];
-    
-    const uniequipContentList = [];
-
-    //一些幹員沒有模組，需要判斷undefined
-    uniequipIdList === undefined ? 
-    //對於無模組的幹員，至少給一個uniEquipName的假資料防止undefined
-    uniequipContentList.push({ uniEquipName: "無模組" }) : 
-    //有模組的幹員，遍歷屬於他的每一個模組
-    uniequipIdList.forEach(e => {
-      //equipDict是object型別，每個key值都對應一個模組id
-      const uniequip = uniequipJsonData.equipDict[e];
-      uniequipContentList.push(uniequip);
-    });        
-    
-    return uniequipContentList;
-  },
-
   //計算幹員的基礎數據在經過各種加成後的最終數據 (回傳object，key對應某個屬性)
   //(maxHp = 生命、atk = 攻擊、def = 防禦、magicResistance = 法抗、baseAttackTime = 攻擊間隔、attackSpeed = 攻速)
-  memberNumeric: (type, memberRow) => {
+  memberNumeric: (type, memberRow, uniequipJsonData, battleEquipJsonData) => {
     //流派
     const witchPhases = BasicCalculatorModel.type(type).witchPhases;
     const witchAttributesKeyFrames = BasicCalculatorModel.type(type).witchAttributesKeyFrames;
@@ -120,52 +95,102 @@ const BasicCalculatorModel = {
     //攻速
     let attackSpeed = basicData.attackSpeed; 
 
+    let log_potential_max_hp = 0;
+    let log_potential_atk = 0;
+    let log_potential_def = 0;
+    let log_potential_magic_resistance = 0;
+    let log_potential_attack_speed = 0;
     //潛能數值
     const potentialRanksData = memberRow.potentialRanks;
     potentialRanksData.forEach((element, index) => { 
       //一些幹員沒有辦法提升潛能，需要判斷null
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "MAX_HP"){
         //生命
+        log_potential_max_hp = element.buff.attributes.attributeModifiers[0].value;
         maxHp += element.buff.attributes.attributeModifiers[0].value;       
       }
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "ATK"){
         //攻擊
+        log_potential_atk = element.buff.attributes.attributeModifiers[0].value;
         atk += element.buff.attributes.attributeModifiers[0].value;
       }     
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "DEF"){
         //防禦
+        log_potential_def = element.buff.attributes.attributeModifiers[0].value;
         def += element.buff.attributes.attributeModifiers[0].value;
       } 
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "MAGIC_RESISTANCE"){
         //法抗
+        log_potential_magic_resistance = element.buff.attributes.attributeModifiers[0].value;
         magicResistance += element.buff.attributes.attributeModifiers[0].value;
       } 
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "ATTACK_SPEED"){
         //攻速
+        log_potential_attack_speed = element.buff.attributes.attributeModifiers[0].value;
         attackSpeed += element.buff.attributes.attributeModifiers[0].value;
       }    
     });
 
+    let log_favor_max_hp = 0;
+    let log_favor_atk = 0;
+    let log_favor_def = 0;
+    let log_favor_magic_resistance = 0;
     //信賴數值
     const favorKeyFrames = memberRow.favorKeyFrames;
     favorKeyFrames.forEach((element, index) => { 
       if(element.level === 50){
         //生命
+        log_favor_max_hp = element.data.maxHp;
         maxHp += element.data.maxHp;   
         //攻擊
+        log_favor_atk = element.data.atk;
         atk += element.data.atk;    
         //防禦
+        log_favor_def = element.data.def;
         def += element.data.def;  
         //法抗
+        log_favor_magic_resistance = element.data.magicResistance;
         magicResistance += element.data.magicResistance;
       }  
     });
 
+    let log_equip_max_hp = 0;
+    let log_equip_atk = 0;
+    let log_equip_def = 0;
+    let log_equip_magic_resistance = 0;
+    let log_equip_attack_speed = 0;
     //模組數值
-    const uniequip = memberRow.uniequip
-    //不是[精二1級]與[精二滿級]流派就沒有辦法開模組，需要判斷
     if(witchPhases === 2){
-      
+      const equipBattle = UniequipCalculatorModel.memberEquipBattle(memberRow, uniequipJsonData, battleEquipJsonData);
+      if(equipBattle){
+        for (const attributeBlackboard of equipBattle.attributeBlackboard) {
+          if(attributeBlackboard.key === 'max_hp'){
+            //生命
+            log_equip_max_hp = attributeBlackboard.value;
+            maxHp += attributeBlackboard.value;   
+          }
+          else if(attributeBlackboard.key === 'atk'){
+            //攻擊
+            log_equip_atk = attributeBlackboard.value;
+            atk += attributeBlackboard.value;   
+          }
+          else if(attributeBlackboard.key === 'def'){
+            //防禦
+            log_equip_def = attributeBlackboard.value;
+            def += attributeBlackboard.value;   
+          }
+          else if(attributeBlackboard.key === 'magic_resistance'){
+            //法抗
+            log_equip_magic_resistance = attributeBlackboard.value;
+            magicResistance += attributeBlackboard.value;   
+          }
+          else if(attributeBlackboard.key === 'attack_speed'){
+            //攻速
+            log_equip_attack_speed = attributeBlackboard.value;
+            attackSpeed += attributeBlackboard.value;
+          }                                                        
+        }
+      }
     }
 
     //天賦數值
@@ -195,36 +220,37 @@ const BasicCalculatorModel = {
             "1.4.原始法抗": basicData.magicResistance,
             "1.5.原始攻擊間隔": basicData.baseAttackTime,
             "1.6.原始攻速": basicData.attackSpeed,
-            "1.-----": "-----",   
-            "2.1.潛能生命": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP"))
-            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAX_HP")?.value || 0,
-            "2.2.潛能攻擊": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK"))
-            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATK")?.value || 0,
-            "2.3.潛能防禦": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF"))
-            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "DEF")?.value || 0,
-            "2.4.潛能法抗": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE"))
-            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "MAGIC_RESISTANCE")?.value || 0,
-            "2.5.潛能攻速": memberRow.potentialRanks.find(i => i.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED"))
-            ?.buff?.attributes.attributeModifiers.find(i => i.attributeType === "ATTACK_SPEED")?.value || 0,
-            "2.-----": "-----",
-            "3.1.信賴生命": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.maxHp || 0,
-            "3.2.信賴攻擊": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.atk || 0,
-            "3.3.信賴防禦": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.def || 0,
-            "3.4.信賴法抗": memberRow.favorKeyFrames?.find(i => i.level === 50)?.data.magicResistance || 0,
+            "2.-----": "-----",   
+            "2.1.潛能生命": log_potential_max_hp,
+            "2.2.潛能攻擊": log_potential_atk,
+            "2.3.潛能防禦": log_potential_def,
+            "2.4.潛能法抗": log_potential_magic_resistance,
+            "2.5.潛能攻速": log_potential_attack_speed,
             "3.-----": "-----",
-            "4.1.天賦生命": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'max_hp')),
-            "4.2.天賦攻擊": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'atk')),
-            "4.3.天賦防禦": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'def')),
-            "4.4.天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'),
-            "4.5.天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, 'base_attack_time'),
-            "4.6.天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed'),
+            "3.1.信賴生命": log_favor_max_hp,
+            "3.2.信賴攻擊": log_favor_atk,
+            "3.3.信賴防禦": log_favor_def,
+            "3.4.信賴法抗": log_favor_magic_resistance,
             "4.-----": "-----",
-            "5.1.加成後生命": maxHp,
-            "5.2.加成後攻擊": atk,
-            "5.3.加成後防禦": def,
-            "5.4.加成後法抗": magicResistance,
-            "5.5.加成後攻擊間隔": baseAttackTime,
-            "5.6.加成後攻速": attackSpeed,
+            "4.1.模組生命": log_equip_max_hp,
+            "4.2.模組攻擊": log_equip_atk,
+            "4.3.模組防禦": log_equip_def,
+            "4.4.模組法抗": log_equip_magic_resistance,
+            "4.4.模組攻速": log_equip_attack_speed,
+            "5.-----": "-----",
+            "5.1.天賦生命": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'max_hp')),
+            "5.2.天賦攻擊": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'atk')),
+            "5.3.天賦防禦": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'def')),
+            "5.4.天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'),
+            "5.5.天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, 'base_attack_time'),
+            "5.6.天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed'),
+            "6.-----": "-----",
+            "6.1.加成後生命": maxHp,
+            "6.2.加成後攻擊": atk,
+            "6.3.加成後防禦": def,
+            "6.4.加成後法抗": magicResistance,
+            "6.5.加成後攻擊間隔": baseAttackTime,
+            "6.6.加成後攻速": attackSpeed,
           }
         ); 
       }   
@@ -234,12 +260,12 @@ const BasicCalculatorModel = {
   },
 
   //計算敵方的DPS
-  enemyDps: (type, memberRow, enemyData) => {
+  enemyDps: (type, memberRow, enemyData, uniequipJsonData, battleEquipJsonData) => {
     //計算平A的DPS
     let dph = 0;
     let dps = 0;      
-    const def = BasicCalculatorModel.memberNumeric(type, memberRow).def
-    const magicResistance = BasicCalculatorModel.memberNumeric(type, memberRow).magicResistance
+    const def = BasicCalculatorModel.memberNumeric(type, memberRow, uniequipJsonData, battleEquipJsonData).def
+    const magicResistance = BasicCalculatorModel.memberNumeric(type, memberRow, uniequipJsonData, battleEquipJsonData).magicResistance
     switch(enemyData.enemyAttackType){
       case "物傷":
         dph = enemyData.enemyAttack - def;
