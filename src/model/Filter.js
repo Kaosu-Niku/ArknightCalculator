@@ -47,17 +47,6 @@ const FilterModel = {
     skillDataFilter: (processedSkillData, characterJsonData, checkRarity) => {
         let finalData = processedSkillData;
 
-        //過濾掉找不到所屬幹員的數據
-        finalData = finalData.filter(item => {
-            const data = SkillCalculatorModel.skillFromMember(item, characterJsonData);
-            if(data !== null){
-                return true;
-            }
-            else{
-                return false;
-            }
-        });
-
         //過濾掉不是幹員的數據
         finalData = finalData.filter(item => {
             const profession = SkillCalculatorModel.skillFromMember(item, characterJsonData)?.profession
@@ -70,6 +59,17 @@ const FilterModel = {
                 return true;
             }
         });
+
+        //過濾掉找不到所屬幹員的數據
+        finalData = finalData.filter(item => {
+            const data = SkillCalculatorModel.skillFromMember(item, characterJsonData);
+            if(data !== null){
+                return true;
+            }
+            else{
+                return false;
+            }
+        }); 
 
         //過濾掉被取消勾選星級的數據
         Object.keys(checkRarity).forEach(key => {

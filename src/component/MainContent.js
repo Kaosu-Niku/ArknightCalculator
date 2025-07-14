@@ -3,6 +3,7 @@ import $, { data } from "jquery";
 import "datatables.net";
 import "datatables.net-dt/css/dataTables.dataTables.min.css";
 import BasicCalculatorModel from '../model/BasicCalculator';
+import UniequipCalculatorModel from '../model/UniequipCalculator';
 import SkillCalculatorModel from '../model/SkillCalculator';
 import CookieModel from '../model/Cookie';
 import FilterModel from '../model/Filter';
@@ -73,16 +74,15 @@ function MainContent() {
       const subProfessionIdJsonData = await subProfessionIdResponse.json();
       //幹員數據 
       const characterResponse = await fetch(`${process.env.PUBLIC_URL}/json/character_table.json`);
-      const characterJsonData = await characterResponse.json();
+      const characterJsonData = await characterResponse.json();console.log('幹員數據',characterJsonData);
 
       //幹員模組資訊
       const uniequipResponse = await fetch(`${process.env.PUBLIC_URL}/json/uniequip_table.json`);
-      const uniequipJsonData = await uniequipResponse.json();
+      const uniequipJsonData = await uniequipResponse.json();console.log('幹員模組資訊',uniequipJsonData);
 
       //幹員模組數據
       const battleEquipResponse = await fetch(`${process.env.PUBLIC_URL}/json/battle_equip_table.json`);
-      const battleEquipJsonData = await battleEquipResponse.json();
-      console.log('模組數據JSON',battleEquipJsonData);
+      const battleEquipJsonData = await battleEquipResponse.json();console.log('幹員模組數據',battleEquipJsonData);
 
       //編輯JSON用參考代碼
       // const abcResponse = await fetch(`${process.env.PUBLIC_URL}/json/技能數據簡化版.json`);
@@ -100,25 +100,32 @@ function MainContent() {
       
       //幹員數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換     
       let filterCharacterData = Object.values(characterJsonData);
-      //幹員數據過濾處
+      //幹員數據過濾處理
       filterCharacterData = FilterModel.characterDataFilter(filterCharacterData, checkRarity); 
+      const processedCharacterData = filterCharacterData;
       
-      //幹員數據與模組數據結合
       //由於現在有模組系統，幹員的數據計算避不開模組加成
       //但是幹員和模組之間屬於一對多的關係，因此無法只遍歷幹員資料來呈現表格
       //有幾個模組就要再重複增添對應的幾筆幹員資料，讓資料最終依然能以一對一關係呈現
-      const processedCharacterData = filterCharacterData;
-      // const processedCharacterData = [];
-      // for (const key in filterCharacterData) {
-      //     if (filterCharacterData.hasOwnProperty(key)) {
-      //         const originalMember = filterCharacterData[key];  
-      //         const uniequipContentList = BasicCalculatorModel.memberUniequip(filterCharacterData[key], uniequipJsonData);            
-      //         uniequipContentList.forEach(e => {               
-      //           const MemberCopy = { ...originalMember, uniequip: e };
-      //           processedCharacterData.push(MemberCopy);
-      //         });
-      //     }
-      // }
+
+      //幹員數據與模組數據結合           
+      for (const key in filterCharacterData) {
+        if (filterCharacterData.hasOwnProperty(key)) {
+          const currentMember = filterCharacterData[key];  
+          const uniequipContentList = UniequipCalculatorModel.memberEquipID(currentMember, uniequipJsonData);  
+          if(uniequipContentList) {
+            uniequipContentList.forEach(e => {               
+              //在原幹員數據上另外添加上equipid屬性，equipid屬性對應模組ID
+              const MemberCopy = { ...currentMember, equipid: e };
+              //由於在原數據，有模組的幹員其模組ID array的第一筆總是預設的空模組
+              //因此要做判斷，不要將空模組資料插入幹員數據，否則原幹員數據+空模組資料會重複到
+              if(e.includes("_001_") === false){
+                processedCharacterData.push(MemberCopy);
+              }            
+            });
+          }               
+        }
+      }
       
       //基礎數值表格
       $(memberTableRef.current).DataTable({ 
@@ -131,7 +138,23 @@ function MainContent() {
           { title: "星級", data: "rarity", render: function (data, type, row) { return BasicCalculatorModel.memberRarity(row); } },
           { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(row, professionJsonData).chineseName; } },
           { title: "分支", data: "subProfessionId", render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).chineseName; } },
-          //{ title: "模組", data: "uniequip", render: function (data, type, row) { return row.uniequip.uniEquipName;} },
+          { title: "模組", data: "equipid", 
+            render: function (data, type, row) { 
+              const equipData = UniequipCalculatorModel.memberEquipData(row, uniequipJsonData);
+              if(equipData){
+                const filteredData = equipData.filter(item => item['uniEquipId'] === data);
+                if(filteredData.length > 0){
+                  return filteredData[0].uniEquipName;
+                }
+                else{
+                  return `${row.name}证章`;
+                }
+              }
+              else{
+                return `${row.name}证章`;
+              }
+            } 
+          },
           { title: "生命", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).maxHp); } },
           { title: "傷害類型", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).attackType; } },
           { title: "攻擊", data: "phases", render: function (data, type, row) { return FilterModel.numberFilter(BasicCalculatorModel.memberNumeric(whichType, row).atk); } },
@@ -156,9 +179,27 @@ function MainContent() {
       const skillJsonData = await skillResponse.json();
 
       //技能數據解讀出來的型別是雙層Object，但dataTable的column只接受陣列，因此需先做轉換
-      let processedSkillData = Object.values(skillJsonData);
+      let filterSkillData = Object.values(skillJsonData);
       //資料處理
-      processedSkillData = FilterModel.skillDataFilter(processedSkillData, characterJsonData, checkRarity);
+      filterSkillData = FilterModel.skillDataFilter(filterSkillData, characterJsonData, checkRarity);
+      const processedSkillData = filterSkillData;
+
+      //技能數據與模組數據結合           
+      for (const key in filterSkillData) {
+        if (filterSkillData.hasOwnProperty(key)) {
+          const currentMember = SkillCalculatorModel.skillFromMember(filterSkillData[key], processedCharacterData);  
+          const uniequipContentList = UniequipCalculatorModel.memberEquipID(currentMember, uniequipJsonData);  
+          if(uniequipContentList) {
+            uniequipContentList.forEach(e => {               
+              //在原幹員數據上另外添加上equipid屬性，equipid屬性對應模組ID
+              const SkillCopy = { ...filterSkillData[key], equipid: e };
+              if(e.includes("_001_") === false){
+                processedSkillData.push(SkillCopy);
+              } 
+            });
+          }               
+        }
+      }
 
       //技能表格(傷害類)
       $(attackSkillTableRef.current).DataTable({
@@ -170,6 +211,23 @@ function MainContent() {
           { title: "星級", data: "rarity", render: function (data, type, row) { return BasicCalculatorModel.memberRarity(SkillCalculatorModel.skillFromMember(row, processedCharacterData)); } },
           { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(SkillCalculatorModel.skillFromMember(row, processedCharacterData), professionJsonData).chineseName; } },
           { title: "分支", data: "subProfessionId", render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(SkillCalculatorModel.skillFromMember(row, processedCharacterData), subProfessionIdJsonData).chineseName; } },
+          { title: "模組", data: "equipid", 
+            render: function (data, type, row) { 
+              const equipData = UniequipCalculatorModel.memberEquipData(SkillCalculatorModel.skillFromMember(row, processedCharacterData), uniequipJsonData);
+              if(equipData){
+                const filteredData = equipData.filter(item => item['uniEquipId'] === data);
+                if(filteredData.length > 0){
+                  return filteredData[0].uniEquipName;
+                }
+                else{
+                  return `${SkillCalculatorModel.skillFromMember(row, processedCharacterData).name}证章`;
+                }
+              }
+              else{
+                return `${SkillCalculatorModel.skillFromMember(row, processedCharacterData).name}证章`;
+              }
+            } 
+          },
           { title: "技能名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).name; } },
           { title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
           { title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },

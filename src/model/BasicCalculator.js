@@ -70,32 +70,6 @@ const BasicCalculatorModel = {
     return subProfessionIdJsonData[subProfessionId];
   },
 
-  //查詢幹員的模組 (回傳object array類型，因為一個幹員可能會有多個模組，詳細內容參考uniequip_table.json)
-  memberUniequip: (memberRow, uniequipJsonData) => {
-    //由於幹員數據的potentialItemId的格式是: p_char_[數字]_[英文名稱]
-    //模組數據的charId的格式是: char_[數字]_[英文名稱]
-    //因此在比對id查詢之前，先刪除前面的p_兩字    
-    const memberId = memberRow.potentialItemId?.substring(2);
-
-    //charEquip是object型別，每個key值都對應一個幹員id，而每個value都是array型別，包含所有此幹員的模組id
-    const uniequipIdList = uniequipJsonData.charEquip[memberId];
-    
-    const uniequipContentList = [];
-
-    //一些幹員沒有模組，需要判斷undefined
-    uniequipIdList === undefined ? 
-    //對於無模組的幹員，至少給一個uniEquipName的假資料防止undefined
-    uniequipContentList.push({ uniEquipName: "無模組" }) : 
-    //有模組的幹員，遍歷屬於他的每一個模組
-    uniequipIdList.forEach(e => {
-      //equipDict是object型別，每個key值都對應一個模組id
-      const uniequip = uniequipJsonData.equipDict[e];
-      uniequipContentList.push(uniequip);
-    });        
-    
-    return uniequipContentList;
-  },
-
   //計算幹員的基礎數據在經過各種加成後的最終數據 (回傳object，key對應某個屬性)
   //(maxHp = 生命、atk = 攻擊、def = 防禦、magicResistance = 法抗、baseAttackTime = 攻擊間隔、attackSpeed = 攻速)
   memberNumeric: (type, memberRow) => {
