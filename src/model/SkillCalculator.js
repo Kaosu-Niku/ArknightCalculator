@@ -128,7 +128,7 @@ const SkillCalculatorModel = {
   },
 
   //計算幹員在技能期間的DPH
-  skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, other = null) => {
+  skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, other_atk_scale_check = null, other_attackType_check = null) => {
     const witchPhases = BasicCalculatorModel.type(type).witchPhases;
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
@@ -143,8 +143,6 @@ const SkillCalculatorModel = {
       );
       blackboardList = partsObject.overrideTraitDataBundle.candidates[partsObject.overrideTraitDataBundle.candidates.length - 1].blackboard;
     }
-    
-
 
     let attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
 
@@ -171,25 +169,20 @@ const SkillCalculatorModel = {
     }
 
     //額外傷害的攻擊倍率
-    let other_attack_scale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'OTHER_atk_scale'); //技能倍率
-    //需要判斷 > 0，確保原資料是0的時候不會計算出錯
-    other_attack_scale = other_attack_scale > 0 ? other_attack_scale : 1;
-
-    //御械術師的使用浮游單元造成額外傷害
-    if(subProfessionName === "御械術師"){
-      other_attack_scale = 1.1;
-    }
-
-    //投擲手的餘震造成額外傷害
-    if(subProfessionName === "投擲手"){
-      other_attack_scale = 0.5;
-    }
+    let other_attack_scale = 1; //技能倍率
 
     //傷害倍率
     let damageMulti = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'damage_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     damageMulti = damageMulti > 0 ? damageMulti : 1
     let talentDamageMulti = memberTalent?.damage_scale || 1; //天賦倍率 
+
+    if(witchPhases === 2){
+      //劍豪X模的提升造成傷害
+      if(subProfessionName === "劍豪"){
+        damageMulti *= blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 1;
+      }
+    }
     
     //削減敵方防禦
     let defDivide = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'def'); //技能倍率
@@ -213,6 +206,12 @@ const SkillCalculatorModel = {
     let change_attackType = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_attackType');
     if(change_attackType){
       attackType = change_attackType;
+    }
+
+    //額外傷害的傷害類型
+    //如果other_attackType_check有值，則表示此DPH計算是經由DPS計算調用的，用於轉換額外傷害的傷害類型  
+    if(other_attackType_check !== null){
+      attackType = other_attackType_check;
     }
 
     //馭法鐵衛的開啟技能轉法傷
@@ -262,8 +261,9 @@ const SkillCalculatorModel = {
 
         finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale)) - finalEnemyDef);
 
-        //如果other有值，則表示此DPH計算是經由DPS計算調用的，用於計算額外傷害而非主傷害  
-        if(other !== null){
+        //如果other_atk_scale_check有值，則表示此DPH計算是經由DPS計算調用的，用於計算額外傷害而非主傷害  
+        if(other_atk_scale_check !== null){
+          other_attack_scale = other_atk_scale_check;
           //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
           //以10為界線區分，絕對值 < 10 的值是(造成一定比例傷害)，絕對值 > 10 的值是(造成固定傷害)          
           if(other_attack_scale < 10){
@@ -276,7 +276,6 @@ const SkillCalculatorModel = {
       break;
       case "法術":
         //法術DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) * ((100 - (敵人法抗 * (1 + 削減敵方法抗[比例]) + 削減敵方法抗[固定])) / 100)) * 傷害倍率)
-
         
         //[削減敵方法抗]在原遊戲數據同時有正數跟負數，正數是我方加法抗，負數才是削減敵方法抗，因此需要判斷 < 0
         //同時還要判斷值大小，絕對值 < 1 的值是比例值，絕對值 > 1 的值是固定值
@@ -310,8 +309,9 @@ const SkillCalculatorModel = {
 
         finalAttack = ((memberNumeric.atk * (1 + attackMulti + talentAttackMulti) * (attackScale * talentAttackScale)) * ((100 - finalEnemyRes) / 100));
 
-        //如果other有值，則表示此DPH計算是經由DPS計算調用的，用於計算額外傷害而非主傷害  
-        if(other !== null){
+        //如果other_atk_scale_check有值，則表示此DPH計算是經由DPS計算調用的，用於計算額外傷害而非主傷害  
+        if(other_atk_scale_check !== null){
+          other_attack_scale = other_atk_scale_check;
           //通常造成額外傷害都是(造成一定比例傷害)和(造成固定傷害)
           //以10為界線區分，絕對值 < 10 的值是(造成一定比例傷害)，絕對值 > 10 的值是(造成固定傷害)          
           if(other_attack_scale < 10){
@@ -376,7 +376,6 @@ const SkillCalculatorModel = {
               "1.2. 攻擊乘算-天賦倍率": talentAttackMulti,
               "2.1. 攻擊倍率-技能倍率": attackScale,
               "2.2. 攻擊倍率-天賦倍率": talentAttackScale,
-              "2.3. 額外傷害攻擊倍率-技能倍率": other_attack_scale,
               "3.1. 傷害倍率-技能倍率": damageMulti,
               "3.2. 傷害倍率-天賦倍率": talentDamageMulti,
               "4.1. 削減敵方防禦-技能倍率": defDivide,
@@ -406,10 +405,23 @@ const SkillCalculatorModel = {
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, uniequipJsonData, battleEquipJsonData, uniequipJsonData, battleEquipJsonData);
     const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
-    const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData);
-    let other_dph = 0; 
+    const memberEquipBattle = UniequipCalculatorModel.memberEquipBattle(memberData, uniequipJsonData, battleEquipJsonData, skillRow.equipid);
+    let blackboardList;
+    //獲取模組的特性追加的數值提升數據陣列
+    if(memberEquipBattle){
+      const partsObject = memberEquipBattle.parts.find(obj => 
+        obj.overrideTraitDataBundle && obj.overrideTraitDataBundle.candidates !== null
+      );
+      blackboardList = partsObject.overrideTraitDataBundle.candidates[partsObject.overrideTraitDataBundle.candidates.length - 1].blackboard;
+    }
+
+    let attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
+    let dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData);
+    let other_skill_dph = 0; 
+    let other_subProfession_dph = 0;
     let dps = 0;
-    let other_dps = 0;
+    let other_skill_dps = 0;
+    let other_subProfession_dps = 0;
 
     //攻擊間隔調整
     let attackTimeRevise = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'base_attack_time'); //技能倍率
@@ -418,6 +430,14 @@ const SkillCalculatorModel = {
     let attackSpeedRevise = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'attack_speed'); //技能倍率
     let talentAttackSpeedRevise = memberTalent?.attack_speed || 0; //天賦倍率
 
+    if(witchPhases === 2){
+      //要塞Y模的提升攻擊速度
+      if(subProfessionName === "要塞"){
+        //目前持有要塞Y模的角色是號角，但是確認到號角的模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前的專案邏輯無法順利抓取到要塞Y模的特性key
+        //attackSpeedRevise += blackboardList?.find(item => item.key === '???')?.value ?? 0;
+      }
+    }
+
     //最終攻擊間隔 = (幹員攻擊間隔 + 攻擊間隔調整) / ((幹員攻速 + 攻擊速度調整) / 100)
     let finalAttackTime = (memberNumeric.baseAttackTime + attackTimeRevise + talentAttackTimeRevise) / ((memberNumeric.attackSpeed + attackSpeedRevise + talentAttackSpeedRevise) / 100);
     
@@ -425,36 +445,61 @@ const SkillCalculatorModel = {
     let attackCount = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'ATTACK_COUNT'); //技能倍率
     attackCount = attackCount === 0 ? 1 : attackCount;
 
-    //額外傷害的攻擊倍率
-    let other_attack_scale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'OTHER_atk_scale'); //技能倍率
-    
+    //技能額外傷害的傷害類型
+    let other_attackType = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_OTHER_attackType'); //技能倍率
+
+    //技能額外傷害的攻擊倍率
+    let other_attack_scale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'OTHER_atk_scale'); //技能倍率  
+
+    //如果other_attack_scale有值，則調用DPH計算額外造成傷害DPH    
+    if(other_attack_scale !== 0){     
+      other_skill_dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, other_attack_scale, other_attackType);
+    }
+
     //御械術師的使用浮游單元造成額外傷害
     if(subProfessionName === "御械術師"){
-      other_attack_scale = 1.1;
+      other_subProfession_dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, 1.1, attackType);           
     }
 
-    //投擲手的餘震造成額外傷害
+    //投擲手的造成一次額外傷害
     if(subProfessionName === "投擲手"){
-      other_attack_scale = 0.5;
+      other_subProfession_dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, 0.5, attackType);      
+      if(witchPhases === 2){
+        //投擲手X模的造成二次額外傷害
+        let other2_atk_scale = blackboardList?.find(item => item.key === 'attack@append_atk_scale')?.value ?? 0;
+        if(other2_atk_scale > 0){
+          other_subProfession_dph += other_subProfession_dph;
+        }        
+      }
     }
 
-    //如果other_attackScale有值，則調用DPH計算額外造成傷害DPH    
-    if(other_attack_scale !== 0){     
-      other_dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, true);
+    if(witchPhases === 2){
+      //領主X模的造成額外法傷
+      if(subProfessionName === "領主"){
+        let other2_atk_scale = blackboardList?.find(item => item.key === 'atk_scale_m')?.value ?? 0;
+        if(other2_atk_scale > 0){
+          other_subProfession_dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, other2_atk_scale, "法術");
+        }                   
+      }
     }
 
-    //額外傷害的攻擊間隔
+    //技能額外傷害的攻擊間隔
     let other_base_attack_time = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'OTHER_base_attack_time'); //技能倍率
     //如果other_base_attack_time有值，則視為新的攻擊間隔，無值則使用原本的最終攻擊間隔，這適用於額外造成傷害是獨立間隔的技能 (ex: 白雪2技能)    
 
     //預設的DPS算法: DPH / 最終攻擊間隔
     dps = (dph * attackCount) / finalAttackTime;
-    if(other_base_attack_time !== 0){     
-      other_dps = (other_dph * attackCount) / other_base_attack_time;
-    }
-    else{
-      other_dps = (other_dph * attackCount) / finalAttackTime;
-    }
+    other_subProfession_dps = (other_subProfession_dph * attackCount) / finalAttackTime;
+    if(other_attack_scale !== 0){
+      if(other_base_attack_time !== 0){     
+        other_skill_dps = (other_skill_dph * attackCount) / other_base_attack_time;
+        other_subProfession_dps += (other_subProfession_dph * attackCount) / other_base_attack_time;
+      }
+      else{
+        other_skill_dps = (other_skill_dph * attackCount) / finalAttackTime;
+        other_subProfession_dps += (other_subProfession_dph * attackCount) / finalAttackTime;
+      }
+    }   
 
     //技能持續時間
     let duration = SkillCalculatorModel.skillData(type, skillRow).duration;
@@ -472,7 +517,11 @@ const SkillCalculatorModel = {
       //脫手類、永續類的技能需要透過自定技能屬性為技能添加CHANGE_duration將技能持續時間調整 > 1，則DPS才不會計算錯誤
       //強力擊類型的DPS直接以DPH來表示 (因為是一次性傷害，所以沒帶入攻擊間隔做計算)
       dps = (dph * attackCount);
-      other_dps = (other_dph * attackCount);
+      other_subProfession_dps = (other_subProfession_dph * attackCount);
+      if(other_attack_scale !== 0){
+        other_skill_dps = (other_skill_dph * attackCount);
+        other_subProfession_dps += (other_subProfession_dph * attackCount);
+      }     
     }
 
     //攻擊段數 (ex: 陳3技能)
@@ -480,7 +529,11 @@ const SkillCalculatorModel = {
     if(times > 0){
       //攻擊段數類型的DPS算法: DPH * 段數
       dps = (dph * attackCount) * times;
-      other_dps = (other_dph * attackCount) * times;
+      other_subProfession_dps = (other_subProfession_dph * attackCount) / times;
+      if(other_attack_scale !== 0){
+        other_skill_dps = (other_skill_dph * attackCount) * times;
+        other_subProfession_dps += (other_subProfession_dph * attackCount) / times;
+      }     
     }
 
     //打印log
@@ -499,25 +552,29 @@ const SkillCalculatorModel = {
               "0.1. 幹員原始攻擊間隔": memberNumeric.baseAttackTime,
               "0.2. 幹員原始攻速": memberNumeric.attackSpeed,
               "1.1. 攻擊間隔調整-技能倍率": attackTimeRevise,
-              "1.2. 攻擊間隔調整-天賦倍率": talentAttackTimeRevise,
-              "1.3. 額外傷害攻擊間隔-技能倍率": other_base_attack_time,
+              "1.2. 攻擊間隔調整-天賦倍率": talentAttackTimeRevise,              
               "2.1. 攻速調整-技能倍率": attackSpeedRevise,
               "2.2. 攻速調整-天賦倍率": talentAttackSpeedRevise,
               "3.1. 最終攻擊間隔": finalAttackTime,
               "3.2. 連擊數-技能倍率": attackCount,
               "3.3. 攻擊段數": times,
-              "4.1. 主傷害DPH": dph,
-              "4.2. 額外傷害DPH": other_dph,
-              "5.1. 主傷害DPS": dps,
-              "5.2. 額外傷害DPS": other_dps,
-              "10. 最終DPS": (dps + other_dps),
+              "4.1. 技能額外傷害的傷害類型-技能倍率": other_attackType,
+              "4.2. 技能額外傷害的攻擊倍率-技能倍率": other_attack_scale,
+              "4.3. 技能額外傷害的攻擊間隔-技能倍率": other_base_attack_time,
+              "5.1. 主傷害DPH": dph,
+              "5.2. 技能額外傷害DPH": other_skill_dph,
+              "5.3. 分支特性額外傷害DPH": other_subProfession_dph,
+              "5.4. 主傷害DPS": dps,
+              "5.5. 技能額外傷害DPS": other_skill_dps,
+              "5.6. 分支特性額外傷害DPS": other_subProfession_dps,
+              "10. 最終DPS": (dps + other_skill_dps + other_subProfession_dps),
             }
           ); 
         }
       }
     }
     //還沒有適配技能CD是攻回的情境
-    return (dps + other_dps);    
+    return (dps + other_skill_dps + other_subProfession_dps);    
   },
   //計算幹員的技能總傷
   skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData) => { 

@@ -444,8 +444,9 @@ function MainContent() {
           <small className="col-12 text-center">{`潛能加成 (生命、攻擊、防禦、法抗、攻速)`}</small>
           <small className="col-12 text-center">{`滿信賴加成 (生命、攻擊、防禦、法抗)`}</small>
           <small className="col-12 text-center">{`天賦加成 (生命、攻擊、防禦、法抗、攻擊間隔、攻速)`}</small>
-          <small className="col-12 text-center">{`(還未添加模組加成，以及天賦加成目前只處理了四星以下的數據)`}</small>
-          <small className="col-12 text-center">{`(因此精二以及五星六星的數據還不準，請勿參考)`}</small>
+          <small className="col-12 text-center">{`模組加成 (生命、攻擊、防禦、法抗、攻速)`}</small>
+          <small className="col-12 text-center">{`(模組系統和五星六星的天賦數據還未處理)`}</small>
+          <small className="col-12 text-center">{`(因此精二流派以及五星六星的數據還不準，請勿參考)`}</small>
         </div> 
       </div>  
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='member_table'>

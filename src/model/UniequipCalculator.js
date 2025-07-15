@@ -63,6 +63,7 @@ const UniequipCalculatorModel = {
 
       if(currentEquipBattle){
         //log獲取基礎數值提升
+        logObject['0.0. 模組ID'] = customEquipid ?? memberData.equipid;
         logObject['1.0. 基礎數值提升'] = '';
         for (const attributeBlackboard of currentEquipBattle.attributeBlackboard){
           logObject[`1.${logCount_attributeBlackboard}. ${attributeBlackboard.key}`] = attributeBlackboard.value;
