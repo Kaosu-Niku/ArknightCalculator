@@ -41,7 +41,7 @@ function App() {
             輸出幹員數據計算log
           </a>
         </p>
-        <div class="collapse w-50" id="collapseExample">
+        <div class="collapse w-25" id="collapseExample">
           <div class="card card-body">
             <div className='row justify-content-center row-gap-1'>
               <small className="col-12 text-center">{`(此為電腦版才能使用的功能)`}</small>

@@ -60,11 +60,13 @@ function MainContent() {
 
       //初始化log輸出狀態
       CookieModel.setLog('memberNumeric', false);
-      CookieModel.setLog('skillMemberDph', false);
-      CookieModel.setLog('skillMemberDph_check', []);
-      CookieModel.setLog('skillMemberDps', false);
-      CookieModel.setLog('skillMemberDps_check', []);
       CookieModel.setLog('memberTalent', false);     
+      CookieModel.setLog('memberEquip', false); 
+      CookieModel.setLog('memberEquip_check', []); 
+      CookieModel.setLog('memberDph', false);
+      CookieModel.setLog('memberDph_check', []);
+      CookieModel.setLog('memberDps', false);
+      CookieModel.setLog('memberDps_check', []);  
 
       //幹員職業
       const professionResponse = await fetch(`${process.env.PUBLIC_URL}/json/profession.json`);
@@ -74,15 +76,15 @@ function MainContent() {
       const subProfessionIdJsonData = await subProfessionIdResponse.json();
       //幹員數據 
       const characterResponse = await fetch(`${process.env.PUBLIC_URL}/json/character_table.json`);
-      const characterJsonData = await characterResponse.json();console.log('幹員數據',characterJsonData);
+      const characterJsonData = await characterResponse.json();console.log('全幹員數據',characterJsonData);
 
       //幹員模組資訊
       const uniequipResponse = await fetch(`${process.env.PUBLIC_URL}/json/uniequip_table.json`);
-      const uniequipJsonData = await uniequipResponse.json();console.log('幹員模組資訊',uniequipJsonData);
+      const uniequipJsonData = await uniequipResponse.json();console.log('全幹員模組資訊',uniequipJsonData);
 
       //幹員模組數據
       const battleEquipResponse = await fetch(`${process.env.PUBLIC_URL}/json/battle_equip_table.json`);
-      const battleEquipJsonData = await battleEquipResponse.json();console.log('幹員模組數據',battleEquipJsonData);
+      const battleEquipJsonData = await battleEquipResponse.json();console.log('全幹員模組數據',battleEquipJsonData);
 
       //編輯JSON用參考代碼
       // const abcResponse = await fetch(`${process.env.PUBLIC_URL}/json/技能數據簡化版.json`);
@@ -145,7 +147,7 @@ function MainContent() {
           { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(row, professionJsonData).chineseName; } },
           { title: "分支", data: "subProfessionId", render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).chineseName; } },
           { title: "模組", data: "equipid", 
-            render: function (data, type, row) { 
+            render: function (data, type, row) {
               const equipData = UniequipCalculatorModel.memberEquipData(row, uniequipJsonData);
               if(equipData){
                   return equipData.uniEquipName;
@@ -442,8 +444,9 @@ function MainContent() {
           <small className="col-12 text-center">{`潛能加成 (生命、攻擊、防禦、法抗、攻速)`}</small>
           <small className="col-12 text-center">{`滿信賴加成 (生命、攻擊、防禦、法抗)`}</small>
           <small className="col-12 text-center">{`天賦加成 (生命、攻擊、防禦、法抗、攻擊間隔、攻速)`}</small>
-          <small className="col-12 text-center">{`(還未添加模組加成，以及天賦加成目前只處理了四星以下的數據)`}</small>
-          <small className="col-12 text-center">{`(因此精二以及五星六星的數據還不準，請勿參考)`}</small>
+          <small className="col-12 text-center">{`模組加成 (生命、攻擊、防禦、法抗、攻速)`}</small>
+          <small className="col-12 text-center">{`(模組系統和五星六星的天賦數據還未處理)`}</small>
+          <small className="col-12 text-center">{`(因此精二流派以及五星六星的數據還不準，請勿參考)`}</small>
         </div> 
       </div>  
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='member_table'>
