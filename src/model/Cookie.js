@@ -47,6 +47,8 @@ const CookieModel = {
         "skillMemberDps": false,
         "skillMemberDps_check": [],
         "memberTalent": false,
+        "memberEquip": false,
+        "memberEquip_check": [],
     },
     //取得log
     getLog: (name) => {

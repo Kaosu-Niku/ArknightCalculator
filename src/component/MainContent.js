@@ -65,6 +65,8 @@ function MainContent() {
       CookieModel.setLog('skillMemberDps', false);
       CookieModel.setLog('skillMemberDps_check', []);
       CookieModel.setLog('memberTalent', false);     
+      CookieModel.setLog('memberEquip', false); 
+      CookieModel.setLog('memberEquip_check', []); 
 
       //幹員職業
       const professionResponse = await fetch(`${process.env.PUBLIC_URL}/json/profession.json`);
@@ -145,7 +147,7 @@ function MainContent() {
           { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(row, professionJsonData).chineseName; } },
           { title: "分支", data: "subProfessionId", render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).chineseName; } },
           { title: "模組", data: "equipid", 
-            render: function (data, type, row) { 
+            render: function (data, type, row) {if(row.name === '艾丽妮'){console.log('艾丽妮', data);}
               const equipData = UniequipCalculatorModel.memberEquipData(row, uniequipJsonData);
               if(equipData){
                   return equipData.uniEquipName;
