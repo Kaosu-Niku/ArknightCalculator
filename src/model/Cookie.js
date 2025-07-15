@@ -42,13 +42,17 @@ const CookieModel = {
     //此處用於輸出log功能，為防止重複輸出，需要用判斷值來判斷是否已輸出
     logList: {
         "memberNumeric": false,
-        "skillMemberDph": false,
-        "skillMemberDph_check": [],
-        "skillMemberDps": false,
-        "skillMemberDps_check": [],
+
         "memberTalent": false,
+
         "memberEquip": false,
         "memberEquip_check": [],
+
+        "memberDph": false,
+        "memberDph_check": [],
+
+        "memberDps": false,
+        "memberDps_check": [],    
     },
     //取得log
     getLog: (name) => {

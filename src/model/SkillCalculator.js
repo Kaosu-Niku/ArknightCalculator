@@ -3,6 +3,7 @@ import SkillCustomCalculatorModel from './SkillCustomCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
 import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import CookieModel from './Cookie';
+import UniequipCalculatorModel from './UniequipCalculator';
 
 const SkillCalculatorModel = {
   //查詢技能所屬的幹員數據 (回傳object，詳細內容參考character_table.json)
@@ -128,10 +129,23 @@ const SkillCalculatorModel = {
 
   //計算幹員在技能期間的DPH
   skillMemberDph: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, other = null) => {
+    const witchPhases = BasicCalculatorModel.type(type).witchPhases;
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, uniequipJsonData, battleEquipJsonData);
     const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
+    const memberEquipBattle = UniequipCalculatorModel.memberEquipBattle(memberData, uniequipJsonData, battleEquipJsonData, skillRow.equipid);
+    let blackboardList;
+    //獲取模組的特性追加的數值提升數據陣列
+    if(memberEquipBattle){
+      const partsObject = memberEquipBattle.parts.find(obj => 
+        obj.overrideTraitDataBundle && obj.overrideTraitDataBundle.candidates !== null
+      );
+      blackboardList = partsObject.overrideTraitDataBundle.candidates[partsObject.overrideTraitDataBundle.candidates.length - 1].blackboard;
+    }
+    
+
+
     let attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
 
     let finalAttack = 0;
@@ -183,6 +197,13 @@ const SkillCalculatorModel = {
 
     //無視防禦
     let defSub = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'def_penetrate_fixed'); //技能倍率
+
+    if(witchPhases === 2){
+      //劍豪Y模的無視防禦
+      if(subProfessionName === "劍豪"){
+        defSub += blackboardList?.find(item => item.key === 'def_penetrate_fixed')?.value ?? 0;
+      }
+    }
 
     //削減敵方法抗       
     let resDivide = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'magic_resistance'); //技能倍率
@@ -323,11 +344,11 @@ const SkillCalculatorModel = {
     //打印log
     if(memberData.name === CookieModel.getCookie('memberName')){  
       const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
-      if(CookieModel.getLog('skillMemberDph_check').includes(skillName) === false){          
-        CookieModel.setLog('skillMemberDph', false);
-        if(CookieModel.getLog('skillMemberDph') === false){            
-          CookieModel.setLog('skillMemberDph', true);
-          CookieModel.getLog('skillMemberDph_check').push(skillName);
+      if(CookieModel.getLog('memberDph_check').includes(`${skillRow.equipid}-${skillName}`) === false){          
+        CookieModel.setLog('memberDph', false);
+        if(CookieModel.getLog('memberDph') === false){            
+          CookieModel.setLog('memberDph', true);
+          CookieModel.getLog('memberDph_check').push(`${skillRow.equipid}-${skillName}`);
 
           //技能加成數據log
           const skillData = SkillCalculatorModel.skillData(type, skillRow);
@@ -343,8 +364,9 @@ const SkillCalculatorModel = {
           );
 
           //DPH算法各項數據log
+          const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
           console.log(
-            `${memberData.name}的「${skillName}」的DPH算法各項數據log`,
+            `${memberData.name}的【${equipData? equipData.uniEquipName : '無'}】模組的「${skillName}」的DPH算法各項數據log`,
             {
               "0.1. 幹員原始攻擊力": memberNumeric.atk,
               "0.2. 敵人原始防禦力": enemyData.enemyDef,
@@ -379,6 +401,7 @@ const SkillCalculatorModel = {
 
   //計算幹員在技能期間的DPS
   skillMemberDps: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData) => {
+    const witchPhases = BasicCalculatorModel.type(type).witchPhases;
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, uniequipJsonData, battleEquipJsonData, uniequipJsonData, battleEquipJsonData);
@@ -463,13 +486,15 @@ const SkillCalculatorModel = {
     //打印log
     if(memberData.name === CookieModel.getCookie('memberName')){  
       const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
-      if(CookieModel.getLog('skillMemberDps_check').includes(skillName) === false){          
-        CookieModel.setLog('skillMemberDps', false);
-        if(CookieModel.getLog('skillMemberDps') === false){            
-          CookieModel.setLog('skillMemberDps', true);
-          CookieModel.getLog('skillMemberDps_check').push(skillName);
+      if(CookieModel.getLog('memberDps_check').includes(`${skillRow.equipid}-${skillName}`) === false){          
+        CookieModel.setLog('memberDps', false);
+        if(CookieModel.getLog('memberDps') === false){
+          CookieModel.setLog('memberDps', true);
+          CookieModel.getLog('memberDps_check').push(`${skillRow.equipid}-${skillName}`);
+
+          const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
           console.log(
-            `${memberData.name}的「${skillName}」的DPS算法各項數據log`,
+            `${memberData.name}的【${equipData? equipData.uniEquipName : '無'}】模組的「${skillName}」的DPS算法各項數據log`,
             {
               "0.1. 幹員原始攻擊間隔": memberNumeric.baseAttackTime,
               "0.2. 幹員原始攻速": memberNumeric.attackSpeed,
