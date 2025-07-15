@@ -76,15 +76,15 @@ function MainContent() {
       const subProfessionIdJsonData = await subProfessionIdResponse.json();
       //幹員數據 
       const characterResponse = await fetch(`${process.env.PUBLIC_URL}/json/character_table.json`);
-      const characterJsonData = await characterResponse.json();console.log('幹員數據',characterJsonData);
+      const characterJsonData = await characterResponse.json();console.log('全幹員數據',characterJsonData);
 
       //幹員模組資訊
       const uniequipResponse = await fetch(`${process.env.PUBLIC_URL}/json/uniequip_table.json`);
-      const uniequipJsonData = await uniequipResponse.json();console.log('幹員模組資訊',uniequipJsonData);
+      const uniequipJsonData = await uniequipResponse.json();console.log('全幹員模組資訊',uniequipJsonData);
 
       //幹員模組數據
       const battleEquipResponse = await fetch(`${process.env.PUBLIC_URL}/json/battle_equip_table.json`);
-      const battleEquipJsonData = await battleEquipResponse.json();console.log('幹員模組數據',battleEquipJsonData);
+      const battleEquipJsonData = await battleEquipResponse.json();console.log('全幹員模組數據',battleEquipJsonData);
 
       //編輯JSON用參考代碼
       // const abcResponse = await fetch(`${process.env.PUBLIC_URL}/json/技能數據簡化版.json`);
@@ -147,7 +147,7 @@ function MainContent() {
           { title: "職業", data: "profession", render: function (data, type, row) { return BasicCalculatorModel.memberProfession(row, professionJsonData).chineseName; } },
           { title: "分支", data: "subProfessionId", render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(row, subProfessionIdJsonData).chineseName; } },
           { title: "模組", data: "equipid", 
-            render: function (data, type, row) {if(row.name === '艾丽妮'){console.log('艾丽妮', data);}
+            render: function (data, type, row) {
               const equipData = UniequipCalculatorModel.memberEquipData(row, uniequipJsonData);
               if(equipData){
                   return equipData.uniEquipName;
