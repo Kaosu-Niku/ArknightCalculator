@@ -20,6 +20,9 @@ function MainContent() {
   const [enemySpd, setEnemySpd] = useState(1);
   const [enemySkill, setEnemySkill] = useState([]);
   const enemyData = {enemyHp, enemyAttackType, enemyAttack, enemyDef, enemyRes, enemySpd, enemySkill }
+  const [search, setSearch] = useState(false);
+  const [candidates, setCandidates] = useState(false);
+  const [candidatesStyle, setCandidatesStyle] = useState("col-4 col-md-3 text-left border border-1 rounded");
 
   const memberTableRef = useRef(null);
   const attackSkillTableRef = useRef(null); 
@@ -256,8 +259,8 @@ function MainContent() {
           //{ title: "天賦效果提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'talent_scale'); } },
           //{ title: "傷害倍率", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'damage_scale'); } },
           //{ title: "力度", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, characterJsonData, 'force'); } },
-          { title: "技能期間DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(SkillCalculatorModel.skillMemberDps(whichType, row, processedCharacterData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData)); } },
-          { title: "技能總傷", data: null, render: function (data, type, row) { return FilterModel.numberFilter(SkillCalculatorModel.skillMemberTotal(whichType, row, processedCharacterData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData)); } },
+          { title: "技能期間DPS", data: null, render: function (data, type, row) { return FilterModel.numberFilter(SkillCalculatorModel.skillMemberDps(whichType, row, processedCharacterData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates)); } },
+          { title: "技能總傷", data: null, render: function (data, type, row) { return FilterModel.numberFilter(SkillCalculatorModel.skillMemberTotal(whichType, row, processedCharacterData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates)); } },
           
         ],
         order: [
@@ -272,46 +275,46 @@ function MainContent() {
         }
       });
       //技能表格(防禦類)
-      $(defSkillTableRef.current).DataTable({
-        destroy: true,
-        data: processedSkillData,
-        pageLength: 20,
-        processing: true,
-        language: {
-          processing: "數據載入中，請稍候..." // 自定義提示文字
-        },
-        columns: [
-          { title: "名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillFromMember(row, processedCharacterData).name; } },
-          { title: "技能名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).name; } },
-          { title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
-          { title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },
-          //{ title: "彈藥數量", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'attack@trigger_time'); } },
-          //{ title: "技能類型", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(SkillCalculatorModel.skillFromMember(row, processedCharacterData), subProfessionIdJsonData).attackType; } },   
-          //{ title: "生命提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'max_hp'); } },
-          //{ title: "防禦提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'def') > 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, 'def') : 0; } },
-          //{ title: "我方法抗提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'magic_resistance') > 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, 'magic_resistance') : 0; } },
-          //{ title: "閃避提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, characterJsonData, 'prob'); } }, 
-          //{ title: "生命回復", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'heal_scale'); } },
-          //{ title: "每秒固定回血", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'hp_recovery_per_sec'); } }, 
-          //{ title: "每秒百分比回血", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'hp_recovery_per_sec_by_max_hp_ratio'); } },
+      // $(defSkillTableRef.current).DataTable({
+      //   destroy: true,
+      //   data: processedSkillData,
+      //   pageLength: 20,
+      //   processing: true,
+      //   language: {
+      //     processing: "數據載入中，請稍候..." // 自定義提示文字
+      //   },
+      //   columns: [
+      //     { title: "名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillFromMember(row, processedCharacterData).name; } },
+      //     { title: "技能名稱", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).name; } },
+      //     { title: "冷卻時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).spData.spCost; } },
+      //     { title: "持續時間", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillData(whichType, row).duration; } },
+      //     { title: "彈藥數量", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'attack@trigger_time'); } },
+      //     { title: "技能類型", data: null, render: function (data, type, row) { return BasicCalculatorModel.memberSubProfessionId(SkillCalculatorModel.skillFromMember(row, processedCharacterData), subProfessionIdJsonData).attackType; } },   
+      //     { title: "生命提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'max_hp'); } },
+      //     { title: "防禦提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'def') > 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, 'def') : 0; } },
+      //     { title: "我方法抗提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'magic_resistance') > 0 ? SkillCalculatorModel.skillCustomAttribute(whichType, row, 'magic_resistance') : 0; } },
+      //     { title: "閃避提升", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillAttribute(whichType, row, characterJsonData, 'prob'); } }, 
+      //     { title: "生命回復", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'heal_scale'); } },
+      //     { title: "每秒固定回血", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'hp_recovery_per_sec'); } }, 
+      //     { title: "每秒百分比回血", data: null, render: function (data, type, row) { return SkillCalculatorModel.skillCustomAttribute(whichType, row, characterJsonData, 'hp_recovery_per_sec_by_max_hp_ratio'); } },
        
-        ],
-        order: [
-          [0, 'asc'], // 索引[0]欄位 = 名稱 asc = 升序
-          [4, 'asc'], // 索引[4]欄位 = 模組 asc = 升序
-        ],
-        drawCallback: function(settings) {
-          $(attackSkillTableRef.current).find('th').css({
-            'background-color': '#c5c5c5',
-            'color': 'black'
-          });
-        }
-      });
+      //   ],
+      //   order: [
+      //     [0, 'asc'], // 索引[0]欄位 = 名稱 asc = 升序
+      //     [4, 'asc'], // 索引[4]欄位 = 模組 asc = 升序
+      //   ],
+      //   drawCallback: function(settings) {
+      //     $(attackSkillTableRef.current).find('th').css({
+      //       'background-color': '#c5c5c5',
+      //       'color': 'black'
+      //     });
+      //   }
+      // });
     };
     CookieModel.setCookie('type', whichType);
     CookieModel.setCookie('rarity', checkRarity);
     loadData(whichType);
-  }, [whichType, checkRarity, enemyData]); // 每次修改敵人數值或改變流派選擇或勾選星級時就更新網頁並重新初始化表格
+  }, [whichType, checkRarity, search, candidates]); // 改變流派選擇、勾選星級、點擊查詢、勾選模組特性追加，更新網頁並重新初始化表格
 
   return (
     <div className='container'>  
@@ -439,17 +442,20 @@ function MainContent() {
           <input type="checkbox" className='col-2 col-md-1' checked={checkRarity["TIER_6"]} onChange={(event) => { setCheckRarity((pre) => ({ ...pre, ["TIER_6"]: event.target.checked, })); }} />
           <label className='col-2 col-md-1'>六星</label>
         </div>
+        <div className="row justify-content-around row-gap-1 p-2">     
+          <button className='btn btn-primary col-9 col-md-5' onClick={() => { setSearch(!search); }}>查詢</button>
+        </div>
+         
+      </div>  
+      <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='member_table'>
         <div className='row justify-content-center row-gap-1'>
           <small className="col-12 text-center">{`目前表格呈現的數據已包含以下加成:`}</small>
           <small className="col-12 text-center">{`潛能加成 (生命、攻擊、防禦、法抗、攻速)`}</small>
           <small className="col-12 text-center">{`滿信賴加成 (生命、攻擊、防禦、法抗)`}</small>
           <small className="col-12 text-center">{`天賦加成 (生命、攻擊、防禦、法抗、攻擊間隔、攻速)`}</small>
           <small className="col-12 text-center">{`模組加成 (生命、攻擊、防禦、法抗、攻速)`}</small>
-          <small className="col-12 text-center">{`(模組系統和五星六星的天賦數據還未處理)`}</small>
-          <small className="col-12 text-center">{`(因此精二流派以及五星六星的數據還不準，請勿參考)`}</small>
-        </div> 
-      </div>  
-      <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='member_table'>
+          <small className="col-12 text-center">{`(五星和六星的天賦數據還未處理完畢，因此五星和六星的數據還不準，請勿參考)`}</small>
+        </div>
         <div className='table-responsive'>
           <table ref={memberTableRef} className="table table-bordered table-hover display table-light"></table>
         </div>     
@@ -457,13 +463,61 @@ function MainContent() {
       <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='attackSkill_table'>
         <div className='row justify-content-center row-gap-1'>
           <small className="col-12 text-center">{`持續時間為-1或0表示其為強力擊、永續類、子彈類的技能`}</small>
-          <small className="col-12 text-center">{`技能與天賦中含有概率或是條件觸發的一律不計算，默認全程沒有觸發`}</small>
+          <small className="col-12 text-center">{`技能與天賦中含有概率或是條件觸發的，一律不計算，默認沒有觸發`}</small>
+          <small className="col-12 text-center">{`模組的特性追加中與傷害計算無關的屬性，一律不計算，默認沒有觸發`}</small>
+          <small className="col-12 text-center">{`模組的特性追加中含有概率或是條件觸發的，預設沒有觸發，但可勾選下列選項觸發`}</small>  
+          <div className="col-12 text-center my-2">
+            <input type="checkbox" className='col-2 col-md-1' checked={candidates} onChange={(event) => { setCandidates(event.target.checked); }} />
+            <span className="col-6 text-danger">{`是否觸發所有含有概率或是條件觸發的模組特性追加?`}</span>
+          </div>                                   
+          <small className="col-12 text-center">{`(模組更新天賦數據還未處理完畢，因此精2帶模組的數據都還不準，請勿參考)`}</small>
+          <a className="col-12 text-center" data-bs-toggle="collapse" href="#collapseCandidates" role="button" aria-expanded="false" aria-controls="collapseCandidates">{`點此詳細了解目前觸發的模組特性追加`}</a>
+          <div class="collapse col-12" id="collapseCandidates">
+          <div class="card card-body border border-2 border-secondary">
+            <div className='row justify-content-start row-gap-1'>
+              <small className="col-12 text-left">{`先鋒:`}</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>衝鋒手Y模:<br/> 攻擊生命低於一定比例的敵人時提升攻擊倍率</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>尖兵X模:<br/> 阻擋敵人時提升攻擊力</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>戰術家Y模:<br/> 攻擊援軍阻擋的敵人時提升攻擊倍率</small>
+              <small className="col-12 text-left">{`近衛:`}</small> 
+              <small className={ candidates ? candidatesStyle : 'd-none' }>無畏者X模:<br/> 攻擊阻擋的敵人時提升攻擊倍率</small>     
+              <small className={ candidates ? candidatesStyle : 'd-none' }>無畏者Y模:<br/> 首次被擊倒不撤退並減少一定比例最大生命和提升攻擊速度</small> 
+              <small className={ candidates ? candidatesStyle : 'd-none' }>術戰者X模:<br/> 未阻擋敵人時提升攻擊速度</small>  
+              <small className={ candidates ? candidatesStyle : 'd-none' }>術戰者Y模:<br/> 自身阻擋的敵人獲得一定比例的法術脆弱</small> 
+              <small className={ candidates ? candidatesStyle : 'd-none' }>鬥士Y模:<br/> 生命高於一定比例時提升攻擊速度</small>                      
+              <small className={ candidatesStyle }>劍豪X模:<br/> 提升造成傷害</small>
+              <small className={ candidatesStyle }>劍豪Y模:<br/> 無視防禦</small>  
+              <small className={ candidates ? candidatesStyle : 'd-none' }>強攻手X模:<br/> 攻擊阻擋的敵人時提升攻擊倍率</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>撼地者X模:<br/> 濺射範圍有3名以上敵人時提升攻擊倍率</small>
+              <small className={ candidatesStyle }>領主X模:<br/> 造成額外法傷</small>  
+              <small className={ candidates ? candidatesStyle : 'd-none' }>領主Y模(數據有問題):<br/> 攻擊範圍有2名以上敵人時提升攻擊速度</small>     
+              <small className={ candidates ? candidatesStyle : 'd-none' }>教官X模:<br/> 攻擊自身未阻擋的敵人時提升攻擊倍率</small>                                         
+              <small className="col-12 text-left">{`狙擊:`}</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>速射手X模:<br/> 攻擊空中敵人時提升攻擊倍率</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>速射手Y模(數據有問題):<br/> 攻擊範圍有地面敵人時提升攻擊速度</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>神射手X模(數據有問題):<br/> 攻擊距離越遠的人造成越高傷害</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>攻城手X模(數據有問題):<br/> 攻擊重量&gt;3的敵人時提升攻擊倍率</small> 
+              <small className={ candidates ? candidatesStyle : 'd-none' }>炮手X模:<br/> 攻擊阻擋的敵人時提升攻擊倍率</small> 
+              <small className={ candidatesStyle }>炮手Y模:<br/> 無視防禦</small>  
+              <small className={ candidatesStyle }>散射手X模:<br/> 攻擊前方一橫排的敵人時提升更高攻擊倍率</small> 
+              <small className={ candidatesStyle }>投擲手X模:<br/> 造成二次額外傷害</small>   
+              <small className="col-12 text-left">{`術師:`}</small>
+              <small className={ candidatesStyle }>中堅術師X模:<br/> 無視法抗</small> 
+              <small className={ candidatesStyle }>御械術師Y模:<br/> 浮游單元傷害上限提升</small>
+              <small className="col-12 text-left">{`重裝:`}</small>
+              <small className={ candidatesStyle }>要塞Y模: 提升攻擊速度</small>   
+              <small className="col-12 text-left">{`醫療:`}</small>
+              <small className="col-12 text-left">{`輔助:`}</small>
+              <small className="col-12 text-left">{`特種:`}</small>
+            </div>             
+          </div>
+        </div>
         </div>
         <div className='table-responsive'>
           <table ref={attackSkillTableRef} className="table table-bordered table-hover display table-light"></table>
         </div>        
       </div> 
-      <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='defSkill_table'>
+      {/* <div className='p-2 m-1 border border-2 rounded-4 bg-light' id='defSkill_table'>
         <div className='row justify-content-center row-gap-1'>
           <small className="col-12 text-center">{`持續時間為-1或0表示其為強力擊、永續類、子彈類的技能`}</small>
           <small className="col-12 text-center">{`技能與天賦中含有概率或是條件觸發的一律不計算，默認全程沒有觸發`}</small>
@@ -471,7 +525,7 @@ function MainContent() {
         <div className='table-responsive'>
           <table ref={defSkillTableRef} className="table table-bordered table-hover display table-light"></table>
         </div>        
-      </div>              
+      </div>               */}
     </div> 
   );
 }

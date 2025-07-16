@@ -35,7 +35,7 @@ function App() {
       <MainContent />
       <Footer />
       {/* 電腦版呈現在左邊的的Collapse */}
-      <div className="d-none d-md-block position-fixed" style={{ top: '15%', left: '10px' }}>
+      <div className="d-none d-md-block position-fixed" style={{ top: '25%', left: '10px' }}>
         <p>
           <a class="btn btn-primary" data-bs-toggle="collapse" href="#collapseExample" role="button" aria-expanded="false" aria-controls="collapseExample">
             輸出幹員數據計算log
@@ -48,10 +48,10 @@ function App() {
               <small className="col-12 text-center">{`此功能可用於輸出指定幹員的所有相關數據計算的log`}</small>
               <small className="col-12 text-center">{`請於下方輸入欄輸入指定幹員的名稱並點擊確認按鈕`}</small>
               <small className="col-12 text-center">{`(以簡體中文名稱為準，其他語言的名稱將無法指定)`}</small>
-              <input className="col-3 text-center" type="text" id="cookieMemberName" name="cookieMemberName" 
+              <input className="col-6 text-center" type="text" id="cookieMemberName" name="cookieMemberName" 
               value={cookieMemberName} onChange={(e) => setCookieMemberName(e.target.value)} required/>
               <span className="col-12"></span>
-              <button className="col-2 btn btn-primary" onClick={() => { 
+              <button className="col-4 btn btn-primary" onClick={() => { 
                  CookieModel.setCookie('memberName', cookieMemberName); 
                  //alert(`已指定${cookieMemberName}`) 
                 }}>確認</button>
