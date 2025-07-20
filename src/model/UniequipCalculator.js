@@ -112,6 +112,199 @@ const UniequipCalculatorModel = {
       }
     }
     return currentEquipBattle;
+  },
+
+  //依照模組ID和指定key名嘗試查詢幹員特定模組的分支特性追加，並回傳此分支特性追加的加成值 (若查詢不到則根據情況回傳1或0)
+  memberEquipTrait: (skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfession, attributeKey) => {
+    const memberEquipBattle = UniequipCalculatorModel.memberEquipBattle(memberData, uniequipJsonData, battleEquipJsonData, skillRow.equipid);
+    let blackboardList;
+    //獲取模組的特性追加的數值提升數據陣列
+    if(memberEquipBattle){
+      const partsObject = memberEquipBattle.parts.find(obj => 
+        obj.overrideTraitDataBundle && obj.overrideTraitDataBundle.candidates !== null
+      );
+      blackboardList = partsObject.overrideTraitDataBundle.candidates[partsObject.overrideTraitDataBundle.candidates.length - 1].blackboard;
+    }
+  
+    if(witchPhases === 2){
+      //開啟模組的分支特性追加
+
+      //無條件的分支特性追加
+        switch(attributeKey){
+          //攻擊乘算
+          case 'atk': 
+            switch(subProfession){
+              case '解放者': //解放者的磨刀疊攻擊力 (還未有相關模組)                    
+              return 2;
+            }
+          break;
+          //攻擊倍率
+          case 'atk_scale': 
+            switch(subProfession){
+              case '獵手': //獵手的攻擊消耗子彈並提升攻擊倍率 (還未有相關模組)                 
+              return 1.2;
+              case '散射手': //散射手X模的攻擊前方一橫排的敵人時提升更高攻擊倍率               
+              return blackboardList?.find(item => item.key === 'atk_scale')?.value ?? 1.5;
+            }
+          break;
+          //傷害倍率
+          case 'damage_scale': 
+            switch(subProfession){
+              case '劍豪': //劍豪X模的提升造成傷害                 
+              return blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 1;
+            }
+          break;
+          //無視防禦
+          case 'def_penetrate_fixed': 
+            switch(subProfession){
+              case '劍豪': //劍豪Y模的無視防禦
+              case '炮手': //炮手Y模的無視防禦               
+              return blackboardList?.find(item => item.key === 'def_penetrate_fixed')?.value ?? 0;
+            }
+          break;
+          //無視防禦
+          case 'magic_resist_penetrate_fixed': 
+            switch(subProfession){
+              case '中堅術師': //中堅術師X模的無視法抗            
+              return blackboardList?.find(item => item.key === 'magic_resist_penetrate_fixed')?.value ?? 0;
+            }
+          break;
+          //攻速調整
+          case 'attack_speed': 
+            switch(subProfession){
+              case '要塞': //要塞Y模的提升攻擊速度 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)            
+              return blackboardList?.find(item => item.key === 'attack_speed')?.value ?? 0;
+            }
+          break;
+          //額外傷害的攻擊倍率
+          case 'other2_attack_scale': 
+            switch(subProfession){
+              case '御械術師': //御械術師Y模的浮游單元傷害上限提升            
+              return blackboardList?.find(item => item.key === 'max_atk_scale')?.value ?? 1.1;
+              case '投擲手': //投擲手X模的造成二次額外傷害            
+              return blackboardList?.find(item => item.key === 'attack@append_atk_scale')?.value ?? 0.5;
+              case '領主': //領主X模的造成額外法傷            
+              return blackboardList?.find(item => item.key === 'atk_scale_m')?.value ?? 0;
+            }
+          break;
+          //額外傷害的傷害類型
+          case 'other2_attack_type': 
+            switch(subProfession){
+              case '御械術師': //御械術師Y模的浮游單元傷害上限提升            
+              return '法術';
+              case '投擲手': //投擲手X模的造成二次額外傷害            
+              return '物理';
+              case '領主': //領主X模的造成額外法傷            
+              return '法術';
+            }
+          break;
+          //額外傷害的傷害類型
+          case 'enable_third_attack': 
+            switch(subProfession){
+              case '投擲手': //投擲手X模的造成二次額外傷害            
+              return blackboardList?.find(item => item.key === 'attack@enable_third_attack')?.value ?? 0;
+            }
+          break;
+        }
+
+      //有條件的分支特性追加
+      if(candidates_check){
+        switch(attributeKey){
+          //攻擊乘算
+          case 'atk': 
+            switch(subProfession){
+              case '尖兵': //尖兵X模的阻擋敵人時提升攻擊力                
+              case '吟遊者': //吟遊者X模的阻擋敵人時提升攻擊力 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)              
+              case '處決者': //處決者Y模的周圍沒有幹員時提升攻擊力              
+              return blackboardList?.find(item => item.key === 'atk')?.value ?? 0;
+              case '行商': //行商Y模的每次特性消耗費用時提升攻擊力(可疊加) (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)
+              return (blackboardList?.find(item => item.key === 'atk')?.value * blackboardList?.find(item => item.key === 'max_stack_cnt')?.value) ?? 0;
+            }
+          break;
+          //攻擊倍率
+          case 'atk_scale': 
+            switch(subProfession){
+              case '衝鋒手': //衝鋒手Y模的攻擊生命低於一定比例的敵人時提升攻擊倍率   
+              case '戰術家': //戰術家Y模的攻擊援軍阻擋的敵人時提升攻擊倍率
+              case '無畏者': //無畏者X模的攻擊阻擋的敵人時提升攻擊倍率
+              case '強攻手': //強攻手X模的攻擊阻擋的敵人時提升攻擊倍率
+              case '教官': //教官X模的攻擊自身未阻擋的敵人時提升攻擊倍率
+              case '速射手': //速射手X模的攻擊空中敵人時提升攻擊倍率
+              case '攻城手': //攻城手X模的攻擊重量>3的敵人時提升攻擊倍率 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)
+              case '炮手': //炮手X模的攻擊阻擋的敵人時提升攻擊倍率
+              case '塑靈術師': //塑靈術師X模的攻擊召喚物阻擋的敵人時提升攻擊倍率
+              return blackboardList?.find(item => item.key === 'atk_scale')?.value ?? 1;
+              case '撼地者': //撼地者X模的濺射範圍有3名以上敵人時提升攻擊倍率
+              return blackboardList?.find(item => item.key === 'atk_scale_e')?.value ?? 1;
+            }
+          break;
+          //傷害倍率
+          case 'damage_scale': 
+            switch(subProfession){
+              case '術戰者': //術戰者Y模的自身阻擋的敵人獲得一定比例的法術脆弱 (暫時將此效果視為提升傷害倍率去算)                
+              return blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 1;
+              case '神射手': //神射手X模的攻擊距離越遠的人造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.15 這種屬於加算類的數據，因此將實際數據再+1以方便帶入乘算) 
+              case '轟擊術師': //轟擊術師X模的攻擊距離越遠的人造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.15 這種屬於加算類的數據，因此將實際數據再+1以方便帶入乘算)
+              case '陣法術師': //陣法術師Y模的攻擊範圍有越多敵人時造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.15 這種屬於加算類的數據，因此將實際數據再+1以方便帶入乘算)             
+              return (1 + blackboardList?.find(item => item.key === 'damage_scale')?.value) ?? 1;
+            }
+          break;
+          //攻速調整
+          case 'attack_speed': 
+            switch(subProfession){
+              case '無畏者': //無畏者Y模的首次被擊倒不撤退並減少一定比例最大生命和提升攻擊速度
+              case '術戰者': //術戰者X模的未阻擋敵人時提升攻擊速度
+              case '鬥士': //鬥士Y模的生命高於一定比例時提升攻擊速度
+              case '領主': //領主Y模的攻擊範圍有2名以上敵人時提升攻擊速度 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)
+              case '速射手': //速射手Y模的攻擊範圍有地面敵人時提升攻擊速度 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)
+              case '秘術師': //秘術師Y模的有儲存攻擊能量時提升攻擊速度 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)
+              return blackboardList?.find(item => item.key === 'attack_speed')?.value ?? 0;
+            }
+          break;
+        }
+      }
+    }else{
+      //無需模組就有的分支特性
+
+      switch(attributeKey){
+        //攻擊乘算
+        case 'atk': 
+          switch(subProfession){
+            case '解放者': //解放者的磨刀疊攻擊力                    
+            return 2;
+          }
+        break;
+        //攻擊倍率
+        case 'atk_scale': 
+          switch(subProfession){
+            case '獵手': //獵手的攻擊消耗子彈並提升攻擊倍率                 
+            return 1.2;
+            case '散射手': //散射手的攻擊前方一橫排的敵人時提升攻擊倍率               
+            return 1.5;
+          }
+        break;
+        //額外傷害的攻擊倍率
+        case 'other2_attack_scale': 
+          switch(subProfession){
+            case '御械術師': //御械術師的使用浮游單元造成額外傷害            
+            return 1.1;
+            case '投擲手': //投擲手的造成一次額外傷害            
+            return 0.5;
+          }
+        break;
+        //額外傷害的傷害類型
+        case 'other2_attack_type': 
+          switch(subProfession){
+            case '御械術師': //御械術師的使用浮游單元造成額外傷害            
+            return '法術';
+            case '投擲手': //投擲手的造成一次額外傷害            
+            return '物理';
+          }
+        break;
+      }
+    }
+
+    return undefined;
   }
 }
 
