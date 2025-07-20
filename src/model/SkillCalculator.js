@@ -1,9 +1,9 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import SkillCustomCalculatorModel from './SkillCustomCalculator';
+import UniequipCalculatorModel from './UniequipCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
 import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import CookieModel from './Cookie';
-import UniequipCalculatorModel from './UniequipCalculator';
 
 const SkillCalculatorModel = {
   //查詢技能所屬的幹員數據 (回傳object，詳細內容參考character_table.json)
@@ -79,7 +79,7 @@ const SkillCalculatorModel = {
   },
 
   //包含合理性檢查以及自定技能數據查詢的技能屬性查詢
-  skillCustomAttribute: (type, skillrow, memberData, attribute) => {
+  skillCustomAttribute: (type, skillrow, memberData, uniequipJsonData, battleEquipJsonData, attribute) => {
     const skillData = SkillCalculatorModel.skillData(type, skillrow);
 
     //此處查詢方式較為特殊，分成多個步驟
@@ -90,10 +90,10 @@ const SkillCalculatorModel = {
     //1. 用attribute比對原技能數據看是否有符合結果
     if(skillData.blackboard?.find(entry => entry.key === attribute) == undefined){
       //2. 沒有符合，用checkName比對自定技能數據看是否有符合結果
-      if(checkName in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData)){
-        if(attribute in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData)[checkName]){
+      if(checkName in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData, uniequipJsonData, battleEquipJsonData)){
+        if(attribute in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData, uniequipJsonData, battleEquipJsonData)[checkName]){
           //3. 有符合，回傳value
-          return SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData)[checkName][attribute] ?? 0;
+          return SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData, uniequipJsonData, battleEquipJsonData)[checkName][attribute] ?? 0;
         }
       }
       //3. 沒有符合，回傳0
@@ -112,10 +112,10 @@ const SkillCalculatorModel = {
           //ex: 深靛-灯塔守卫者 的 base_attack_time = 0.8，而 base_attack_time 對應傷害公式的攻擊間隔調整
           //可是傷害公式對攻擊間隔調整的算法是固定秒數加減，然而 深靛-灯塔守卫者 的 base_attack_time 意思卻是減少80%時間
           //所以對於此種例子就必須先在過濾清單過濾掉，然後才再自定技能數據修正回來
-          if(checkName in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData)){
-            if(attribute in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData)[checkName]){
+          if(checkName in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData, uniequipJsonData, battleEquipJsonData)){
+            if(attribute in SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData, uniequipJsonData, battleEquipJsonData)[checkName]){
               //4. 有符合，回傳value
-              return SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData)[checkName][attribute] ?? 0;
+              return SkillCustomCalculatorModel.skillListToAttackSkill(type, skillrow, memberData, uniequipJsonData, battleEquipJsonData)[checkName][attribute] ?? 0;
             }
           }
           //4. 沒有符合，回傳0
@@ -136,42 +136,42 @@ const SkillCalculatorModel = {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, uniequipJsonData, battleEquipJsonData);
-    const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
+    const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData, uniequipJsonData, battleEquipJsonData)[memberData.name];
 
     let attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
 
     let finalAttack = 0;
 
     //攻擊乘算
-    let attackMulti = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'atk'); //技能倍率
+    let attackMulti = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'atk'); //技能倍率
     let talentAttackMulti = memberTalent?.attack || 0; //天賦倍率
     let traitAttackMulti = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'atk') ?? 0; //分支特性倍率
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'atk') ?? 0; //分支特性倍率
 
     //攻擊倍率
-    let attackScale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'atk_scale'); //技能倍率
+    let attackScale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'atk_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     attackScale = attackScale > 0 ? attackScale : 1;
     let talentAttackScale = memberTalent?.atk_scale || 1; //天賦倍率 
     let traitAttackScale = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'atk_scale') ?? 1; //分支特性倍率
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'atk_scale') ?? 1; //分支特性倍率
 
     //額外傷害的攻擊倍率
     let other_attack_scale = 1; //技能倍率
 
     //傷害倍率
-    let damageMulti = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'damage_scale'); //技能倍率
+    let damageMulti = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'damage_scale'); //技能倍率
     //需要判斷 > 0，確保原資料是0的時候不會計算出錯
     damageMulti = damageMulti > 0 ? damageMulti : 1
     let talentDamageMulti = memberTalent?.damage_scale || 1; //天賦倍率 
     let traitDamageMulti = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'damage_scale') ?? 1; //分支特性倍率
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'damage_scale') ?? 1; //分支特性倍率
     
     let finalEnemyDef = 0;
     let finalEnemyRes = 0;
     
     //削減敵方防禦
-    let defDivide = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'def'); //技能倍率
+    let defDivide = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'def'); //技能倍率
     let talentDefDivide = memberTalent?.def_penetrate_fixed || 0; //天賦倍率
 
     //[削減敵方防禦]在原遊戲數據同時有正數跟負數，正數是我方加防禦，負數才是削減敵方防禦，因此需要判斷 < 0
@@ -199,9 +199,9 @@ const SkillCalculatorModel = {
     }    
     
     //無視防禦
-    let defSub = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'def_penetrate_fixed'); //技能倍率
+    let defSub = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'def_penetrate_fixed'); //技能倍率
     let traitDefSub = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'def_penetrate_fixed') ?? 0; //分支特性倍率
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'def_penetrate_fixed') ?? 0; //分支特性倍率
 
     //敵人剩餘防禦
     finalEnemyDef = enemyData.enemyDef * (1 + defDivideA + talentDefDivideA) + defDivideB + talentDefDivideB - defSub - traitDefSub;
@@ -209,10 +209,10 @@ const SkillCalculatorModel = {
     finalEnemyDef = finalEnemyDef < 0 ? 0 : finalEnemyDef;  
 
     //削減敵方法抗       
-    let resDivide = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'magic_resistance'); //技能倍率
+    let resDivide = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'magic_resistance'); //技能倍率
     let talentResDivide = memberTalent?.magic_resistance || 0; //天賦倍率
     let traitResDivide = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'magic_resist_penetrate_fixed') ?? 0; //分支特性倍率
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'magic_resist_penetrate_fixed') ?? 0; //分支特性倍率
 
     //[削減敵方法抗]在原遊戲數據同時有正數跟負數，正數是我方加法抗，負數才是削減敵方法抗，因此需要判斷 < 0
     //同時還要判斷值大小，絕對值 < 1 的值是比例值，絕對值 > 1 的值是固定值
@@ -245,7 +245,7 @@ const SkillCalculatorModel = {
     finalEnemyRes = finalEnemyRes < 0 ? 0 : finalEnemyRes;
 
     //傷害類型轉換
-    let change_attackType = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_attackType');
+    let change_attackType = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'CHANGE_attackType');
     if(change_attackType){
       attackType = change_attackType;
     }
@@ -388,7 +388,7 @@ const SkillCalculatorModel = {
     const memberData = SkillCalculatorModel.skillFromMember(skillRow, characterJsonData);
     const subProfessionName = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).chineseName;
     const memberNumeric = BasicCalculatorModel.memberNumeric(type, memberData, uniequipJsonData, battleEquipJsonData, uniequipJsonData, battleEquipJsonData);
-    const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData)[memberData.name];
+    const memberTalent = TalentsCustomCalculatorModel.talentListToAttackSkill(type, memberData, uniequipJsonData, battleEquipJsonData)[memberData.name];
 
     let attackType = BasicCalculatorModel.memberSubProfessionId(memberData, subProfessionIdJsonData).attackType;
     let dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates_check);
@@ -399,25 +399,25 @@ const SkillCalculatorModel = {
     let other_subProfession_dps = 0;
 
     //攻擊間隔調整
-    let attackTimeRevise = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'base_attack_time'); //技能倍率
+    let attackTimeRevise = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'base_attack_time'); //技能倍率
     let talentAttackTimeRevise = memberTalent?.base_attack_time || 0; //天賦倍率
     //攻速調整
-    let attackSpeedRevise = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'attack_speed'); //技能倍率
+    let attackSpeedRevise = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'attack_speed'); //技能倍率
     let talentAttackSpeedRevise = memberTalent?.attack_speed || 0; //天賦倍率
     let traitAttackSpeedRevise = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'attack_speed') ?? 0; //分支特性倍率
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'attack_speed') ?? 0; //分支特性倍率
 
     //最終攻擊間隔 = (幹員攻擊間隔 + 攻擊間隔調整) / ((幹員攻速 + 攻擊速度調整) / 100)
     let finalAttackTime = (memberNumeric.baseAttackTime + attackTimeRevise + talentAttackTimeRevise) / ((memberNumeric.attackSpeed + attackSpeedRevise + talentAttackSpeedRevise + traitAttackSpeedRevise) / 100);
     
     //連擊數
-    let attackCount = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'ATTACK_COUNT'); //技能倍率
+    let attackCount = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'ATTACK_COUNT'); //技能倍率
     attackCount = attackCount === 0 ? 1 : attackCount;
 
     //技能額外傷害的攻擊倍率
-    let other_attack_scale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'OTHER_atk_scale'); //技能倍率 
+    let other_attack_scale = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'OTHER_atk_scale'); //技能倍率 
     //技能額外傷害的傷害類型
-    let other_attack_type = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_OTHER_attackType'); //技能倍率 
+    let other_attack_type = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'CHANGE_OTHER_attackType'); //技能倍率 
 
     //如果other_attack_scale有值，則調用DPH計算額外造成傷害DPH    
     if(other_attack_scale !== 0){     
@@ -426,10 +426,10 @@ const SkillCalculatorModel = {
 
     //分支特性額外傷害的攻擊倍率
     let other2_attack_scale = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'other2_attack_scale') ?? 0; //分支特性倍率
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'other2_attack_scale') ?? 0; //分支特性倍率
     //分支特性額外傷害的傷害類型
     let other2_attack_type = UniequipCalculatorModel.memberEquipTrait(
-      skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'other2_attack_type') ?? 0; //分支特性倍率    
+      skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'other2_attack_type') ?? 0; //分支特性倍率    
 
     //如果other2_attack_scale有值，則調用DPH計算額外造成傷害DPH    
     if(other2_attack_scale !== 0){
@@ -438,7 +438,7 @@ const SkillCalculatorModel = {
       if(subProfessionName === '投擲手'){
         //專用於投擲手X模的二連額外傷害判斷
         let enable_third_attack = UniequipCalculatorModel.memberEquipTrait(
-          skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'enable_third_attack') ?? 0; //分支特性倍率
+          skillRow.equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfessionName, 'enable_third_attack') ?? 0; //分支特性倍率
         if(enable_third_attack > 0){
           other_subProfession_dph *= (1 + enable_third_attack);
         }
@@ -446,7 +446,7 @@ const SkillCalculatorModel = {
     }
 
     //技能額外傷害的攻擊間隔
-    let other_base_attack_time = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'OTHER_base_attack_time'); //技能倍率
+    let other_base_attack_time = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'OTHER_base_attack_time'); //技能倍率
     //如果other_base_attack_time有值，則視為新的攻擊間隔，無值則使用原本的最終攻擊間隔，這適用於額外造成傷害是獨立間隔的技能 (ex: 白雪2技能)    
 
     //預設的DPS算法: DPH / 最終攻擊間隔
@@ -469,7 +469,7 @@ const SkillCalculatorModel = {
     duration = duration < 1 ? 1 : duration;
 
     //技能持續時間調整 (ex: 宴2技能如果直接套原本的技能持續時間，則總傷會計算錯誤)
-    let change_duration = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_duration'); //技能倍率
+    let change_duration = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'CHANGE_duration'); //技能倍率
     if(change_duration){
       duration = change_duration;
     }
@@ -487,7 +487,7 @@ const SkillCalculatorModel = {
     }
 
     //攻擊段數 (ex: 陳3技能)
-    let times = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'times');
+    let times = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'times');
     if(times > 0){
       //攻擊段數類型的DPS算法: DPH * 段數
       dps = (dph * attackCount) * times;
@@ -549,20 +549,20 @@ const SkillCalculatorModel = {
     //[技能持續時間]需要判斷 < 1 ，確保強力擊、脫手類、永續類的技能不會計算錯誤
     duration = duration < 1 ? 1 : duration;
     //技能持續時間更新 (ex: 宴2技能如果直接套原本的技能持續時間，則總傷會計算錯誤)
-    let change_duration = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'CHANGE_duration'); //技能倍率
+    let change_duration = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'CHANGE_duration'); //技能倍率
     if(change_duration){
       duration = change_duration;
     }
 
     //攻擊段數 (ex: 陳3技能)
-    let times = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'times');    
+    let times = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'times');    
     if(times > 0){
       //攻擊段數類型的總傷直接以DPS來表示 (總傷實際上已於DPS算法中計算完成)
       return dps;
     }
 
     //彈藥數量 (ex: 水陳3技能)
-    let trigger_time = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, 'attack@trigger_time');
+    let trigger_time = SkillCalculatorModel.skillCustomAttribute(type, skillRow, memberData, uniequipJsonData, battleEquipJsonData, 'attack@trigger_time');
     if(trigger_time > 0){
       //對於彈藥類型的技能，再次得出DPH，並乘上彈藥數量來計算總傷
       const dph = SkillCalculatorModel.skillMemberDph(type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates_check);

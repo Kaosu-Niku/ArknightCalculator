@@ -1,7 +1,5 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import SkillCustomCalculatorModel from './SkillCustomCalculator';
-import TalentsCalculatorModel from './TalentsCalculator';
-import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import CookieModel from './Cookie';
 
 const UniequipCalculatorModel = {
@@ -114,20 +112,19 @@ const UniequipCalculatorModel = {
     return currentEquipBattle;
   },
 
-  //依照模組ID和指定key名嘗試查詢幹員特定模組的分支特性追加，並回傳此分支特性追加的加成值 (若查詢不到則根據情況回傳1或0)
-  memberEquipTrait: (skillRow, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfession, attributeKey) => {
-    const memberEquipBattle = UniequipCalculatorModel.memberEquipBattle(memberData, uniequipJsonData, battleEquipJsonData, skillRow.equipid);
-    let blackboardList;
-    //獲取模組的特性追加的數值提升數據陣列
-    if(memberEquipBattle){
-      const partsObject = memberEquipBattle.parts.find(obj => 
-        obj.overrideTraitDataBundle && obj.overrideTraitDataBundle.candidates !== null
-      );
-      blackboardList = partsObject.overrideTraitDataBundle.candidates[partsObject.overrideTraitDataBundle.candidates.length - 1].blackboard;
-    }
-  
+  //依照模組ID和指定key名嘗試查詢幹員特定模組的分支特性追加，並回傳此分支特性追加的加成值 (若查詢不到則根據情況回傳1、0、undefind)
+  memberEquipTrait: (equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, candidates_check, subProfession, attributeKey) => {
     if(witchPhases === 2){
       //開啟模組的分支特性追加
+      const memberEquipBattle = UniequipCalculatorModel.memberEquipBattle(memberData, uniequipJsonData, battleEquipJsonData, equipid);
+      let blackboardList;
+      //獲取模組的特性追加的數值提升數據陣列
+      if(memberEquipBattle){
+        const partsObject = memberEquipBattle.parts.find(obj => 
+          obj.overrideTraitDataBundle && obj.overrideTraitDataBundle.candidates !== null
+        );
+        blackboardList = partsObject.overrideTraitDataBundle.candidates[partsObject.overrideTraitDataBundle.candidates.length - 1].blackboard;
+      }
 
       //無條件的分支特性追加
         switch(attributeKey){
@@ -305,6 +302,27 @@ const UniequipCalculatorModel = {
     }
 
     return undefined;
+  },
+
+  //依照模組ID和指定key名嘗試查詢幹員特定模組的天賦更新，並回傳天賦更新的加成值 (若查詢不到則回傳undefind)
+  memberEquipTalent: (equipid, memberData, uniequipJsonData, battleEquipJsonData, witchPhases, attributeKey) => {    
+    if(witchPhases === 2){
+      //開啟模組的天賦更新
+      const memberEquipBattle = UniequipCalculatorModel.memberEquipBattle(memberData, uniequipJsonData, battleEquipJsonData, equipid);
+      let blackboardList;
+      //獲取模組的天賦更新的數值提升數據陣列
+      if(memberEquipBattle){
+        const partsObject = memberEquipBattle.parts.find(obj => 
+          obj.addOrOverrideTalentDataBundle && obj.addOrOverrideTalentDataBundle.candidates !== null
+        );
+        blackboardList = partsObject.addOrOverrideTalentDataBundle.candidates[partsObject.addOrOverrideTalentDataBundle.candidates.length - 1].blackboard;
+      }
+
+      return blackboardList?.find(item => item.key === attributeKey)?.value;
+    }
+    else{
+      return undefined;
+    }
   }
 }
 

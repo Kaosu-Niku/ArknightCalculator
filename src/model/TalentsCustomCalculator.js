@@ -1,5 +1,6 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
+import UniequipCalculatorModel from './UniequipCalculator';
 
 const TalentsCustomCalculatorModel = {
   //目前在幹員基礎數據計算天賦加成時使用了這些key: 
@@ -26,7 +27,7 @@ const TalentsCustomCalculatorModel = {
   },
 
   //此處是記錄所有會對傷害公式計算造成影響的天賦，並嘗試將這些天賦歸類到傷害公式計算的一個乘區中的自定天賦數據
-  talentListToAttackSkill: (type, memberRow) =>{    
+  talentListToAttackSkill: (type, memberRow, uniequipJsonData, battleEquipJsonData) =>{    
     return {
       //?標記的為較少人使用的屬性，可以只在那些人的object裡宣告該屬性即可 (會順便在旁邊標註有誰使用了這個屬性)
       'default': { 
@@ -44,12 +45,12 @@ const TalentsCustomCalculatorModel = {
 
       //四星
       '骋风': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      '宴': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: TalentsCalculatorModel.memberTalent(type, memberRow, 'min_attack_speed') },
-      '猎蜂': { attack: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk') * TalentsCalculatorModel.memberTalent(type, memberRow, 'max_stack_cnt'), atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      '酸糖': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, ensure_damage: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale_2') },
-      '夜烟': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'), damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
+      '宴': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'min_attack_speed') },
+      '猎蜂': { attack: TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk') * TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'max_stack_cnt'), atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
+      '酸糖': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0, ensure_damage: TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk_scale_2') },
+      '夜烟': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'magic_resistance'), damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
       '卡达': { attack: 0, atk_scale: 0, def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
-      '云迹': { attack: 0, atk_scale: TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale'), def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
+      '云迹': { attack: 0, atk_scale: TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk_scale'), def_penetrate_fixed: 0, magic_resistance: 0, damage_scale: 0, base_attack_time: 0, attack_speed: 0 },
     }
   }
 }

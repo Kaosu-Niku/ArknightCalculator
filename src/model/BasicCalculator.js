@@ -1,5 +1,5 @@
-import TalentsCalculatorModel from './TalentsCalculator';
 import UniequipCalculatorModel from './UniequipCalculator';
+import TalentsCalculatorModel from './TalentsCalculator';
 import CookieModel from './Cookie';
 
 const BasicCalculatorModel = {
@@ -195,65 +195,70 @@ const BasicCalculatorModel = {
 
     //天賦數值
     //生命
-    maxHp *= (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'max_hp'));
+    maxHp *= (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'max_hp'));
     //攻擊
-    atk *= (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'atk'));
+    atk *= (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk'));
     //防禦
-    def *= (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'def'));
+    def *= (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'def'));
     //法抗
-    magicResistance += TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance');
+    magicResistance += TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'magic_resistance');
     //攻擊間隔
-    baseAttackTime += TalentsCalculatorModel.memberTalent(type, memberRow, 'base_attack_time');   
+    baseAttackTime += TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'base_attack_time');   
     //攻速
-    attackSpeed += TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed');        
+    attackSpeed += TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'attack_speed');        
     
     //打印log
-    if(CookieModel.getLog('memberNumeric') === false){
-      if(memberRow.name === CookieModel.getCookie('memberName')){
-        CookieModel.setLog('memberNumeric', true);
-        console.log(
-          `${memberRow.name}的基礎數據以及加成後數據log`,
-          {
-            "1.1.原始生命": basicData.maxHp,
-            "1.2.原始攻擊": basicData.atk,
-            "1.3.原始防禦": basicData.def,
-            "1.4.原始法抗": basicData.magicResistance,
-            "1.5.原始攻擊間隔": basicData.baseAttackTime,
-            "1.6.原始攻速": basicData.attackSpeed,
-            "2.-----": "-----",   
-            "2.1.潛能生命": log_potential_max_hp,
-            "2.2.潛能攻擊": log_potential_atk,
-            "2.3.潛能防禦": log_potential_def,
-            "2.4.潛能法抗": log_potential_magic_resistance,
-            "2.5.潛能攻速": log_potential_attack_speed,
-            "3.-----": "-----",
-            "3.1.信賴生命": log_favor_max_hp,
-            "3.2.信賴攻擊": log_favor_atk,
-            "3.3.信賴防禦": log_favor_def,
-            "3.4.信賴法抗": log_favor_magic_resistance,
-            "4.-----": "-----",
-            "4.1.模組生命": log_equip_max_hp,
-            "4.2.模組攻擊": log_equip_atk,
-            "4.3.模組防禦": log_equip_def,
-            "4.4.模組法抗": log_equip_magic_resistance,
-            "4.4.模組攻速": log_equip_attack_speed,
-            "5.-----": "-----",
-            "5.1.天賦生命": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'max_hp')),
-            "5.2.天賦攻擊": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'atk')),
-            "5.3.天賦防禦": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, 'def')),
-            "5.4.天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, 'magic_resistance'),
-            "5.5.天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, 'base_attack_time'),
-            "5.6.天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, 'attack_speed'),
-            "6.-----": "-----",
-            "6.1.加成後生命": maxHp,
-            "6.2.加成後攻擊": atk,
-            "6.3.加成後防禦": def,
-            "6.4.加成後法抗": magicResistance,
-            "6.5.加成後攻擊間隔": baseAttackTime,
-            "6.6.加成後攻速": attackSpeed,
-          }
-        ); 
-      }   
+    if(memberRow.name === CookieModel.getCookie('memberName')){
+      if(CookieModel.getLog('memberNumeric_check').includes(`${memberRow.equipid}`) === false){
+        CookieModel.setLog('memberNumeric', false);
+        if(CookieModel.getLog('memberNumeric') === false){     
+          CookieModel.setLog('memberNumeric', true);
+          CookieModel.getLog('memberNumeric_check').push(`${memberRow.equipid}`); 
+          const equipData = UniequipCalculatorModel.memberEquipData(memberRow, uniequipJsonData, memberRow.equipid);
+          console.log(
+            `${memberRow.name}的【${equipData? equipData.uniEquipName : '無'}】模組的基礎數據以及加成後數據log`,
+            {
+              "1.1.原始生命": basicData.maxHp,
+              "1.2.原始攻擊": basicData.atk,
+              "1.3.原始防禦": basicData.def,
+              "1.4.原始法抗": basicData.magicResistance,
+              "1.5.原始攻擊間隔": basicData.baseAttackTime,
+              "1.6.原始攻速": basicData.attackSpeed,
+              "2.-----": "-----",   
+              "2.1.潛能生命": log_potential_max_hp,
+              "2.2.潛能攻擊": log_potential_atk,
+              "2.3.潛能防禦": log_potential_def,
+              "2.4.潛能法抗": log_potential_magic_resistance,
+              "2.5.潛能攻速": log_potential_attack_speed,
+              "3.-----": "-----",
+              "3.1.信賴生命": log_favor_max_hp,
+              "3.2.信賴攻擊": log_favor_atk,
+              "3.3.信賴防禦": log_favor_def,
+              "3.4.信賴法抗": log_favor_magic_resistance,
+              "4.-----": "-----",
+              "4.1.模組生命": log_equip_max_hp,
+              "4.2.模組攻擊": log_equip_atk,
+              "4.3.模組防禦": log_equip_def,
+              "4.4.模組法抗": log_equip_magic_resistance,
+              "4.4.模組攻速": log_equip_attack_speed,
+              "5.-----": "-----",
+              "5.1.天賦生命": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'max_hp')),
+              "5.2.天賦攻擊": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk')),
+              "5.3.天賦防禦": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'def')),
+              "5.4.天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'magic_resistance'),
+              "5.5.天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'base_attack_time'),
+              "5.6.天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'attack_speed'),
+              "6.-----": "-----",
+              "6.1.加成後生命": maxHp,
+              "6.2.加成後攻擊": atk,
+              "6.3.加成後防禦": def,
+              "6.4.加成後法抗": magicResistance,
+              "6.5.加成後攻擊間隔": baseAttackTime,
+              "6.6.加成後攻速": attackSpeed,
+            }
+          ); 
+        }
+      }  
     }
 
     return { maxHp, atk, def, magicResistance, baseAttackTime, attackSpeed};

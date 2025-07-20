@@ -1,6 +1,6 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
-import TalentsCalculatorModel from './TalentsCalculator';
 import SkillCalculatorModel from './SkillCalculator';
+import TalentsCalculatorModel from './TalentsCalculator';
 
 const SkillCustomCalculatorModel = {
   //目前在傷害算法計算時使用了這些key: 
@@ -35,17 +35,17 @@ const SkillCustomCalculatorModel = {
   },
 
   //此處是記錄所有沒有包含在傷害公式計算中的key，並嘗試將這些key歸類到傷害公式計算中的一個已有key的自定技能數據
-  skillListToAttackSkill: (type, skillrow, memberRow) => {
+  skillListToAttackSkill: (type, skillrow, memberRow, uniequipJsonData, battleEquipJsonData) => {
     return {
       //四星
       '骋风-以攻为守': { 
         'CHANGE_OTHER_attackType': '物理',
-        'OTHER_atk_scale': TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale'), //天賦的造成額外傷害
+        'OTHER_atk_scale': TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk_scale'), //天賦的造成額外傷害
       },
       '骋风-招无虚发': { 
         'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@atk_scale'),
         'CHANGE_OTHER_attackType': '物理',
-        'OTHER_atk_scale': TalentsCalculatorModel.memberTalent(type, memberRow, 'atk_scale'), //天賦的造成額外傷害
+        'OTHER_atk_scale': TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk_scale'), //天賦的造成額外傷害
       },          
       '休谟斯-高效处理': { 'atk': SkillCalculatorModel.skillAttribute(type, skillrow, 'humus_s_2[peak_2].peak_performance.atk') },       
       '石英-全力相搏': { 'atk_scale': SkillCalculatorModel.skillAttribute(type, skillrow, 'attack@s2_atk_scale') }, 

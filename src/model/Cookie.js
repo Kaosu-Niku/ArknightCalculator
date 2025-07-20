@@ -42,8 +42,10 @@ const CookieModel = {
     //此處用於輸出log功能，為防止重複輸出，需要用判斷值來判斷是否已輸出
     logList: {
         "memberNumeric": false,
+        "memberNumeric_check": [],
 
         "memberTalent": false,
+        "memberTalent_check": [],
 
         "memberEquip": false,
         "memberEquip_check": [],
