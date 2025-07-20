@@ -164,7 +164,21 @@ const SkillCalculatorModel = {
       if(witchPhases === 2){
         //尖兵X模的阻擋敵人時提升攻擊力
         if(subProfessionName === "尖兵"){
-          attackMulti += blackboardList?.find(item => item.key === 'atk')?.value ?? 1;
+          attackMulti += blackboardList?.find(item => item.key === 'atk')?.value ?? 0;
+        }
+        //吟遊者X模的阻擋敵人時提升攻擊力
+        //目前確認到吟遊者X模的角色，其模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前的專案邏輯無法順利抓取到特性key
+        if(subProfessionName === "吟遊者"){
+          attackMulti += blackboardList?.find(item => item.key === 'atk')?.value ?? 0;
+        }
+        //處決者Y模的周圍沒有幹員時提升攻擊力
+        if(subProfessionName === "處決者"){
+          attackMulti += blackboardList?.find(item => item.key === 'atk')?.value ?? 0;
+        }
+        //行商Y模的每次特性消耗費用時提升攻擊力(可疊加)
+        //目前確認到行商Y模的角色，其模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前的專案邏輯無法順利抓取到特性key
+        if(subProfessionName === "行商"){
+          attackMulti += (blackboardList?.find(item => item.key === 'atk')?.value * blackboardList?.find(item => item.key === 'max_stack_cnt')?.value) ?? 0; 
         }
       }
     }    
@@ -228,7 +242,10 @@ const SkillCalculatorModel = {
         if(subProfessionName === "炮手"){
           attackScale *= blackboardList?.find(item => item.key === 'atk_scale')?.value ?? 1;
         }
-        
+        //塑靈術師X模的攻擊召喚物阻擋的敵人時提升攻擊倍率
+        if(subProfessionName === "塑靈術師"){
+          attackScale *= blackboardList?.find(item => item.key === 'atk_scale')?.value ?? 1;
+        }
         
       }
     }    
@@ -259,11 +276,16 @@ const SkillCalculatorModel = {
         if(subProfessionName === "神射手"){
           damageMulti += blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 0;
         }
+        //轟擊術師X模的攻擊距離越遠的人造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.1 這種屬於加算類的數據，因此此處的算式改成加法)
+        if(subProfessionName === "轟擊術師"){
+          damageMulti += blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 0;
+        }
+        //陣法術師Y模的攻擊範圍有越多敵人時造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.15 這種屬於加算類的數據，因此此處的算式改成加法)
+        if(subProfessionName === "陣法術師"){
+          damageMulti += blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 0;
+        }
       }
     } 
-
-
-    
     
     let finalEnemyDef = 0;
     let finalEnemyRes = 0;
@@ -553,6 +575,12 @@ const SkillCalculatorModel = {
           //目前確認到速射手Y模的角色，其模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前的專案邏輯無法順利抓取到特性key
           attackSpeedRevise += blackboardList?.find(item => item.key === 'attack_speed')?.value ?? 0;
         }
+        //秘術師Y模的有儲存攻擊能量時提升攻擊速度
+        if(subProfessionName === "秘術師"){
+          //目前確認到秘術師Y模的角色，其模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前的專案邏輯無法順利抓取到特性key
+          attackSpeedRevise += blackboardList?.find(item => item.key === 'attack_speed')?.value ?? 0;
+        }
+
       }
     }  
 

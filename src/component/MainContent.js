@@ -504,11 +504,18 @@ function MainContent() {
               <small className="col-12 text-left">{`術師:`}</small>
               <small className={ candidatesStyle }>中堅術師X模:<br/> 無視法抗</small> 
               <small className={ candidatesStyle }>御械術師Y模:<br/> 浮游單元傷害上限提升</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>秘術師Y模(數據有問題):<br/> 有儲存攻擊能量時提升攻擊速度</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>塑靈術師X模:<br/> 攻擊召喚物阻擋的敵人時提升攻擊倍率</small> 
+              <small className={ candidates ? candidatesStyle : 'd-none' }>轟擊術師X模(數據有問題):<br/> 攻擊距離越遠的人造成越高傷害</small>  
+              <small className={ candidates ? candidatesStyle : 'd-none' }>陣法術師Y模(數據有問題):<br/> 攻擊範圍有越多敵人時造成越高傷害</small>              
               <small className="col-12 text-left">{`重裝:`}</small>
               <small className={ candidatesStyle }>要塞Y模: 提升攻擊速度</small>   
               <small className="col-12 text-left">{`醫療:`}</small>
               <small className="col-12 text-left">{`輔助:`}</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>吟遊者X模(數據有問題):<br/> 攻擊範圍有2名以上幹員時提升攻擊力</small>  
               <small className="col-12 text-left">{`特種:`}</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>處決者Y模:<br/> 周圍沒有幹員時提升攻擊力</small>
+              <small className={ candidates ? candidatesStyle : 'd-none' }>行商Y模(數據有問題):<br/> 每次特性消耗費用時提升攻擊力(可疊加)</small>  
             </div>             
           </div>
         </div>
