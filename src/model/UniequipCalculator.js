@@ -2,6 +2,8 @@ import BasicCalculatorModel from '../model/BasicCalculator';
 import SkillCustomCalculatorModel from './SkillCustomCalculator';
 import CookieModel from './Cookie';
 
+//模組更新進度: 死芒-未处理的遗产
+//模組上線時間查詢: https://prts.wiki/w/%E5%B9%B2%E5%91%98%E6%A8%A1%E7%BB%84%E4%B8%80%E8%A7%88/%E4%B8%8A%E7%BA%BF%E6%97%B6%E9%97%B4
 const UniequipCalculatorModel = {
   //查詢幹員擁有的所有模組的ID (回傳string array，詳細內容參考uniequip_table.json的charEquip)
   memberEquipID: (memberData, uniequipJsonData) => {
@@ -242,6 +244,7 @@ const UniequipCalculatorModel = {
               case '術戰者': //術戰者Y模的自身阻擋的敵人獲得一定比例的法術脆弱 (暫時將此效果視為提升傷害倍率去算)                
               return blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 1;
               case '神射手': //神射手X模的攻擊距離越遠的人造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.15 這種屬於加算類的數據，因此將實際數據再+1以方便帶入乘算) 
+              case '攻城手': //攻城手Y模的攻擊距離越遠的人造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.12 這種屬於加算類的數據，因此將實際數據再+1以方便帶入乘算) 
               case '轟擊術師': //轟擊術師X模的攻擊距離越遠的人造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.15 這種屬於加算類的數據，因此將實際數據再+1以方便帶入乘算)
               case '陣法術師': //陣法術師Y模的攻擊範圍有越多敵人時造成越高傷害 (明明看敘述這應該是屬於乘算類的，但是實際數據卻是給 0.15 這種屬於加算類的數據，因此將實際數據再+1以方便帶入乘算)             
               return (1 + blackboardList?.find(item => item.key === 'damage_scale')?.value) ?? 1;

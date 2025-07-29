@@ -498,6 +498,7 @@ function MainContent() {
               <small className={ candidates ? candidatesStyle : 'd-none' }>速射手Y模(數據有問題):<br/> 攻擊範圍有地面敵人時提升攻擊速度</small>
               <small className={ candidates ? candidatesStyle : 'd-none' }>神射手X模(數據有問題):<br/> 攻擊距離越遠的人造成越高傷害</small>
               <small className={ candidates ? candidatesStyle : 'd-none' }>攻城手X模(數據有問題):<br/> 攻擊重量&gt;3的敵人時提升攻擊倍率</small> 
+              <small className={ candidates ? candidatesStyle : 'd-none' }>攻城手Y模(數據有問題):<br/> 攻擊距離越遠的人造成越高傷害</small>
               <small className={ candidates ? candidatesStyle : 'd-none' }>炮手X模:<br/> 攻擊阻擋的敵人時提升攻擊倍率</small> 
               <small className={ candidatesStyle }>炮手Y模:<br/> 無視防禦</small>  
               <small className={ candidatesStyle }>散射手X模:<br/> 攻擊前方一橫排的敵人時提升更高攻擊倍率</small> 
