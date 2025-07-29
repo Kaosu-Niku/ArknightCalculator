@@ -99,10 +99,11 @@ const UniequipCalculatorModel = {
               CookieModel.getLog('memberEquip_check').push(log_equipid);
 
               const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, log_equipid);
-              console.log(
-                `${memberData.name}的【${equipData.uniEquipName}】模組加成數據log`,
+              console.groupCollapsed(`${memberData.name}【${equipData.uniEquipName}】的模組加成數據log`);
+              console.table(
                 logObject
               );
+              console.groupEnd(); 
             }
           }
         }

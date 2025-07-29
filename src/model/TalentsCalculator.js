@@ -109,10 +109,11 @@ const TalentsCalculatorModel = {
           CookieModel.setLog('memberTalent', true);  
           CookieModel.getLog('memberTalent_check').push(`${memberRow.equipid}`); 
           const equipData = UniequipCalculatorModel.memberEquipData(memberRow, uniequipJsonData, memberRow.equipid); 
-          console.log(
-            `${memberRow.name}的【${equipData? equipData.uniEquipName : '無'}】模組的的天賦加成數據log`,
+          console.groupCollapsed(`${memberRow.name}【${equipData? equipData.uniEquipName : '無模組'}】的天賦加成原始數據log`);
+          console.table(
             logObject
           );
+          console.groupEnd(); 
         }   
       }
       

@@ -336,15 +336,16 @@ const SkillCalculatorModel = {
             logObject[`${logCount_blackboard}. ${b.key}`] = b.value;
             logCount_blackboard += 1;
           });
-          console.log(
-            `'${memberData.name}-${skillName}' 的技能加成數據log`, 
+          console.groupCollapsed(`${memberData.name}「${skillName}」 的技能加成原始數據log`);
+          console.table(
             logObject
           );
+          console.groupEnd();
 
           //DPH算法各項數據log
           const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
-          console.log(
-            `${memberData.name}的【${equipData? equipData.uniEquipName : '無'}】模組的「${skillName}」的DPH算法各項數據log`,
+          console.groupCollapsed(`${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPH算法數據log`);
+          console.table(
             {
               "0.1. 幹員原始攻擊力": memberNumeric.atk,
               "0.2. 敵人原始防禦力": enemyData.enemyDef,
@@ -374,6 +375,7 @@ const SkillCalculatorModel = {
               "10. 最終DPH": finalAttack * (damageMulti * talentDamageMulti * traitDamageMulti),
             }
           ); 
+          console.groupEnd(); 
         }
       }
     }
@@ -508,8 +510,8 @@ const SkillCalculatorModel = {
           CookieModel.getLog('memberDps_check').push(`${skillRow.equipid}-${skillName}`);
 
           const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
-          console.log(
-            `${memberData.name}的【${equipData? equipData.uniEquipName : '無'}】模組的「${skillName}」的DPS算法各項數據log`,
+          console.groupCollapsed(`${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPS算法數據log`);
+          console.table(
             {
               "0.1. 幹員原始攻擊間隔": memberNumeric.baseAttackTime,
               "0.2. 幹員原始攻速": memberNumeric.attackSpeed,
@@ -533,6 +535,7 @@ const SkillCalculatorModel = {
               "10. 最終DPS": (dps + other_skill_dps + other_subProfession_dps),
             }
           ); 
+          console.groupEnd(); 
         }
       }
     }
