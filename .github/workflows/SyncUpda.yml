@@ -21,7 +21,7 @@ jobs:
 
     steps:
       - name: 取得代碼
-        uses: actions/checkout@v4 # 建議更新至 v4
+        uses: actions/checkout@v5
         with:
           fetch-depth: 0
           # 確保檢出 master 分支
