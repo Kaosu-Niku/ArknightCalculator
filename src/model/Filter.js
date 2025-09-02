@@ -1,94 +1,43 @@
-import BasicCalculatorModel from './BasicCalculator';
 import SkillCalculatorModel from './SkillCalculator';
 
 const FilterModel = {
-
-    //數值過濾
+    // 數值過濾，將小數點無條件捨去
     numberFilter: (number) => {
-        //數值資料如為整數，則回傳原值，如有小數點，則無條件捨去至整數
-        // 如要使用其他方法，無條件進位 = ceil()，無條件捨去 = trunc()，四捨五入 = round()
-        return Number.isInteger(number) ? number : Math.trunc(number);
+        return Math.trunc(number);
     },
 
-    //幹員數據過濾
+    // 通用資料過濾函式
+    dataFilter: (data, checkRarity, professionCheck) => {
+        let filteredData = [...data];
+
+        // 過濾掉非幹員數據
+        filteredData = filteredData.filter(item => {
+            const profession = professionCheck(item)?.profession;
+            return profession !== "TRAP" && profession !== "TOKEN";
+        });
+
+        // 過濾掉被取消勾選星級的數據
+        const uncheckedRarities = Object.keys(checkRarity).filter(key => !checkRarity[key]);
+        if (uncheckedRarities.length > 0) {
+            filteredData = filteredData.filter(item => {
+                const rarity = professionCheck(item)?.rarity;
+                return !uncheckedRarities.includes(rarity);
+            });
+        }
+        
+        return filteredData;
+    },
+
+    // 幹員數據過濾
     characterDataFilter: (processedCharacterData, checkRarity) => {
-        let finalData = processedCharacterData;
-
-        //過濾掉不是幹員的數據
-        finalData = finalData.filter(item => {
-            switch(item.profession){
-                case "TRAP": //道具
-                return false;
-                case "TOKEN": //裝置
-                return false;
-                default:
-                return true;
-            }
-        });
-
-        //過濾掉被取消勾選星級的數據
-        Object.keys(checkRarity).forEach(key => {
-            if(checkRarity[key] === false){
-            finalData = finalData.filter(item => {
-                switch(item.rarity){
-                case key:
-                    return false;
-                default:
-                    return true;
-                }
-            });
-            }
-        });
-
-        return finalData;
+        return FilterModel.dataFilter(processedCharacterData, checkRarity, (item) => item);
     },
-    
-    //技能數據過濾
+
+    // 技能數據過濾
     skillDataFilter: (processedSkillData, characterJsonData, checkRarity) => {
-        let finalData = processedSkillData;
-
-        //過濾掉不是幹員的數據
-        finalData = finalData.filter(item => {
-            const profession = SkillCalculatorModel.skillFromMember(item, characterJsonData)?.profession
-            switch(profession){
-            case "TRAP": //道具
-                return false;
-            case "TOKEN": //裝置
-                return false;
-            default:
-                return true;
-            }
-        });
-
-        //過濾掉找不到所屬幹員的數據
-        finalData = finalData.filter(item => {
-            const data = SkillCalculatorModel.skillFromMember(item, characterJsonData);
-            if(data !== null){
-                return true;
-            }
-            else{
-                return false;
-            }
-        }); 
-
-        //過濾掉被取消勾選星級的數據
-        Object.keys(checkRarity).forEach(key => {
-            if(checkRarity[key] === false){
-            finalData = finalData.filter(item => {
-                const rarity = SkillCalculatorModel.skillFromMember(item, characterJsonData)?.rarity
-                switch(rarity){
-                case key:
-                    return false;
-                default:
-                    return true;
-                }
-            });
-            }
-        });
-
-        return finalData;
+        let filteredData = processedSkillData.filter(item => SkillCalculatorModel.skillFromMember(item, characterJsonData));
+        return FilterModel.dataFilter(filteredData, checkRarity, (item) => SkillCalculatorModel.skillFromMember(item, characterJsonData));
     },
-
-}
+};
 
 export default FilterModel;

@@ -1,69 +1,42 @@
 const CookieModel = {
-
-    //取得Cookie
+    // 取得 Cookie
     getCookie: (name) => {
-        const cookies = document.cookie.split('; ');
-        //取得
-        for (let i = 0; i < cookies.length; i++) {
-        const cookie = cookies[i].trim().split('=');
-        if (cookie[0] === name) {
-            try{
-            return JSON.parse(cookie[1]);
+        const cookies = document.cookie.split('; ').reduce((acc, cookie) => {
+            const [key, value] = cookie.split('=');
+            acc[key] = value;
+            return acc;
+        }, {});
+
+        const cookieValue = cookies[name];
+        
+        if (cookieValue) {
+            try {
+                return JSON.parse(cookieValue);
+            } catch (e) {
+                return cookieValue;
             }
-            catch (e) {
-            return cookie[1];
-            } 
         }
-        }
-        //沒取得的預設值
-        switch(name){
-        case 'type':
-            return '精零1級';
-        case 'rarity':
-            return { "TIER_1":true, "TIER_2":true, "TIER_3":true, "TIER_4":true, "TIER_5":true, "TIER_6":true,};
+        
+        // 沒有取得的預設值
+        switch (name) {
+            case 'type':
+                return '精零1級';
+            case 'rarity':
+                return { "TIER_1": true, "TIER_2": true, "TIER_3": true, "TIER_4": true, "TIER_5": true, "TIER_6": true, };
+            default:
+                return undefined;
         }
     },
-    //設置Cookie
+
+    // 設置 Cookie
     setCookie: (key, value) => {
-        let expirationDate = new Date();
-        expirationDate.setDate(expirationDate.getDate() + 7); // 设置Cookier在7天后过期
+        const expirationDate = new Date();
+        expirationDate.setDate(expirationDate.getDate() + 7);
         const expires = `expires=${expirationDate.toUTCString()}`;
         const path = 'path=/';
-    
-        let cookieValue = value;
-        if (typeof value === 'object' && value !== null) {
-            cookieValue = JSON.stringify(value);
-        } 
-
-        // 組合完整的Cookie字串
+        const cookieValue = (typeof value === 'object' && value !== null) ? JSON.stringify(value) : value;
         document.cookie = `${key}=${cookieValue}; ${expires}; ${path};`;
     },
-    //log
-    //此處用於輸出log功能，為防止重複輸出，需要用判斷值來判斷是否已輸出
-    logList: {
-        "memberNumeric": false,
-        "memberNumeric_check": [],
-
-        "memberTalent": false,
-        "memberTalent_check": [],
-
-        "memberEquip": false,
-        "memberEquip_check": [],
-
-        "memberDph": false,
-        "memberDph_check": [],
-
-        "memberDps": false,
-        "memberDps_check": [],    
-    },
-    //取得log
-    getLog: (name) => {
-        return CookieModel.logList[name];
-    },
-    //設置log
-    setLog: (name, value) => {
-        return CookieModel.logList[name] = value;
-    },
-}
+};
 
 export default CookieModel;
