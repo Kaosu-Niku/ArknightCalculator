@@ -264,7 +264,7 @@ const SkillCalculatorModel = {
     if(subProfessionName === "護佑者"){
       attackType = "治療";
     }
-    
+
     switch(attackType){
       case "物理":
         //物理DPH = (((幹員攻擊力 * (1 + 攻擊乘算) * 攻擊倍率) - (敵人防禦 * (1 - 削減敵方防禦[比例]) - 削減敵方防禦[固定] - 無視防禦)) * 傷害倍率)        
@@ -308,6 +308,12 @@ const SkillCalculatorModel = {
     //finalAttack是計算完攻擊力加成以及扣除敵方防禦法抗後的原定傷害，而傷害公式要確保原定傷害過低時會至少有5%攻擊力的保底傷害 
     //(極少數角色具有保底傷害天賦，不只會有5%，而talentEnsureDamage就是為此處理的特別屬性)
     let ensureDamage = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti + traitAttackMulti) * (attackScale * talentAttackScale * traitAttackScale)) * talentEnsureDamage;
+
+    //如果other_atk_scale_check有值，則表示此DPH計算是經由DPS計算調用的，用於計算額外傷害而非主傷害 
+    if(other_atk_scale_check !== null){
+      ensureDamage = (memberNumeric.atk * (1 + attackMulti + talentAttackMulti + traitAttackMulti) * (attackScale * talentAttackScale * traitAttackScale * other_attack_scale)) * talentEnsureDamage;
+    }
+
     finalAttack = finalAttack < ensureDamage ? ensureDamage : finalAttack;
 
     switch(attackType){
