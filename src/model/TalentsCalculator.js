@@ -2,6 +2,7 @@ import BasicCalculatorModel from '../model/BasicCalculator';
 import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import UniequipCalculatorModel from './UniequipCalculator';
 import CookieModel from './Cookie';
+import LogManager from './LogManager';
 
 const TalentsCalculatorModel = {
   //依照指定key名嘗試查詢幹員對應的天賦，並回傳此天賦的加成值 (若查詢不到則默認回傳0)
@@ -102,18 +103,17 @@ const TalentsCalculatorModel = {
     }
 
     //打印log       
-    if(memberRow.name === CookieModel.getCookie('memberName')){
+    if(LogManager.shouldLog(memberRow.name)){
       if(CookieModel.getLog('memberTalent_check').includes(`${memberRow.equipid}`) === false){
         CookieModel.setLog('memberTalent', false);
         if(CookieModel.getLog('memberTalent') === false){
           CookieModel.setLog('memberTalent', true);  
           CookieModel.getLog('memberTalent_check').push(`${memberRow.equipid}`); 
           const equipData = UniequipCalculatorModel.memberEquipData(memberRow, uniequipJsonData, memberRow.equipid); 
-          console.groupCollapsed(`${memberRow.name}【${equipData? equipData.uniEquipName : '無模組'}】的天賦加成原始數據log`);
-          console.table(
+          LogManager.addLog(
+            `${memberRow.name}【${equipData? equipData.uniEquipName : '無模組'}】的天賦加成原始數據log`,
             logObject
           );
-          console.groupEnd(); 
         }   
       }
       

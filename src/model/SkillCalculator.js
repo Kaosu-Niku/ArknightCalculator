@@ -4,6 +4,7 @@ import UniequipCalculatorModel from './UniequipCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
 import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import CookieModel from './Cookie';
+import LogManager from './LogManager';
 
 const SkillCalculatorModel = {
   //查詢技能所屬的幹員數據 (回傳object，詳細內容參考character_table.json)
@@ -326,7 +327,7 @@ const SkillCalculatorModel = {
     }
 
     //打印log
-    if(memberData.name === CookieModel.getCookie('memberName')){  
+    if(LogManager.shouldLog(memberData.name)){  
       const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
       if(CookieModel.getLog('memberDph_check').includes(`${skillRow.equipid}-${skillName}`) === false){          
         CookieModel.setLog('memberDph', false);
@@ -342,16 +343,17 @@ const SkillCalculatorModel = {
             logObject[`${logCount_blackboard}. ${b.key}`] = b.value;
             logCount_blackboard += 1;
           });
-          console.groupCollapsed(`${memberData.name}「${skillName}」 的技能加成原始數據log`);
-          console.table(
+          
+          LogManager.addLog(
+            `${memberData.name}「${skillName}」 的技能加成原始數據log`,
             logObject
           );
-          console.groupEnd();
 
           //DPH算法各項數據log
           const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
-          console.groupCollapsed(`${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPH算法數據log`);
-          console.table(
+          
+          LogManager.addLog(
+            `${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPH算法數據log`,
             {
               "0.1. 幹員原始攻擊力": memberNumeric.atk,
               "0.2. 敵人原始防禦力": enemyData.enemyDef,
@@ -381,7 +383,6 @@ const SkillCalculatorModel = {
               "10. 最終DPH": finalAttack * (damageMulti * talentDamageMulti * traitDamageMulti),
             }
           ); 
-          console.groupEnd(); 
         }
       }
     }
@@ -507,7 +508,7 @@ const SkillCalculatorModel = {
     }
 
     //打印log
-    if(memberData.name === CookieModel.getCookie('memberName')){  
+    if(LogManager.shouldLog(memberData.name)){  
       const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
       if(CookieModel.getLog('memberDps_check').includes(`${skillRow.equipid}-${skillName}`) === false){          
         CookieModel.setLog('memberDps', false);
@@ -516,8 +517,9 @@ const SkillCalculatorModel = {
           CookieModel.getLog('memberDps_check').push(`${skillRow.equipid}-${skillName}`);
 
           const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
-          console.groupCollapsed(`${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPS算法數據log`);
-          console.table(
+          
+          LogManager.addLog(
+            `${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPS算法數據log`,
             {
               "0.1. 幹員原始攻擊間隔": memberNumeric.baseAttackTime,
               "0.2. 幹員原始攻速": memberNumeric.attackSpeed,
@@ -541,7 +543,6 @@ const SkillCalculatorModel = {
               "10. 最終DPS": (dps + other_skill_dps + other_subProfession_dps),
             }
           ); 
-          console.groupEnd(); 
         }
       }
     }

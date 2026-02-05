@@ -1,6 +1,7 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import SkillCustomCalculatorModel from './SkillCustomCalculator';
 import CookieModel from './Cookie';
+import LogManager from './LogManager';
 
 //模組更新進度: 死芒-未处理的遗产
 //模組上線時間查詢: https://prts.wiki/w/%E5%B9%B2%E5%91%98%E6%A8%A1%E7%BB%84%E4%B8%80%E8%A7%88/%E4%B8%8A%E7%BA%BF%E6%97%B6%E9%97%B4
@@ -93,7 +94,7 @@ const UniequipCalculatorModel = {
         }    
         
         //打印log 
-        if(memberData.name === CookieModel.getCookie('memberName')){  
+        if(LogManager.shouldLog(memberData.name)){  
           if(CookieModel.getLog('memberEquip_check').includes(log_equipid) === false){
             CookieModel.setLog('memberEquip', false);
             if(CookieModel.getLog('memberEquip') === false){
@@ -101,11 +102,10 @@ const UniequipCalculatorModel = {
               CookieModel.getLog('memberEquip_check').push(log_equipid);
 
               const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, log_equipid);
-              console.groupCollapsed(`${memberData.name}【${equipData.uniEquipName}】的模組加成數據log`);
-              console.table(
+              LogManager.addLog(
+                `${memberData.name}【${equipData.uniEquipName}】的模組加成數據log`,
                 logObject
               );
-              console.groupEnd(); 
             }
           }
         }
