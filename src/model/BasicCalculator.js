@@ -1,6 +1,7 @@
 import UniequipCalculatorModel from './UniequipCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
 import CookieModel from './Cookie';
+import LogManager from './LogManager';
 
 const BasicCalculatorModel = {
   //查詢當前所選流派 (回傳object，key有witchPhases、witchAttributesKeyFrames)
@@ -208,15 +209,16 @@ const BasicCalculatorModel = {
     attackSpeed += TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'attack_speed');        
     
     //打印log
-    if(memberRow.name === CookieModel.getCookie('memberName')){
+    if(LogManager.shouldLog(memberRow.name)){
       if(CookieModel.getLog('memberNumeric_check').includes(`${memberRow.equipid}`) === false){
         CookieModel.setLog('memberNumeric', false);
         if(CookieModel.getLog('memberNumeric') === false){     
           CookieModel.setLog('memberNumeric', true);
           CookieModel.getLog('memberNumeric_check').push(`${memberRow.equipid}`); 
           const equipData = UniequipCalculatorModel.memberEquipData(memberRow, uniequipJsonData, memberRow.equipid);
-          console.groupCollapsed(`${memberRow.name}【${equipData? equipData.uniEquipName : '無模組'}】的各項加成數據log`);
-          console.table(
+          
+          LogManager.addLog(
+            `${memberRow.name}【${equipData? equipData.uniEquipName : '無模組'}】的各項加成數據log`,
             {
               "1.": "",
               "基礎生命": basicData.maxHp,
@@ -258,7 +260,6 @@ const BasicCalculatorModel = {
               "加成後攻速": attackSpeed,
             }
           );
-          console.groupEnd(); 
         }
       }  
     }
