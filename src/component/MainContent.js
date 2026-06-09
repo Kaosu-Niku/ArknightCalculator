@@ -64,16 +64,16 @@ function MainContent() {
       }
 
       //初始化log輸出狀態
-      CookieModel.setLog('memberNumeric', false);
-      CookieModel.setLog('memberNumeric_check', []);     
-      CookieModel.setLog('memberTalent', false);    
-      CookieModel.setLog('memberTalent_check', []);       
-      CookieModel.setLog('memberEquip', false); 
-      CookieModel.setLog('memberEquip_check', []); 
-      CookieModel.setLog('memberDph', false);
-      CookieModel.setLog('memberDph_check', []);
-      CookieModel.setLog('memberDps', false);
-      CookieModel.setLog('memberDps_check', []);  
+      // CookieModel.setLog('memberNumeric', false);
+      // CookieModel.setLog('memberNumeric_check', []);     
+      // CookieModel.setLog('memberTalent', false);    
+      // CookieModel.setLog('memberTalent_check', []);       
+      // CookieModel.setLog('memberEquip', false); 
+      // CookieModel.setLog('memberEquip_check', []); 
+      // CookieModel.setLog('memberDph', false);
+      // CookieModel.setLog('memberDph_check', []);
+      // CookieModel.setLog('memberDps', false);
+      // CookieModel.setLog('memberDps_check', []);  
 
       //幹員職業
       const professionResponse = await fetch(`${process.env.PUBLIC_URL}/json/profession.json`);
