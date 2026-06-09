@@ -1,7 +1,6 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
 import UniequipCalculatorModel from './UniequipCalculator';
-import CookieModel from './Cookie';
 
 const TalentsCalculatorModel = {
   //依照指定key名嘗試查詢幹員對應的天賦，並回傳此天賦的加成值 (若查詢不到則默認回傳0)
@@ -11,8 +10,6 @@ const TalentsCalculatorModel = {
     const witchAttributesKeyFrames = BasicCalculatorModel.type(type).witchAttributesKeyFrames;
 
     let addTotal = 0;
-    let logObject = {};
-    let logCount_talents = 1;
 
     //一個幹員可能會同時有多個天賦也可能完全沒天賦
     memberRow.talents?.forEach(t => {
@@ -48,17 +45,6 @@ const TalentsCalculatorModel = {
           if(memberRarity < 4 && witchPhases !== 2 && levelN === 1 && witchAttributesKeyFrames === 0){
             levelCheck = false;
           }
-
-          //用於輸出log的計算
-          logObject[`${logCount_talents}.`] = t.candidates[l].name;              
-          t.candidates[l].blackboard.forEach(b => {
-            logObject[`${logCount_talents}. ${b.key}`] = b.value;
-            const unieqVal = UniequipCalculatorModel.memberEquipTalent(memberRow.equipid, memberRow, uniequipJsonData, battleEquipJsonData, witchPhases, b.key);
-            if(unieqVal){
-              logObject[`${logCount_talents}. ${b.key}`] = unieqVal;
-            }        
-          });
-          logCount_talents += 1;
 
           if(levelCheck){         
             //一個天賦可能會同時有多個強化效果，甚至可能重複     
@@ -99,24 +85,6 @@ const TalentsCalculatorModel = {
           }
         }
       }     
-    }
-
-    //打印log       
-    if(memberRow.name === CookieModel.getCookie('memberName')){
-      if(CookieModel.getLog('memberTalent_check').includes(`${memberRow.equipid}`) === false){
-        CookieModel.setLog('memberTalent', false);
-        if(CookieModel.getLog('memberTalent') === false){
-          CookieModel.setLog('memberTalent', true);  
-          CookieModel.getLog('memberTalent_check').push(`${memberRow.equipid}`); 
-          const equipData = UniequipCalculatorModel.memberEquipData(memberRow, uniequipJsonData, memberRow.equipid); 
-          console.groupCollapsed(`${memberRow.name}【${equipData? equipData.uniEquipName : '無模組'}】的天賦加成原始數據log`);
-          console.table(
-            logObject
-          );
-          console.groupEnd(); 
-        }   
-      }
-      
     }
 
     return addTotal;

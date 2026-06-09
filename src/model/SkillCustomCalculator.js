@@ -37,6 +37,10 @@ const SkillCustomCalculatorModel = {
   //此處是記錄所有沒有包含在傷害公式計算中的key，並嘗試將這些key歸類到傷害公式計算中的一個已有key的自定技能數據
   skillListToAttackSkill: (type, skillrow, memberRow, uniequipJsonData, battleEquipJsonData) => {
     return {
+      //三星
+      '月见夜-武器附魔·α型': { 
+        'CHANGE_attackType': '法術',
+      },
       //四星
       '骋风-以攻为守': { 
         'CHANGE_OTHER_attackType': '物理',

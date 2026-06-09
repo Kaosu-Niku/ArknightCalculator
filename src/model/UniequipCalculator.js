@@ -39,11 +39,6 @@ const UniequipCalculatorModel = {
   //依照模組ID查詢幹員特定模組的實際數據 (object，詳細內容參考battle_equip_table.json)
   memberEquipBattle: (memberData, uniequipJsonData, battleEquipJsonData, customEquipid = null) => {
   let currentEquipBattle = undefined;
-  let logObject = {};
-  let log_equipid;
-  let logCount_attributeBlackboard = 1;
-  let logCount_blackboard = 1;
-  let logCount_blackboard2 = 1;
 
   const memberEquipID = UniequipCalculatorModel.memberEquipID(memberData, uniequipJsonData);
     if(memberEquipID){
@@ -51,65 +46,12 @@ const UniequipCalculatorModel = {
         if(memberData.equipid === id){
           //模組基本上會有3個升級階段，但只需要取最高階段的來做數值計算
           currentEquipBattle = battleEquipJsonData[id].phases[battleEquipJsonData[id].phases.length - 1];
-          log_equipid = memberData.equipid;
         }
       }
 
       if(customEquipid){
         //如果因為一些原因，參數memberData沒有辦法傳遞模組ID，替代方案於第三個參數手動添加模組ID以供查詢
         currentEquipBattle = battleEquipJsonData[customEquipid].phases[battleEquipJsonData[customEquipid].phases.length - 1];
-        log_equipid = customEquipid;
-      }
-
-      if(currentEquipBattle){
-        //log獲取基礎數值提升
-        logObject['0.0. 模組ID'] = customEquipid ?? memberData.equipid;
-        logObject['1.0. 基礎數值提升'] = '';
-        for (const attributeBlackboard of currentEquipBattle.attributeBlackboard){
-          logObject[`1.${logCount_attributeBlackboard}. ${attributeBlackboard.key}`] = attributeBlackboard.value;
-          logCount_attributeBlackboard += 1;
-        }
-
-        //log獲取特性追加
-        const partsObject = currentEquipBattle.parts.find(obj => 
-          obj.overrideTraitDataBundle && obj.overrideTraitDataBundle.candidates !== null
-        );
-        const candidatesObject = partsObject.overrideTraitDataBundle.candidates[partsObject.overrideTraitDataBundle.candidates.length - 1];
-        logObject['2.0. 特性追加描述'] = candidatesObject.additionalDescription;
-        for (const blackboard of candidatesObject.blackboard){
-          logObject[`2.${logCount_blackboard}. ${blackboard.key}`] = blackboard.value;
-          logCount_blackboard += 1;
-        }
-
-        //log獲取天賦更新
-        const partsObject2 = currentEquipBattle.parts.find(obj => 
-          obj.addOrOverrideTalentDataBundle && obj.addOrOverrideTalentDataBundle.candidates !== null
-        );
-        const candidatesObject2 = partsObject2.addOrOverrideTalentDataBundle.candidates[partsObject2.addOrOverrideTalentDataBundle.candidates.length - 1];
-        logObject['3.0. 天賦更新描述'] = candidatesObject2.upgradeDescription;
-        for (const blackboard of candidatesObject2.blackboard){
-          logObject[`3.${logCount_blackboard2}. ${blackboard.key}`] = blackboard.value;
-          logCount_blackboard2 += 1;
-        }    
-        
-        //打印log 
-        if(memberData.name === CookieModel.getCookie('memberName')){  
-          if(CookieModel.getLog('memberEquip_check').includes(log_equipid) === false){
-            CookieModel.setLog('memberEquip', false);
-            if(CookieModel.getLog('memberEquip') === false){
-              CookieModel.setLog('memberEquip', true); 
-              CookieModel.getLog('memberEquip_check').push(log_equipid);
-
-              const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, log_equipid);
-              console.groupCollapsed(`${memberData.name}【${equipData.uniEquipName}】的模組加成數據log`);
-              console.table(
-                logObject
-              );
-              console.groupEnd(); 
-            }
-          }
-        }
-
       }
     }
     return currentEquipBattle;
@@ -130,82 +72,82 @@ const UniequipCalculatorModel = {
       }
 
       //無條件的分支特性追加
-        switch(attributeKey){
-          //攻擊乘算
-          case 'atk': 
-            switch(subProfession){
-              case '解放者': //解放者的磨刀疊攻擊力 (還未有相關模組)                    
-              return 2;
-            }
-          break;
-          //攻擊倍率
-          case 'atk_scale': 
-            switch(subProfession){
-              case '獵手': //獵手的攻擊消耗子彈並提升攻擊倍率 (還未有相關模組)                 
-              return 1.2;
-              case '散射手': //散射手X模的攻擊前方一橫排的敵人時提升更高攻擊倍率               
-              return blackboardList?.find(item => item.key === 'atk_scale')?.value ?? 1.5;
-            }
-          break;
-          //傷害倍率
-          case 'damage_scale': 
-            switch(subProfession){
-              case '劍豪': //劍豪X模的提升造成傷害                 
-              return blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 1;
-            }
-          break;
-          //無視防禦
-          case 'def_penetrate_fixed': 
-            switch(subProfession){
-              case '劍豪': //劍豪Y模的無視防禦
-              case '炮手': //炮手Y模的無視防禦               
-              return blackboardList?.find(item => item.key === 'def_penetrate_fixed')?.value ?? 0;
-            }
-          break;
-          //無視防禦
-          case 'magic_resist_penetrate_fixed': 
-            switch(subProfession){
-              case '中堅術師': //中堅術師X模的無視法抗            
-              return blackboardList?.find(item => item.key === 'magic_resist_penetrate_fixed')?.value ?? 0;
-            }
-          break;
-          //攻速調整
-          case 'attack_speed': 
-            switch(subProfession){
-              case '要塞': //要塞Y模的提升攻擊速度 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)            
-              return blackboardList?.find(item => item.key === 'attack_speed')?.value ?? 0;
-            }
-          break;
-          //額外傷害的攻擊倍率
-          case 'other2_attack_scale': 
-            switch(subProfession){
-              case '御械術師': //御械術師Y模的浮游單元傷害上限提升            
-              return blackboardList?.find(item => item.key === 'max_atk_scale')?.value ?? 1.1;
-              case '投擲手': //投擲手X模的造成二次額外傷害            
-              return blackboardList?.find(item => item.key === 'attack@append_atk_scale')?.value ?? 0.5;
-              case '領主': //領主X模的造成額外法傷            
-              return blackboardList?.find(item => item.key === 'atk_scale_m')?.value ?? 0;
-            }
-          break;
-          //額外傷害的傷害類型
-          case 'other2_attack_type': 
-            switch(subProfession){
-              case '御械術師': //御械術師Y模的浮游單元傷害上限提升            
-              return '法術';
-              case '投擲手': //投擲手X模的造成二次額外傷害            
-              return '物理';
-              case '領主': //領主X模的造成額外法傷            
-              return '法術';
-            }
-          break;
-          //額外傷害的傷害類型
-          case 'enable_third_attack': 
-            switch(subProfession){
-              case '投擲手': //投擲手X模的造成二次額外傷害            
-              return blackboardList?.find(item => item.key === 'attack@enable_third_attack')?.value ?? 0;
-            }
-          break;
-        }
+      switch(attributeKey){
+        //攻擊乘算
+        case 'atk': 
+          switch(subProfession){
+            case '解放者': //解放者的磨刀疊攻擊力 (還未有相關模組)                    
+            return 2;
+          }
+        break;
+        //攻擊倍率
+        case 'atk_scale': 
+          switch(subProfession){
+            case '獵手': //獵手的攻擊消耗子彈並提升攻擊倍率 (還未有相關模組)                 
+            return 1.2;
+            case '散射手': //散射手X模的攻擊前方一橫排的敵人時提升更高攻擊倍率               
+            return blackboardList?.find(item => item.key === 'atk_scale')?.value ?? 1.5;
+          }
+        break;
+        //傷害倍率
+        case 'damage_scale': 
+          switch(subProfession){
+            case '劍豪': //劍豪X模的提升造成傷害                 
+            return blackboardList?.find(item => item.key === 'damage_scale')?.value ?? 1;
+          }
+        break;
+        //無視防禦
+        case 'def_penetrate_fixed': 
+          switch(subProfession){
+            case '劍豪': //劍豪Y模的無視防禦
+            case '炮手': //炮手Y模的無視防禦               
+            return blackboardList?.find(item => item.key === 'def_penetrate_fixed')?.value ?? 0;
+          }
+        break;
+        //無視防禦
+        case 'magic_resist_penetrate_fixed': 
+          switch(subProfession){
+            case '中堅術師': //中堅術師X模的無視法抗            
+            return blackboardList?.find(item => item.key === 'magic_resist_penetrate_fixed')?.value ?? 0;
+          }
+        break;
+        //攻速調整
+        case 'attack_speed': 
+          switch(subProfession){
+            case '要塞': //要塞Y模的提升攻擊速度 (目前確認到此模組原數據中把特性的 key value 寫在了理應是寫天賦更新的地方，導致目前專案邏輯無法順利抓取到key)            
+            return blackboardList?.find(item => item.key === 'attack_speed')?.value ?? 0;
+          }
+        break;
+        //額外傷害的攻擊倍率
+        case 'other2_attack_scale': 
+          switch(subProfession){
+            case '御械術師': //御械術師Y模的浮游單元傷害上限提升            
+            return blackboardList?.find(item => item.key === 'max_atk_scale')?.value ?? 1.1;
+            case '投擲手': //投擲手X模的造成二次額外傷害            
+            return blackboardList?.find(item => item.key === 'attack@append_atk_scale')?.value ?? 0.5;
+            case '領主': //領主X模的造成額外法傷            
+            return blackboardList?.find(item => item.key === 'atk_scale_m')?.value ?? 0;
+          }
+        break;
+        //額外傷害的傷害類型
+        case 'other2_attack_type': 
+          switch(subProfession){
+            case '御械術師': //御械術師Y模的浮游單元傷害上限提升            
+            return '法術';
+            case '投擲手': //投擲手X模的造成二次額外傷害            
+            return '物理';
+            case '領主': //領主X模的造成額外法傷            
+            return '法術';
+          }
+        break;
+        //額外傷害的傷害類型
+        case 'enable_third_attack': 
+          switch(subProfession){
+            case '投擲手': //投擲手X模的造成二次額外傷害            
+            return blackboardList?.find(item => item.key === 'attack@enable_third_attack')?.value ?? 0;
+          }
+        break;
+      }
 
       //有條件的分支特性追加
       if(candidates_check){

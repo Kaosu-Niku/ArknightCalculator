@@ -3,7 +3,6 @@ import SkillCustomCalculatorModel from './SkillCustomCalculator';
 import UniequipCalculatorModel from './UniequipCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
 import TalentsCustomCalculatorModel from './TalentsCustomCalculator';
-import CookieModel from './Cookie';
 
 const SkillCalculatorModel = {
   //查詢技能所屬的幹員數據 (回傳object，詳細內容參考character_table.json)
@@ -325,67 +324,6 @@ const SkillCalculatorModel = {
       break;
     }
 
-    //打印log
-    if(memberData.name === CookieModel.getCookie('memberName')){  
-      const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
-      if(CookieModel.getLog('memberDph_check').includes(`${skillRow.equipid}-${skillName}`) === false){          
-        CookieModel.setLog('memberDph', false);
-        if(CookieModel.getLog('memberDph') === false){            
-          CookieModel.setLog('memberDph', true);
-          CookieModel.getLog('memberDph_check').push(`${skillRow.equipid}-${skillName}`);
-
-          //技能加成數據log
-          const skillData = SkillCalculatorModel.skillData(type, skillRow);
-          let logObject = {};
-          let logCount_blackboard = 1;
-          skillData.blackboard?.forEach(b => {
-            logObject[`${logCount_blackboard}. ${b.key}`] = b.value;
-            logCount_blackboard += 1;
-          });
-          console.groupCollapsed(`${memberData.name}「${skillName}」 的技能加成原始數據log`);
-          console.table(
-            logObject
-          );
-          console.groupEnd();
-
-          //DPH算法各項數據log
-          const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
-          console.groupCollapsed(`${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPH算法數據log`);
-          console.table(
-            {
-              "0.1. 幹員原始攻擊力": memberNumeric.atk,
-              "0.2. 敵人原始防禦力": enemyData.enemyDef,
-              "0.3. 敵人原始法抗": enemyData.enemyRes,
-              "0.4. 傷害類型": attackType,
-              "1.1. 攻擊乘算-技能倍率": attackMulti,
-              "1.2. 攻擊乘算-天賦倍率": talentAttackMulti,
-              "1.3. 攻擊乘算-分支特性倍率": traitAttackMulti,
-              "2.1. 攻擊倍率-技能倍率": attackScale,
-              "2.2. 攻擊倍率-天賦倍率": talentAttackScale,
-              "2.3. 攻擊倍率-分支特性倍率": traitAttackScale,
-              "3.1. 傷害倍率-技能倍率": damageMulti,
-              "3.2. 傷害倍率-天賦倍率": talentDamageMulti,
-              "3.3. 傷害倍率-分支特性倍率": traitDamageMulti,
-              "4.1. 削減敵方防禦-技能倍率": defDivide,
-              "4.2. 削減敵方防禦-天賦倍率": talentDefDivide,
-              "5.1. 無視防禦-技能倍率": defSub,              
-              "5.2. 無視防禦-天賦倍率": "無計算",
-              "5.3. 無視防禦-分支特性倍率": traitDefSub,
-              "6.1. 削減敵方法抗-技能倍率": resDivide,
-              "6.2. 削減敵方法抗-天賦倍率": talentResDivide,
-              "6.3. 削減敵方法抗-分支特性倍率": traitResDivide,
-              "7.1. 保底傷害倍率-技能倍率": "無計算",
-              "7.2. 保底傷害倍率-天賦倍率": talentEnsureDamage,
-              "8.1. 敵人最終防禦力": finalEnemyDef,
-              "8.2. 敵人最終法抗": finalEnemyRes,
-              "10. 最終DPH": finalAttack * (damageMulti * talentDamageMulti * traitDamageMulti),
-            }
-          ); 
-          console.groupEnd(); 
-        }
-      }
-    }
-
     return finalAttack * (damageMulti * talentDamageMulti * traitDamageMulti);
   },
 
@@ -506,45 +444,6 @@ const SkillCalculatorModel = {
       }     
     }
 
-    //打印log
-    if(memberData.name === CookieModel.getCookie('memberName')){  
-      const skillName = SkillCalculatorModel.skillData(type, skillRow).name;
-      if(CookieModel.getLog('memberDps_check').includes(`${skillRow.equipid}-${skillName}`) === false){          
-        CookieModel.setLog('memberDps', false);
-        if(CookieModel.getLog('memberDps') === false){
-          CookieModel.setLog('memberDps', true);
-          CookieModel.getLog('memberDps_check').push(`${skillRow.equipid}-${skillName}`);
-
-          const equipData = UniequipCalculatorModel.memberEquipData(memberData, uniequipJsonData, skillRow.equipid);
-          console.groupCollapsed(`${memberData.name}【${equipData? equipData.uniEquipName : '無模組'}】「${skillName}」的DPS算法數據log`);
-          console.table(
-            {
-              "0.1. 幹員原始攻擊間隔": memberNumeric.baseAttackTime,
-              "0.2. 幹員原始攻速": memberNumeric.attackSpeed,
-              "1.1. 攻擊間隔調整-技能倍率": attackTimeRevise,
-              "1.2. 攻擊間隔調整-天賦倍率": talentAttackTimeRevise,              
-              "2.1. 攻速調整-技能倍率": attackSpeedRevise,
-              "2.2. 攻速調整-天賦倍率": talentAttackSpeedRevise,
-              "2.3. 攻速調整-分支特性倍率": traitAttackSpeedRevise,
-              "3.1. 最終攻擊間隔": finalAttackTime,
-              "3.2. 連擊數-技能倍率": attackCount,
-              "3.3. 攻擊段數": times,
-              "4.1. 技能額外傷害的傷害類型-技能倍率": other_attack_type,
-              "4.2. 技能額外傷害的攻擊倍率-技能倍率": other_attack_scale,
-              "4.3. 技能額外傷害的攻擊間隔-技能倍率": other_base_attack_time,
-              "5.1. 主傷害DPH": dph,
-              "5.2. 技能額外傷害DPH": other_skill_dph,
-              "5.3. 分支特性額外傷害DPH": other_subProfession_dph,
-              "5.4. 主傷害DPS": dps,
-              "5.5. 技能額外傷害DPS": other_skill_dps,
-              "5.6. 分支特性額外傷害DPS": other_subProfession_dps,
-              "10. 最終DPS": (dps + other_skill_dps + other_subProfession_dps),
-            }
-          ); 
-          console.groupEnd(); 
-        }
-      }
-    }
     //還沒有適配技能CD是攻回的情境
     return (dps + other_skill_dps + other_subProfession_dps);    
   },

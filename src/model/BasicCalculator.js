@@ -1,6 +1,5 @@
 import UniequipCalculatorModel from './UniequipCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
-import CookieModel from './Cookie';
 
 const BasicCalculatorModel = {
   //查詢當前所選流派 (回傳object，key有witchPhases、witchAttributesKeyFrames)
@@ -95,70 +94,47 @@ const BasicCalculatorModel = {
     //攻速
     let attackSpeed = basicData.attackSpeed; 
 
-    let log_potential_max_hp = 0;
-    let log_potential_atk = 0;
-    let log_potential_def = 0;
-    let log_potential_magic_resistance = 0;
-    let log_potential_attack_speed = 0;
     //潛能數值
     const potentialRanksData = memberRow.potentialRanks;
     potentialRanksData.forEach((element, index) => { 
       //一些幹員沒有辦法提升潛能，需要判斷null
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "MAX_HP"){
         //生命
-        log_potential_max_hp = element.buff.attributes.attributeModifiers[0].value;
         maxHp += element.buff.attributes.attributeModifiers[0].value;       
       }
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "ATK"){
         //攻擊
-        log_potential_atk = element.buff.attributes.attributeModifiers[0].value;
         atk += element.buff.attributes.attributeModifiers[0].value;
       }     
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "DEF"){
         //防禦
-        log_potential_def = element.buff.attributes.attributeModifiers[0].value;
         def += element.buff.attributes.attributeModifiers[0].value;
       } 
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "MAGIC_RESISTANCE"){
         //法抗
-        log_potential_magic_resistance = element.buff.attributes.attributeModifiers[0].value;
         magicResistance += element.buff.attributes.attributeModifiers[0].value;
       } 
       if(element.buff?.attributes.attributeModifiers[0].attributeType === "ATTACK_SPEED"){
         //攻速
-        log_potential_attack_speed = element.buff.attributes.attributeModifiers[0].value;
         attackSpeed += element.buff.attributes.attributeModifiers[0].value;
       }    
     });
 
-    let log_favor_max_hp = 0;
-    let log_favor_atk = 0;
-    let log_favor_def = 0;
-    let log_favor_magic_resistance = 0;
     //信賴數值
     const favorKeyFrames = memberRow.favorKeyFrames;
     favorKeyFrames.forEach((element, index) => { 
       if(element.level === 50){
         //生命
-        log_favor_max_hp = element.data.maxHp;
         maxHp += element.data.maxHp;   
         //攻擊
-        log_favor_atk = element.data.atk;
         atk += element.data.atk;    
         //防禦
-        log_favor_def = element.data.def;
         def += element.data.def;  
         //法抗
-        log_favor_magic_resistance = element.data.magicResistance;
         magicResistance += element.data.magicResistance;
       }  
     });
 
-    let log_equip_max_hp = 0;
-    let log_equip_atk = 0;
-    let log_equip_def = 0;
-    let log_equip_magic_resistance = 0;
-    let log_equip_attack_speed = 0;
     //模組數值
     if(witchPhases === 2){
       const equipBattle = UniequipCalculatorModel.memberEquipBattle(memberRow, uniequipJsonData, battleEquipJsonData);
@@ -166,27 +142,22 @@ const BasicCalculatorModel = {
         for (const attributeBlackboard of equipBattle.attributeBlackboard) {
           if(attributeBlackboard.key === 'max_hp'){
             //生命
-            log_equip_max_hp = attributeBlackboard.value;
             maxHp += attributeBlackboard.value;   
           }
           else if(attributeBlackboard.key === 'atk'){
             //攻擊
-            log_equip_atk = attributeBlackboard.value;
             atk += attributeBlackboard.value;   
           }
           else if(attributeBlackboard.key === 'def'){
             //防禦
-            log_equip_def = attributeBlackboard.value;
             def += attributeBlackboard.value;   
           }
           else if(attributeBlackboard.key === 'magic_resistance'){
             //法抗
-            log_equip_magic_resistance = attributeBlackboard.value;
             magicResistance += attributeBlackboard.value;   
           }
           else if(attributeBlackboard.key === 'attack_speed'){
             //攻速
-            log_equip_attack_speed = attributeBlackboard.value;
             attackSpeed += attributeBlackboard.value;
           }                                                        
         }
@@ -206,62 +177,6 @@ const BasicCalculatorModel = {
     baseAttackTime += TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'base_attack_time');   
     //攻速
     attackSpeed += TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'attack_speed');        
-    
-    //打印log
-    if(memberRow.name === CookieModel.getCookie('memberName')){
-      if(CookieModel.getLog('memberNumeric_check').includes(`${memberRow.equipid}`) === false){
-        CookieModel.setLog('memberNumeric', false);
-        if(CookieModel.getLog('memberNumeric') === false){     
-          CookieModel.setLog('memberNumeric', true);
-          CookieModel.getLog('memberNumeric_check').push(`${memberRow.equipid}`); 
-          const equipData = UniequipCalculatorModel.memberEquipData(memberRow, uniequipJsonData, memberRow.equipid);
-          console.groupCollapsed(`${memberRow.name}【${equipData? equipData.uniEquipName : '無模組'}】的各項加成數據log`);
-          console.table(
-            {
-              "1.": "",
-              "基礎生命": basicData.maxHp,
-              "基礎攻擊": basicData.atk,
-              "基礎防禦": basicData.def,
-              "基礎法抗": basicData.magicResistance,
-              "基礎攻擊間隔": basicData.baseAttackTime,
-              "基礎攻速": basicData.attackSpeed, 
-              "2.": "",
-              "潛能生命": log_potential_max_hp,
-              "潛能攻擊": log_potential_atk,
-              "潛能防禦": log_potential_def,
-              "潛能法抗": log_potential_magic_resistance,
-              "潛能攻速": log_potential_attack_speed,
-              "3.": "",
-              "信賴生命": log_favor_max_hp,
-              "信賴攻擊": log_favor_atk,
-              "信賴防禦": log_favor_def,
-              "信賴法抗": log_favor_magic_resistance,
-              "4.": "",
-              "模組生命": log_equip_max_hp,
-              "模組攻擊": log_equip_atk,
-              "模組防禦": log_equip_def,
-              "模組法抗": log_equip_magic_resistance,
-              "模組攻速": log_equip_attack_speed,
-              "5.": "",
-              "天賦生命(比例)": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'max_hp')),
-              "天賦攻擊(比例)": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'atk')),
-              "天賦防禦(比例)": (1 + TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'def')),
-              "天賦法抗": TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'magic_resistance'),
-              "天賦攻擊間隔": TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'base_attack_time'),
-              "天賦攻速": TalentsCalculatorModel.memberTalent(type, memberRow, uniequipJsonData, battleEquipJsonData, 'attack_speed'),
-              "6.": "",
-              "加成後生命": maxHp,
-              "加成後攻擊": atk,
-              "加成後防禦": def,
-              "加成後法抗": magicResistance,
-              "加成後攻擊間隔": baseAttackTime,
-              "加成後攻速": attackSpeed,
-            }
-          );
-          console.groupEnd(); 
-        }
-      }  
-    }
 
     return { maxHp, atk, def, magicResistance, baseAttackTime, attackSpeed};
   },

@@ -21,6 +21,8 @@ const CookieModel = {
             return '精零1級';
         case 'rarity':
             return { "TIER_1":true, "TIER_2":true, "TIER_3":true, "TIER_4":true, "TIER_5":true, "TIER_6":true,};
+        default:
+            return null;
         }
     },
     //設置Cookie
@@ -37,32 +39,6 @@ const CookieModel = {
 
         // 組合完整的Cookie字串
         document.cookie = `${key}=${cookieValue}; ${expires}; ${path};`;
-    },
-    //log
-    //此處用於輸出log功能，為防止重複輸出，需要用判斷值來判斷是否已輸出
-    logList: {
-        "memberNumeric": false,
-        "memberNumeric_check": [],
-
-        "memberTalent": false,
-        "memberTalent_check": [],
-
-        "memberEquip": false,
-        "memberEquip_check": [],
-
-        "memberDph": false,
-        "memberDph_check": [],
-
-        "memberDps": false,
-        "memberDps_check": [],    
-    },
-    //取得log
-    getLog: (name) => {
-        return CookieModel.logList[name];
-    },
-    //設置log
-    setLog: (name, value) => {
-        return CookieModel.logList[name] = value;
     },
 }
 
