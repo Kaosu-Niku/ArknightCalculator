@@ -1,70 +1,94 @@
-# Getting Started with Create React App
+# Arknight Calculator (明日方舟数据计算器)
 
-This project was bootstrapped with [Create React App](https://github.com/facebook/create-react-app).
+![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react)
+![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap)
 
-## Available Scripts
+> **说明**: 本项目是基于 **Kaosu-Niku** 大佬的原作网站进行维护、重构与功能改进的版本。
 
-In the project directory, you can run:
+基于 React 构建的明日方舟数值计算器，专为 **四星队** 及 **低配攻略**（精一1级/精一满级）流派设计。支持自定义敌人数据，快速计算我方与敌方的 DPS、生存能力等关键数据，助力关卡攻略。
 
-### `npm start`
+## ✨ 功能特性
 
-Runs the app in the development mode.\
-Open [http://localhost:3000](http://localhost:3000) to view it in your browser.
+*   **流派针对优化**: 专门针对以下流派的数据模型进行优化：
+    *   精一 1 级四星队
+    *   精一满级四星队
+    *   常规四星队
+*   **自定义战斗模拟**: 支持输入自定义的敌人属性（HP、攻击、防御、法抗等），模拟真实战斗环境。
+*   **多维数据展示**:
+    *   **干员数据**: 包含基础面板属性、天赋加成。
+    *   **技能数据**: 详细的攻击技能与防御技能数值计算。
+    *   **DPS 分析**: 自动计算理论 DPS 及总伤害，支持敌我双方数据对比。
+*   **模组支持**: 完整包含模组（Uniequip）带来的属性提升与特性变化。
+*   **多语言界面**: 内置简体中文与繁体中文，支持一键切换。
+*   **响应式设计**: 完美适配桌面端与移动端访问。
+*   **[NEW] 可视化计算日志**: 
+    *   新增侧边栏日志面板，无需打开控制台即可查看详细计算过程。
+    *   支持**搜索干员**，快速定位目标。
+    *   提供一键清空和实时日志计数功能。
 
-The page will reload when you make changes.\
-You may also see any lint errors in the console.
+## 🚀 在线预览
 
-### `npm test`
+访问 GitHub Pages 进行在线体验：
+[https://Light-milk-tea.github.io/ArknightCalculator-Kaosu-Niku/](https://Light-milk-tea.github.io/ArknightCalculator-Kaosu-Niku/)
 
-Launches the test runner in the interactive watch mode.\
-See the section about [running tests](https://facebook.github.io/create-react-app/docs/running-tests) for more information.
+> **注意**: 如果页面无法访问，可能是 GitHub Pages 尚未部署完成，请稍候再试。
 
-### `npm run build`
+## 🛠️ 本地运行
 
-Builds the app for production to the `build` folder.\
-It correctly bundles React in production mode and optimizes the build for the best performance.
+如果你想在本地运行或开发本项目，请按照以下步骤操作：
 
-The build is minified and the filenames include the hashes.\
-Your app is ready to be deployed!
+### 1. 环境准备
+确保你的环境中已安装 [Node.js](https://nodejs.org/) (建议 v16 或更高版本)。
 
-See the section about [deployment](https://facebook.github.io/create-react-app/docs/deployment) for more information.
+### 2. 克隆仓库
+```bash
+git clone https://github.com/Light-milk-tea/ArknightCalculator-Kaosu-Niku.git
+cd ArknightCalculator-Kaosu-Niku
+```
 
-### `npm run eject`
+### 3. 安装依赖
+```bash
+npm install
+```
 
-**Note: this is a one-way operation. Once you `eject`, you can't go back!**
+### 4. 启动开发服务器
+```bash
+npm start
+```
+启动后，浏览器将自动打开 [http://localhost:3000](http://localhost:3000) 访问应用。
 
-If you aren't satisfied with the build tool and configuration choices, you can `eject` at any time. This command will remove the single build dependency from your project.
+### 5. 构建生产版本
+```bash
+npm run build
+```
+构建产物将输出到 `build` 目录，可用于部署。
 
-Instead, it will copy all the configuration files and the transitive dependencies (webpack, Babel, ESLint, etc) right into your project so you have full control over them. All of the commands except `eject` will still work, but they will point to the copied scripts so you can tweak them. At this point you're on your own.
+## 📂 项目结构
 
-You don't have to ever use `eject`. The curated feature set is suitable for small and middle deployments, and you shouldn't feel obligated to use this feature. However we understand that this tool wouldn't be useful if you couldn't customize it when you are ready for it.
+```
+src/
+├── component/          # UI 组件
+│   ├── LogPanel.js     # [新增] 日志展示面板
+│   ├── Header.js       # 顶部导航栏
+│   └── ...
+├── context/            # React Context (语言状态管理)
+├── model/              # 核心计算逻辑
+│   ├── LogManager.js   # [新增] 日志管理模块
+│   ├── BasicCalculator.js   # 基础数值
+│   ├── SkillCalculator.js   # 技能计算
+│   ├── TalentsCalculator.js # 天赋计算
+│   └── UniequipCalculator.js # 模组计算
+└── App.js              # 主应用入口
+```
 
-## Learn More
+## 🤝 贡献
 
-You can learn more in the [Create React App documentation](https://facebook.github.io/create-react-app/docs/getting-started).
+欢迎提交 Issue 或 Pull Request 来改进这个计算器！无论是增加新干员数据、修复 Bug 还是优化算法，都非常欢迎。
 
-To learn React, check out the [React documentation](https://reactjs.org/).
+## 👤 作者与致谢
 
-### Code Splitting
+*   **原作者**: Kaosu-Niku
+*   **维护与改进**: Light-milk-tea
 
-This section has moved here: [https://facebook.github.io/create-react-app/docs/code-splitting](https://facebook.github.io/create-react-app/docs/code-splitting)
-
-### Analyzing the Bundle Size
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size](https://facebook.github.io/create-react-app/docs/analyzing-the-bundle-size)
-
-### Making a Progressive Web App
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app](https://facebook.github.io/create-react-app/docs/making-a-progressive-web-app)
-
-### Advanced Configuration
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/advanced-configuration](https://facebook.github.io/create-react-app/docs/advanced-configuration)
-
-### Deployment
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/deployment](https://facebook.github.io/create-react-app/docs/deployment)
-
-### `npm run build` fails to minify
-
-This section has moved here: [https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify](https://facebook.github.io/create-react-app/docs/troubleshooting#npm-run-build-fails-to-minify)
+---
+*本项目与《明日方舟》官方无关，所有游戏素材版权归鹰角网络所有。*

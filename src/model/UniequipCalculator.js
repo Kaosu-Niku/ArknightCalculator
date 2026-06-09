@@ -1,6 +1,7 @@
 import BasicCalculatorModel from '../model/BasicCalculator';
 import SkillCustomCalculatorModel from './SkillCustomCalculator';
 import CookieModel from './Cookie';
+import LogManager from './LogManager';
 
 //模組更新進度: 死芒-未处理的遗产
 //模組上線時間查詢: https://prts.wiki/w/%E5%B9%B2%E5%91%98%E6%A8%A1%E7%BB%84%E4%B8%80%E8%A7%88/%E4%B8%8A%E7%BA%BF%E6%97%B6%E9%97%B4
