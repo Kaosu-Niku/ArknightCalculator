@@ -1,13 +1,32 @@
-import React, { createContext, useState, useContext, useEffect } from 'react';
+import React, { createContext, useCallback, useState, useContext, useEffect } from 'react';
 import * as OpenCC from 'opencc-js';
+import SettingsStorageModel from '../model/SettingsStorage';
 
 const LanguageContext = createContext();
 
 export const useLanguage = () => useContext(LanguageContext);
 
+export const translateText = ({
+  text,
+  sourceLang = 'zh-TW',
+  language,
+  converters,
+  isReady,
+}) => {
+  if(!text || typeof text !== 'string' || !isReady || language === sourceLang){
+    return text;
+  }
+  if(language === 'zh-CN' && sourceLang === 'zh-TW'){
+    return converters.twToCn(text);
+  }
+  if(language === 'zh-TW' && sourceLang === 'zh-CN'){
+    return converters.cnToTw(text);
+  }
+  return text;
+};
+
 export const LanguageProvider = ({ children }) => {
-  // Default to Simplified Chinese (zh-CN)
-  const [language, setLanguage] = useState('zh-CN');
+  const [language, setLanguage] = useState(SettingsStorageModel.get('language'));
   const [converters, setConverters] = useState({
     twToCn: null,
     cnToTw: null
@@ -31,9 +50,13 @@ export const LanguageProvider = ({ children }) => {
     initConverters();
   }, []);
 
-  const toggleLanguage = () => {
-    setLanguage((prev) => (prev === 'zh-TW' ? 'zh-CN' : 'zh-TW'));
-  };
+  const toggleLanguage = useCallback(() => {
+    setLanguage(prev => {
+      const nextLanguage = prev === 'zh-TW' ? 'zh-CN' : 'zh-TW';
+      SettingsStorageModel.update({ language: nextLanguage });
+      return nextLanguage;
+    });
+  }, []);
 
   /**
    * Translate text based on source language and current target language.
@@ -41,34 +64,16 @@ export const LanguageProvider = ({ children }) => {
    * @param {string} sourceLang - The source language of the text ('zh-TW' or 'zh-CN'). Defaults to 'zh-TW'.
    * @returns {string} - The translated text.
    */
-  const t = (text, sourceLang = 'zh-TW') => {
-    if (!text || typeof text !== 'string') return text;
-    if (!isReady) return text;
-    
-    // If source and target are same, return text
-    if (language === sourceLang) {
-      return text;
-    }
-
-    // If target is Simplified and source is Traditional -> Convert TW to CN
-    if (language === 'zh-CN' && sourceLang === 'zh-TW') {
-      return converters.twToCn(text);
-    }
-
-    // If target is Traditional and source is Simplified -> Convert CN to TW
-    if (language === 'zh-TW' && sourceLang === 'zh-CN') {
-      return converters.cnToTw(text);
-    }
-
-    return text;
-  };
-
-  // Deprecated: Alias for t(text, 'zh-CN') for backward compatibility if needed, 
-  // but better to use t(text, source) directly.
-  const tData = (text) => t(text, 'zh-CN');
+  const t = useCallback((text, sourceLang = 'zh-TW') => translateText({
+    text,
+    sourceLang,
+    language,
+    converters,
+    isReady,
+  }), [language, converters, isReady]);
 
   return (
-    <LanguageContext.Provider value={{ language, toggleLanguage, t, tData, isReady }}>
+    <LanguageContext.Provider value={{ language, toggleLanguage, t, isReady }}>
       {children}
     </LanguageContext.Provider>
   );

@@ -1,47 +1,41 @@
-
-
-import React, { useState, useEffect } from 'react';
+import React from 'react';
 import { useLanguage } from '../context/LanguageContext';
-import LogManager from '../model/LogManager';
 
 function Header() {
   const { language, toggleLanguage, t } = useLanguage();
-  const [logCount, setLogCount] = useState(0);
-
-  useEffect(() => {
-    // 訂閱日誌更新以顯示計數
-    const unsubscribe = LogManager.subscribe((newLogs) => {
-      setLogCount(newLogs.length);
-    });
-    return () => unsubscribe();
-  }, []);
 
   return (
-    <div className='bg-dark text-white sticky-top' style={{zIndex: 1020}}>
-      <div className='d-flex justify-content-center align-items-center p-1 m-0 position-relative'>
-        <h2 className='text-center m-0'>Arknight Calculator</h2>
-        <div className="position-absolute end-0 me-2 d-flex gap-2 align-items-center">
-          {/* 日誌面板觸發按鈕 */}
-          <button 
-            className="btn btn-outline-info btn-sm" 
-            type="button" 
-            data-bs-toggle="offcanvas" 
-            data-bs-target="#logOffcanvas"
-            title={t('點擊展開日誌面板')}
-          >
-            {t('查看計算日誌')} 
-            {logCount > 0 && <span className="badge bg-danger ms-1">{logCount}</span>}
-          </button>
+    <header className="app-header">
+      <div className="header-inner">
+        <a className="brand-lockup" href="#enemy_form" aria-label="Arknight Calculator">
+          <span className="brand-mark">AC</span>
+          <span>
+            <strong>Arknight Calculator</strong>
+            <small>{t('傷害計算工作台')}</small>
+          </span>
+        </a>
 
-          <button 
-            className="btn btn-outline-light btn-sm" 
-            onClick={toggleLanguage}
+        <nav className="desktop-nav" aria-label={t('主要導覽')}>
+          <a href="#enemy_form">{t('作戰參數')}</a>
+          <a href="#member_table">{t('幹員數據')}</a>
+          <a href="#attackSkill_table">{t('技能傷害')}</a>
+        </nav>
+
+        <div className="header-actions">
+          <button
+            className="header-button"
+            type="button"
+            data-bs-toggle="offcanvas"
+            data-bs-target="#logOffcanvas"
           >
-            {language === 'zh-TW' ? '切换至简体中文' : '切换至繁体中文'}
+            {t('計算明細')}
+          </button>
+          <button className="language-button" type="button" onClick={toggleLanguage}>
+            {language === 'zh-TW' ? '简' : '繁'}
           </button>
         </div>
       </div>
-    </div>
+    </header>
   );
 }
 
