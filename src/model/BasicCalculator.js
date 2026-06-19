@@ -1,6 +1,7 @@
 import UniequipCalculatorModel from './UniequipCalculator';
 import TalentsCalculatorModel from './TalentsCalculator';
 import ProgressionResolverModel from './ProgressionResolver';
+import { resolveFlatTalentBonuses } from './talentEffectRules';
 
 const memberNumericCache = new WeakMap();
 const numericKeys = ['maxHp', 'atk', 'def', 'magicResistance', 'baseAttackTime', 'attackSpeed'];
@@ -67,6 +68,7 @@ const BasicCalculatorModel = {
         module: emptyNumeric(),
         beforeTalent: emptyNumeric(),
         talent: emptyNumeric(),
+        flatTalent: { atk: 0, maxHp: 0 },
         final: emptyNumeric(),
       };
     }
@@ -137,16 +139,26 @@ const BasicCalculatorModel = {
       key,
       base[key] + potential[key] + trust[key] + module[key],
     ]));
+    const flatTalent = resolveFlatTalentBonuses(
+      memberRow.name,
+      (attribute) => TalentsCalculatorModel.memberTalentRaw(
+        type,
+        memberRow,
+        uniequipJsonData,
+        battleEquipJsonData,
+        attribute
+      )
+    );
     const final = {
-      maxHp: beforeTalent.maxHp * (1 + talent.maxHp),
-      atk: beforeTalent.atk * (1 + talent.atk),
+      maxHp: beforeTalent.maxHp * (1 + talent.maxHp) + flatTalent.maxHp,
+      atk: beforeTalent.atk * (1 + talent.atk) + flatTalent.atk,
       def: beforeTalent.def * (1 + talent.def),
       magicResistance: beforeTalent.magicResistance + talent.magicResistance,
       baseAttackTime: beforeTalent.baseAttackTime + talent.baseAttackTime,
       attackSpeed: beforeTalent.attackSpeed + talent.attackSpeed,
     };
 
-    return { base, potential, trust, module, beforeTalent, talent, final };
+    return { base, potential, trust, module, beforeTalent, talent, flatTalent, final };
   },
 };
 

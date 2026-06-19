@@ -3,6 +3,7 @@ import SkillDataIndexModel from './SkillDataIndex';
 const formulaFieldKeys = {
   attackTypeOverride: 'CHANGE_attackType',
   attackMultiplier: 'atk',
+  flatAttack: 'FLAT_atk',
   attackScale: 'atk_scale',
   damageScale: 'damage_scale',
   defenseReduction: 'def',
@@ -13,10 +14,13 @@ const formulaFieldKeys = {
   attackCount: 'ATTACK_COUNT',
   durationOverride: 'CHANGE_duration',
   attackTimes: 'times',
+  mainAttackTimes: 'MAIN_times',
   ammoCount: 'attack@trigger_time',
   extraAttackTypeOverride: 'CHANGE_OTHER_attackType',
   extraAttackScale: 'OTHER_atk_scale',
   extraAttackInterval: 'OTHER_base_attack_time',
+  extraAttackTimes: 'OTHER_times',
+  extraDuration: 'OTHER_duration',
 };
 
 const getBlackboardAttribute = (skillData, attribute, blackboardIndex) => {
@@ -95,6 +99,7 @@ const SkillEffectResolverModel = {
       fieldResult,
       attackTypeOverride: () => field('attackTypeOverride'),
       attackMultiplier: () => field('attackMultiplier'),
+      flatAttack: () => field('flatAttack'),
       attackScale: () => field('attackScale'),
       damageScale: () => field('damageScale'),
       defenseReduction: () => field('defenseReduction'),
@@ -105,10 +110,13 @@ const SkillEffectResolverModel = {
       attackCount: () => field('attackCount'),
       durationOverride: () => field('durationOverride'),
       attackTimes: () => field('attackTimes'),
+      mainAttackTimes: () => field('mainAttackTimes'),
       ammoCount: () => field('ammoCount'),
       extraAttackTypeOverride: () => field('extraAttackTypeOverride'),
       extraAttackScale: () => field('extraAttackScale'),
       extraAttackInterval: () => field('extraAttackInterval'),
+      extraAttackTimes: () => field('extraAttackTimes'),
+      extraDuration: () => field('extraDuration'),
     };
   },
 };

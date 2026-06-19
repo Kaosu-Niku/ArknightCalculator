@@ -1,5 +1,6 @@
 import SkillCalculatorModel from '../SkillCalculator';
 import CalculatorDataBuilderModel from '../CalculatorDataBuilder';
+import BasicCalculatorModel from '../BasicCalculator';
 
 const characterJsonData = require('../../../public/json/character_table.json');
 const skillJsonData = require('../../../public/json/skill_table.json');
@@ -279,6 +280,119 @@ describe('approved calculation baselines', () => {
     expect(incantationMedic).toBeGreaterThan(0);
   });
 
+  test('new game data custom rules map multi-hit and non-standard keys', () => {
+    const varkis = report('精二滿級', 'skchr_varkis_1');
+    const amoris = report('精二滿級', 'skchr_amoris_1');
+    const liesel = report('精二滿級', 'skchr_liesel_2');
+    const kaltsit = report('精二滿級', 'skchr_kalts2_2');
+    const headbrh = report('精二滿級', 'skchr_headb2_3');
+
+    expect(varkis.schedule.attackCount).toBe(3);
+    expect(amoris.formulaEffects.attackScale.value).toBeCloseTo(2);
+    expect(liesel.streams.find(stream => stream.source === 'main').times).toBe(1);
+    expect(liesel.streams.find(stream => stream.source === 'skillExtra').duration).toBe(6);
+    expect(kaltsit.streams[0].details.attackType).toBe('真實');
+    expect(kaltsit.schedule.ammoCount).toBe(10);
+    expect(headbrh.formulaEffects.attackMultiplier.value).toBe(1);
+    expect(headbrh.formulaEffects.attackScale.value).toBeCloseTo(3.12);
+    expect(headbrh.schedule.attackCount).toBe(5);
+  });
+
+  test('new conditional talents and skills use enabled or expected values', () => {
+    const kichiOff = report('精二滿級', 'skchr_kichi_2', false);
+    const kichiOn = report('精二滿級', 'skchr_kichi_2', true);
+    const demetrOff = report('精二滿級', 'skchr_demetr_3', false);
+    const demetrOn = report('精二滿級', 'skchr_demetr_3', true);
+
+    expect(kichiOff.memberTalent.damage_scale ?? 1).toBe(1);
+    expect(kichiOn.memberTalent.damage_scale).toBeCloseTo(1.21);
+    expect(demetrOff.formulaEffects.attackScale.value).toBe(1);
+    expect(demetrOn.formulaEffects.attackScale.value).toBeCloseTo(1.425);
+    expect(demetrOn.memberTalent.damage_scale).toBeCloseTo(1.36);
+    expect(demetrOn.memberTalent.def_penetrate_fixed).toBeCloseTo(-0.35);
+  });
+
+  test('fragile effects feed back only when conditional effects are enabled', () => {
+    const pramanixOff = report('精二滿級', 'skchr_slbell_2', false);
+    const pramanixOn = report('精二滿級', 'skchr_slbell_2', true);
+    const shamareOn = report('精二滿級', 'skchr_vodfox_1', true);
+    const reedOff = report('精二滿級', 'skchr_reed2_3', false);
+    const reedOn = report('精二滿級', 'skchr_reed2_3', true);
+
+    expect(pramanixOff.memberTalent.damage_scale ?? 1).toBe(1);
+    expect(pramanixOn.memberTalent.damage_scale).toBeCloseTo(1.33);
+    expect(shamareOn.streams[0].details.damageMultiplier.final).toBeCloseTo(1.594);
+    expect(reedOff.memberTalent.damage_scale ?? 1).toBe(1);
+    expect(reedOn.memberTalent.damage_scale).toBeCloseTo(1.32);
+  });
+
+  test('fixed talent stacks are added after percentage talent bonuses', () => {
+    const ulpian = characterJsonData.char_4145_ulpia;
+    const numeric = BasicCalculatorModel.memberNumericBreakdown(
+      '精二滿級',
+      ulpian,
+      uniequipJsonData,
+      battleEquipJsonData
+    );
+    const skill = report('精二滿級', 'skchr_ulpia_2');
+
+    expect(numeric.flatTalent.atk).toBe(300);
+    expect(numeric.flatTalent.maxHp).toBe(1200);
+    expect(numeric.final.atk).toBeCloseTo(
+      numeric.beforeTalent.atk * (1 + numeric.talent.atk) + 300
+    );
+    expect(skill.formulaEffects.flatAttack.value).toBe(300);
+  });
+
+  test('substitute and retaliation damage do not modify main attacks', () => {
+    const specter = report('精二滿級', 'skchr_ghost2_2', true);
+    const mlynarOff = report('精二滿級', 'skchr_mlynar_1', false);
+    const mlynarOn = report('精二滿級', 'skchr_mlynar_1', true);
+
+    expect(specter.memberTalent.atk_scale ?? 1).toBe(1);
+    expect(mlynarOff.memberTalent.atk_scale).toBeCloseTo(1.13);
+    expect(mlynarOn.memberTalent.atk_scale).toBeCloseTo(1.18);
+  });
+
+  test('team buffs apply only when the operator can receive them', () => {
+    const breakdown = (type, id) => BasicCalculatorModel.memberNumericBreakdown(
+      type,
+      characterJsonData[id],
+      uniequipJsonData,
+      battleEquipJsonData
+    );
+
+    expect(breakdown('精二滿級', 'char_180_amgoat').talent.atk).toBeCloseTo(0.16);
+    expect(breakdown('精二滿級', 'char_130_doberm').talent.atk).toBe(0);
+    expect(breakdown('精一滿級', 'char_187_ccheal').talent.atk).toBe(0);
+  });
+
+  test('staged skills use their highest available stage', () => {
+    const thorns = report('精二滿級', 'skchr_thorns_3');
+    const viviana = report('精二滿級', 'skchr_vvana_3');
+    const horn = report('精二滿級', 'skchr_horn_3');
+    const headbrh = report('精二滿級', 'skchr_headb2_2');
+    const haruka = report('精二滿級', 'skchr_haruka_2');
+    const eyjafjalla = report('精二滿級', 'skchr_amgoat_1');
+    const logos = report('精二滿級', 'skchr_logos_2');
+    const carnelian = report('精二滿級', 'skchr_billro_3');
+
+    expect(thorns.formulaEffects.attackMultiplier.value).toBeCloseTo(1.2);
+    expect(thorns.formulaEffects.attackSpeedRevision.value).toBe(50);
+    expect(thorns.schedule.isPermanent).toBe(true);
+    expect(viviana.schedule.attackCount).toBe(3);
+    expect(viviana.schedule.duration).toBe(25);
+    expect(horn.formulaEffects.attackMultiplier.value).toBeCloseTo(1.4);
+    expect(headbrh.formulaEffects.attackMultiplier.value).toBeCloseTo(1.8);
+    expect(headbrh.schedule.isPermanent).toBe(true);
+    expect(haruka.formulaEffects.attackMultiplier.value).toBeCloseTo(0.4);
+    expect(haruka.schedule.isPermanent).toBe(true);
+    expect(eyjafjalla.formulaEffects.attackMultiplier.value).toBeCloseTo(0.6);
+    expect(eyjafjalla.formulaEffects.attackSpeedRevision.value).toBe(60);
+    expect(logos.streams.find(stream => stream.source === 'skillExtra').details.attackScale.extra).toBeCloseTo(2.25);
+    expect(carnelian.formulaEffects.damageScale.value).toBeCloseTo(2);
+  });
+
   test('real skills use instant, ammo, permanent and staged DPS timing', () => {
     const instant = report('精二滿級', 'skchr_chen_2');
     const ammo = report('精二滿級', 'skchr_wisdel_3');
@@ -291,8 +405,8 @@ describe('approved calculation baselines', () => {
     );
     expect(permanent.schedule.isPermanent).toBe(true);
     expect(permanent.dps).toBeGreaterThan(0);
-    expect(staged.schedule.isPermanent).toBe(false);
-    expect(staged.dps).toBeCloseTo(staged.total / staged.schedule.duration);
+    expect(staged.schedule.isPermanent).toBe(true);
+    expect(staged.dps).toBeGreaterThan(0);
   });
 
   test('ammo total includes thrower module extra attacks', () => {

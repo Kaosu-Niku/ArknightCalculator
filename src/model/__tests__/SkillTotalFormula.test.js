@@ -10,6 +10,7 @@ import { isPermanentSkill } from '../skillDurationRules';
 import {
   getConditionalModuleTrait,
   getExtraAttackHitMultiplier,
+  getStaticModuleTrait,
   hasConditionalModuleTrait,
 } from '../uniequipTraitRules';
 import {
@@ -47,6 +48,22 @@ describe('skill total formula', () => {
     expect(getConditionalModuleTrait('強攻手', 'atk_scale', blackboard)).toBeCloseTo(1.1);
     expect(getConditionalModuleTrait('神射手', 'damage_scale', blackboard)).toBeCloseTo(1.1);
     expect(getConditionalModuleTrait('無畏者', 'attack_speed', blackboard)).toBeCloseTo(4);
+  });
+
+  test('new module branch traits resolve through the shared rule table', () => {
+    const values = new Map([
+      ['atk_scale', 1.1],
+      ['damage_scale', 1.1],
+    ]);
+    const blackboard = { value: key => values.get(key) };
+    const artsProtectorBlackboard = {
+      value: key => key === 'atk_scale' ? 0.1 : undefined,
+    };
+
+    expect(getConditionalModuleTrait('回環射手', 'atk_scale', blackboard)).toBe(1.1);
+    expect(getConditionalModuleTrait('本源術師', 'damage_scale', blackboard)).toBe(1.1);
+    expect(getStaticModuleTrait('馭法鐵衛', 'other2_attack_scale', artsProtectorBlackboard)).toBe(0.1);
+    expect(getStaticModuleTrait('馭法鐵衛', 'other2_attack_type', blackboard)).toBe('法術');
   });
 
   test('resolves attack interval with all revisions', () => {
@@ -105,6 +122,21 @@ describe('skill total formula', () => {
     })).toBe(1200);
   });
 
+  test('damage streams can override shared times and duration independently', () => {
+    const schedule = {
+      attackCount: 1,
+      attackInterval: 2,
+      duration: 10,
+      times: 0,
+      ammoCount: 0,
+    };
+
+    expect(resolveTotalByStreams([
+      { damage: 100, times: 1 },
+      { damage: 20, interval: 1, duration: 6 },
+    ], schedule)).toBe(220);
+  });
+
   test('uses active duration for normal, ammo, segmented and instant DPS', () => {
     const streams = [{ damage: 100 }, { damage: 50, interval: 1 }];
     const baseSchedule = {
@@ -145,10 +177,10 @@ describe('skill total formula', () => {
     })).toBe(100);
   });
 
-  test('detects direct permanent skills but leaves staged permanence to custom rules', () => {
+  test('treats the highest stage of permanent skills as permanent', () => {
     expect(isPermanentSkill({ description: '攻擊力提升，持续时间无限' })).toBe(true);
     expect(isPermanentSkill({ description: '可以在下列状态和初始状态间切换' })).toBe(true);
-    expect(isPermanentSkill({ description: '第二次及以后使用时持续时间无限' })).toBe(false);
+    expect(isPermanentSkill({ description: '第二次及以后使用时持续时间无限' })).toBe(true);
     expect(isPermanentSkill({ description: '立即造成一次伤害' })).toBe(false);
   });
 

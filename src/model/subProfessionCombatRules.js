@@ -8,9 +8,14 @@ const resolveSkillAttackType = ({
   baseAttackType,
   skillAttackType,
   streamAttackType,
+  allowForcedOverride = false,
 }) => {
-  return forcedSkillAttackTypes[subProfessionId]
-    ?? (streamAttackType || skillAttackType || baseAttackType);
+  const forcedType = forcedSkillAttackTypes[subProfessionId];
+  if (forcedType && !allowForcedOverride) {
+    return forcedType;
+  }
+
+  return streamAttackType || skillAttackType || forcedType || baseAttackType;
 };
 
 export {

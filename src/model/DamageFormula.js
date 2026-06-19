@@ -78,6 +78,10 @@ const resolveDamageByType = ({
     return resolveArtsDamage(attackPower, enemyResistance);
   }
 
+  if (attackType === '真實') {
+    return attackPower;
+  }
+
   return 0;
 };
 

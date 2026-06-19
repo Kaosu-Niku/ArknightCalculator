@@ -31,6 +31,8 @@ const resolveDamageStreamTotal = ({
   damage,
   interval,
   hitMultiplier = 1,
+  times: streamTimes,
+  duration: streamDuration,
 }, {
   attackCount,
   attackInterval,
@@ -39,20 +41,22 @@ const resolveDamageStreamTotal = ({
   ammoCount,
 }) => {
   const damagePerAttack = (damage * hitMultiplier) * attackCount;
+  const resolvedTimes = streamTimes ?? times;
+  const resolvedDuration = streamDuration ?? duration;
 
   // 明確段數優先於彈藥；兩者皆無時才依持續時間與間隔推算。
-  if(times > 0){
-    return damagePerAttack * times;
+  if(resolvedTimes > 0){
+    return damagePerAttack * resolvedTimes;
   }
   if(ammoCount > 0){
     return damagePerAttack * ammoCount;
   }
-  if(duration === 1){
+  if(resolvedDuration === 1){
     return damagePerAttack;
   }
 
   return (damagePerAttack / resolveStreamInterval(interval, attackInterval))
-    * duration;
+    * resolvedDuration;
 };
 
 const resolveTotalByStreams = (streams, schedule) => {

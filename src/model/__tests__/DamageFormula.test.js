@@ -137,4 +137,18 @@ describe('damage formula helpers', () => {
     expect(resolveAttackDamage({ ...values, attackType: '治療' })).toBe(0);
     expect(resolveAttackDamage({ ...values, attackType: '不攻擊' })).toBe(0);
   });
+
+  test('true damage ignores defense and resistance', () => {
+    expect(resolveAttackDamage({
+      attackType: '真實',
+      baseAttack: 500,
+      attackMultiplierFactor: 1.5,
+      attackScale: 2,
+      extraAttackScale: null,
+      minimumDamageScale: 0.05,
+      enemyDefense: 9999,
+      enemyResistance: 100,
+      damageMultiplier: 1,
+    })).toBe(1500);
+  });
 });

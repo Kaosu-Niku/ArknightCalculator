@@ -24,11 +24,14 @@ const resolveDamageDetails = (
   context,
   enemyData,
   extraAttackScale = null,
-  attackTypeOverride = null
+  attackTypeOverride = null,
+  allowForcedOverride = false
 ) => {
   // 所有傷害流共用同一套乘區與減傷順序，明細與總傷因此不會分叉。
   const { memberNumeric, memberTalent } = context;
   const attackMultiplier = context.skillEffects.attackMultiplier();
+  const flatAttack = context.skillEffects.flatAttack();
+  const baseAttack = memberNumeric.atk + flatAttack;
   const talentAttackMultiplier = memberTalent?.attack ?? 0;
   const traitAttackMultiplier = context.memberEquipTrait('atk') ?? 0;
   let attackScale = context.skillEffects.attackScale();
@@ -57,6 +60,7 @@ const resolveDamageDetails = (
     baseAttackType: context.attackType,
     skillAttackType: context.skillEffects.attackTypeOverride() || null,
     streamAttackType: attackTypeOverride,
+    allowForcedOverride,
   });
 
   const attackMultiplierFactor = 1
@@ -68,7 +72,7 @@ const resolveDamageDetails = (
     * talentDamageMultiplier
     * traitDamageMultiplier;
   const scaledAttackPower = resolveAttackPower({
-    baseAttack: memberNumeric.atk,
+    baseAttack,
     attackMultiplierFactor,
     attackScale: combinedAttackScale,
     extraAttackScale,
@@ -78,7 +82,7 @@ const resolveDamageDetails = (
     : scaledAttackPower;
   const damage = resolveAttackDamage({
     attackType,
-    baseAttack: memberNumeric.atk,
+    baseAttack,
     attackMultiplierFactor,
     attackScale: combinedAttackScale,
     extraAttackScale,
@@ -91,7 +95,8 @@ const resolveDamageDetails = (
   return {
     damage,
     attackType,
-    baseAttack: memberNumeric.atk,
+    baseAttack,
+    flatAttack,
     attackMultiplier: {
       skill: attackMultiplier,
       talent: talentAttackMultiplier,
@@ -135,6 +140,7 @@ const createSkillDamageProfile = (context, enemyData) => {
   const streams = [{
     source: 'main',
     details: resolveDamageDetails(context, enemyData),
+    times: context.skillEffects.mainAttackTimes() || undefined,
   }];
   streams[0].damage = streams[0].details.damage;
   const skillExtraScale = context.skillEffects.extraAttackScale();
@@ -144,13 +150,16 @@ const createSkillDamageProfile = (context, enemyData) => {
       context,
       enemyData,
       skillExtraScale,
-      context.skillEffects.extraAttackTypeOverride()
+      context.skillEffects.extraAttackTypeOverride(),
+      true
     );
     streams.push({
       source: 'skillExtra',
       damage: details.damage,
       details,
       interval: context.skillEffects.extraAttackInterval(),
+      times: context.skillEffects.extraAttackTimes() || undefined,
+      duration: context.skillEffects.extraDuration() || undefined,
     });
   }
 

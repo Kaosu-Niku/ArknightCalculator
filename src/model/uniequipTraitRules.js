@@ -47,11 +47,13 @@ const staticModuleTraits = {
     '御械術師': { key: 'max_atk_scale', fallback: 1.1 },
     '投擲手': { key: 'attack@append_atk_scale', fallback: 0.5 },
     '領主': { key: 'atk_scale_m', fallback: 0 },
+    '馭法鐵衛': { key: 'atk_scale', fallback: 0 },
   },
   other2_attack_type: {
     '御械術師': '法術',
     '投擲手': '物理',
     '領主': '法術',
+    '馭法鐵衛': '法術',
   },
   enable_third_attack: {
     '投擲手': { key: 'attack@enable_third_attack', fallback: 0 },
@@ -77,6 +79,7 @@ const conditionalModuleTraits = {
     '塑靈術師': { key: 'atk_scale', fallback: 1 },
     '撼地者': { key: 'atk_scale_e', fallback: 1 },
     '陷阱師': { key: 'atk_scale', fallback: 1 },
+    '回環射手': { key: 'atk_scale', fallback: 1 },
   },
   damage_scale: {
     '術戰者': { key: 'damage_scale', fallback: 1 },
@@ -84,6 +87,7 @@ const conditionalModuleTraits = {
     '攻城手': { compute: (blackboard) => 1 + (blackboard.value('damage_scale') ?? 0) },
     '轟擊術師': { compute: (blackboard) => 1 + (blackboard.value('damage_scale') ?? 0) },
     '陣法術師': { compute: (blackboard) => 1 + (blackboard.value('damage_scale') ?? 0) },
+    '本源術師': { key: 'damage_scale', fallback: 1 },
   },
   attack_speed: {
     '無畏者': { key: 'attack_speed', fallback: 0 },
