@@ -23,6 +23,11 @@
     "chineseName": "情報官",
     "attackType": "物理",
     "position": "地面"
+  },
+  "counsellor": {
+    "chineseName": "策士",
+    "attackType": "物理",
+    "position": "地面"
   },    
 
   "fearless": {
@@ -62,6 +67,11 @@
   },
   "hammer": {
     "chineseName": "撼地者",
+    "attackType": "物理",
+    "position": "地面"
+  },
+  "mercenary": {
+    "chineseName": "傭兵",
     "attackType": "物理",
     "position": "地面"
   },
@@ -133,6 +143,11 @@
   },
   "bombarder": {
     "chineseName": "投擲手",
+    "attackType": "物理",
+    "position": "高台"
+  },
+  "skybreaker": {
+    "chineseName": "裂空炮手",
     "attackType": "物理",
     "position": "高台"
   },
@@ -333,6 +348,11 @@
   }, 
   "chainhealer": {
     "chineseName": "鍊癒師",
+    "attackType": "治療",
+    "position": "高台"
+  },
+  "watchman": {
+    "chineseName": "守望者",
     "attackType": "治療",
     "position": "高台"
   },

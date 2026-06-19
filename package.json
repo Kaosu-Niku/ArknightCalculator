@@ -21,6 +21,8 @@
     "start": "react-scripts start",
     "build": "react-scripts build",
     "test": "react-scripts test",
+    "data:check": "node scripts/sync-game-data.mjs --dry-run",
+    "data:sync": "node scripts/sync-game-data.mjs",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"

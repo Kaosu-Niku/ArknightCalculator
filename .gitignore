@@ -24,3 +24,4 @@ yarn-error.log*
 
 # local cache
 npm_cache/
+.game-data-sync-report.md

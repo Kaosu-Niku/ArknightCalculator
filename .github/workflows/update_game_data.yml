@@ -1,0 +1,71 @@
+name: Check and update game data
+
+on:
+  schedule:
+    - cron: "0 18 * * 1"
+  workflow_dispatch:
+    inputs:
+      upstream_ref:
+        description: Upstream branch, tag or commit
+        required: false
+        default: master
+
+permissions:
+  contents: write
+  pull-requests: write
+
+concurrency:
+  group: game-data-update
+  cancel-in-progress: false
+
+jobs:
+  update:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: "20"
+          cache: npm
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Download and validate upstream data
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+          UPSTREAM_REF: ${{ inputs.upstream_ref || 'master' }}
+        run: npm run data:sync
+
+      - name: Add sync report to job summary
+        if: always()
+        run: |
+          if [ -f .game-data-sync-report.md ]; then
+            cat .game-data-sync-report.md >> "$GITHUB_STEP_SUMMARY"
+          fi
+
+      - name: Run tests
+        run: npm test -- --watchAll=false
+
+      - name: Build application
+        run: npm run build
+        env:
+          PUBLIC_URL: /${{ github.event.repository.name }}
+
+      - name: Create or update data pull request
+        uses: peter-evans/create-pull-request@v7
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+          branch: automation/game-data-update
+          delete-branch: true
+          commit-message: Update Arknights game data
+          title: Update Arknights game data
+          body-path: .game-data-sync-report.md
+          add-paths: |
+            public/json/character_table.json
+            public/json/skill_table.json
+            public/json/uniequip_table.json
+            public/json/battle_equip_table.json
