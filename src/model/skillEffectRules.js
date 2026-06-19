@@ -118,11 +118,23 @@ const skillEffectRuleFactories = {
   '孑-刺身拼盘': () => ({
     CHANGE_duration: 2,
   }),
+  '战车-倾泻弹药': ({ conditionalMultiplier }) => ({
+    atk_scale: conditionalMultiplier('atk_scale'),
+  }),
+  '鸿雪-抑扬格': ({ conditionalMultiplier }) => ({
+    atk_scale: conditionalMultiplier('atk_scale'),
+  }),
 };
 
 const emptyEffects = Object.freeze({});
+const conditionalSkillEffects = new Set([
+  '战车-倾泻弹药',
+  '鸿雪-抑扬格',
+]);
 
 const SkillEffectRulesModel = {
+  hasConditionalEffect: (checkName) => conditionalSkillEffects.has(checkName),
+
   resolve: (checkName, context) => {
     const createEffects = skillEffectRuleFactories[checkName];
     return createEffects?.(context) ?? emptyEffects;

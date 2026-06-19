@@ -1,0 +1,124 @@
+模組與分支 Key 對照
+===================
+
+一、模組 attributeBlackboard：直接增加面板固定值
+-----------------------------------------------
+
+max_hp             -> 最大生命固定值
+atk                -> 攻擊力固定值
+def                -> 防禦固定值
+magic_resistance   -> 自身法抗固定點數
+attack_speed       -> 攻速固定點數
+
+公式位置：等級基礎值 + 潛能 + 信賴 + 模組 attributeBlackboard，之後才乘天賦面板比例。
+注意：這裡的 atk=50 表示面板攻擊力 +50，不是 +50%。
+
+
+二、模組 trait／分支規則輸出的標準效果
+--------------------------------------
+
+atk
+  意義：技能傷害公式中的攻擊力加成比例。
+  公式：加入 (1 + 技能 atk + 特殊天賦 attack + 模組／分支 atk)。
+  特例：解放者目前固定提供 2，代表 +200% 攻擊力。
+
+atk_scale
+  意義：模組／分支攻擊倍率。
+  公式：與技能、天賦 atk_scale 相乘。
+  現有分支基礎值：獵手 1.2、散射手 1.5。
+
+damage_scale
+  意義：模組最終傷害倍率。
+  公式：與技能、天賦 damage_scale 相乘。
+  注意：部分模組 raw damage_scale 儲存的是「額外增加量」，規則會轉成 1 + raw value；另一些已直接是完整倍率。
+
+def_penetrate_fixed
+  意義：固定無視敵方防禦。
+  單位：固定正數，直接從敵方防禦扣除。
+
+magic_resist_penetrate_fixed
+  意義：調整敵方法抗。
+  公式目前直接加到敵方法抗，因此穿透值通常應是負數。
+
+attack_speed
+  意義：模組提供的攻速點數。
+
+other2_attack_scale
+  意義：分支或模組提供的第二獨立傷害流倍率。
+  現有例：御械術師浮游單元、投擲手第二段、領主額外法術傷害。
+
+other2_attack_type
+  意義：第二獨立傷害流類型。
+  現有例：御械術師=法術、投擲手=物理、領主=法術。
+
+enable_third_attack
+  意義：投擲手模組是否再追加一次額外攻擊。
+  公式：投擲手的額外傷害流命中倍率 = 1 + enable_third_attack。
+
+
+三、目前已映射的 raw trait key
+------------------------------
+
+atk
+  依分支可能映射為條件攻擊力加成。
+
+max_stack_cnt
+  行商會與 atk 相乘：atk * max_stack_cnt。
+
+atk_scale、atk_scale_e
+  依分支映射為完整攻擊倍率。
+
+damage_scale
+  依分支可能直接作完整倍率，也可能轉成 1 + damage_scale。
+
+def_penetrate_fixed
+  劍豪、炮手等分支映射為固定無視防禦。
+
+magic_resist_penetrate_fixed
+  中堅術師映射為法抗調整。
+
+attack_speed
+  多個分支映射為攻速點數。
+
+max_atk_scale
+  御械術師第二傷害流倍率；缺少時預設 1.1。
+
+attack@append_atk_scale
+  投擲手第二段倍率；缺少時預設 0.5。
+
+atk_scale_m
+  領主額外法術傷害倍率。
+
+attack@enable_third_attack
+  投擲手額外攻擊開關／次數值。
+
+
+四、靜態模組效果與條件模組效果
+--------------------------------
+
+靜態效果：
+- 只要裝備該模組就套用。
+- 由 staticModuleTraits 依分支和標準效果查找。
+
+條件效果：
+- 只有 UI 的「條件與機率效果」開啟時套用。
+- 由 conditionalModuleTraits 依分支查找。
+- 確定型條件在開關關閉時不套用，開啟時完整套用。
+- 帶 prob、attack@prob、talent@prob 或 buff_prob 的機率效果，開啟後按期望值計算。
+- 加法型效果使用 value * prob；完整倍率使用 1 + (value - 1) * prob。
+- 陷阱師 X 模組的 prob=0.2、atk_scale=2，因此開啟後使用 1.2 倍期望倍率。
+
+新增規則時應先判斷：
+1. 效果是否常駐。
+2. raw value 是完整倍率，還是額外增加量。
+3. key 是否位於 overrideTraitDataBundle 或 addOrOverrideTalentDataBundle。
+4. 該分支是否需要固定 fallback。
+
+
+五、模組天賦覆蓋
+----------------
+模組 addOrOverrideTalentDataBundle 會覆蓋同名天賦 key，而不是與原始天賦值相加。
+TalentsCalculator 讀取同一 attribute 時：
+- 沒有模組覆蓋值 -> 使用角色天賦值。
+- 有模組覆蓋值 -> 使用模組最高階段的值。
+- 若該 key 在 talentExcludedAttributes -> 原始值與覆蓋值都不直接進面板，交由 custom 重新解讀。

@@ -12,11 +12,13 @@ import {
   resolveAttackCount,
   resolveAttackInterval,
   resolveDamageStreamTotal,
+  resolveDpsByStreams,
   resolveSkillDuration,
   resolveTotalByStreams,
 } from './SkillTotalFormula';
 import { getExtraAttackHitMultiplier } from './uniequipTraitRules';
 import { resolveSkillAttackType } from './subProfessionCombatRules';
+import { isPermanentSkill } from './skillDurationRules';
 
 const resolveDamageDetails = (
   context,
@@ -189,14 +191,56 @@ const createSkillDamageProfile = (context, enemyData) => {
     ),
     times: context.skillEffects.attackTimes(),
     ammoCount: context.skillEffects.ammoCount(),
+    isPermanent: isPermanentSkill(context.skillData),
   };
 
   return { streams, schedule };
 };
 
+const resolveSkillMetrics = (profile) => {
+  const total = resolveTotalByStreams(profile.streams, profile.schedule);
+  return {
+    dps: resolveDpsByStreams(profile.streams, profile.schedule, total),
+    total,
+  };
+};
+
+const createSkillContext = ({
+  type,
+  skillRow,
+  characterJsonData,
+  subProfessionIdJsonData,
+  uniequipJsonData,
+  battleEquipJsonData,
+  candidates_check,
+}) => CalculationContextModel.createSkillContext({
+  type,
+  skillRow,
+  characterJsonData,
+  subProfessionIdJsonData,
+  uniequipJsonData,
+  battleEquipJsonData,
+  candidates_check,
+}, {
+  skillFromMember: SkillCalculatorModel.skillFromMember,
+  skillData: SkillCalculatorModel.skillData,
+});
+
 const SkillCalculatorModel = {
   skillFromMember: (skillRow, characterJsonData) => {
-    const { bySkillId, bySkillIdAndEquipId } = DataIndexModel.skillMemberIndex(characterJsonData);
+    const {
+      byMemberId,
+      byMemberIdAndEquipId,
+      bySkillId,
+      bySkillIdAndEquipId,
+    } = DataIndexModel.skillMemberIndex(characterJsonData);
+
+    if(skillRow.memberId){
+      if(skillRow.equipid){
+        return byMemberIdAndEquipId.get(`${skillRow.memberId}::${skillRow.equipid}`) ?? null;
+      }
+      return byMemberId.get(skillRow.memberId) ?? null;
+    }
 
     if(skillRow.equipid){
       return bySkillIdAndEquipId.get(`${skillRow.skillId}::${skillRow.equipid}`) ?? null;
@@ -227,20 +271,41 @@ const SkillCalculatorModel = {
     return skillRow.levels[levelIndexByPhase[witchPhases]];
   },
 
-  skillFormulaEffects: (type, skillRow, memberData, uniequipJsonData, battleEquipJsonData) => {
+  skillFormulaEffects: (
+    type,
+    skillRow,
+    memberData,
+    uniequipJsonData,
+    battleEquipJsonData,
+    candidates_check = false
+  ) => {
     return CalculationContextModel.createSkillAttributeContext({
       type,
       skillRow,
       memberData,
       uniequipJsonData,
       battleEquipJsonData,
+      candidates_check,
     }, {
       skillData: SkillCalculatorModel.skillData,
     }).skillEffects;
   },
 
   skillMemberTotal: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates_check = false) => {
-    const context = CalculationContextModel.createSkillContext({
+    return SkillCalculatorModel.skillMemberMetrics(
+      type,
+      skillRow,
+      characterJsonData,
+      enemyData,
+      subProfessionIdJsonData,
+      uniequipJsonData,
+      battleEquipJsonData,
+      candidates_check
+    ).total;
+  },
+
+  skillMemberMetrics: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates_check = false) => {
+    const context = createSkillContext({
       type,
       skillRow,
       characterJsonData,
@@ -248,17 +313,13 @@ const SkillCalculatorModel = {
       uniequipJsonData,
       battleEquipJsonData,
       candidates_check,
-    }, {
-      skillFromMember: SkillCalculatorModel.skillFromMember,
-      skillData: SkillCalculatorModel.skillData,
     });
-
     const profile = createSkillDamageProfile(context, enemyData);
-    return resolveTotalByStreams(profile.streams, profile.schedule);
+    return resolveSkillMetrics(profile);
   },
 
   skillMemberReport: (type, skillRow, characterJsonData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates_check = false) => {
-    const context = CalculationContextModel.createSkillContext({
+    const context = createSkillContext({
       type,
       skillRow,
       characterJsonData,
@@ -266,15 +327,13 @@ const SkillCalculatorModel = {
       uniequipJsonData,
       battleEquipJsonData,
       candidates_check,
-    }, {
-      skillFromMember: SkillCalculatorModel.skillFromMember,
-      skillData: SkillCalculatorModel.skillData,
     });
     const profile = createSkillDamageProfile(context, enemyData);
     const streams = profile.streams.map(stream => ({
       ...stream,
       total: resolveDamageStreamTotal(stream, profile.schedule),
     }));
+    const total = streams.reduce((sum, stream) => sum + stream.total, 0);
     const formulaEffects = Object.fromEntries(
       Object.entries(SkillEffectResolverModel.formulaFieldKeys).map(([fieldName]) => [
         fieldName,
@@ -296,7 +355,8 @@ const SkillCalculatorModel = {
       ),
       schedule: profile.schedule,
       streams,
-      total: streams.reduce((sum, stream) => sum + stream.total, 0),
+      dps: resolveDpsByStreams(profile.streams, profile.schedule, total),
+      total,
     };
   },
 }

@@ -1,6 +1,8 @@
 import SkillDataIndexModel from '../SkillDataIndex';
 import TalentDataIndexModel from '../TalentDataIndex';
 import TalentEffectRulesModel from '../talentEffectRules';
+import TalentsCalculatorModel from '../TalentsCalculator';
+import TalentsCustomCalculatorModel from '../TalentsCustomCalculator';
 import UniequipDataIndexModel from '../UniequipDataIndex';
 
 describe('data indexes', () => {
@@ -73,6 +75,78 @@ describe('data indexes', () => {
 });
 
 describe('custom talent effect semantics', () => {
+  test('raw talent values remain available to custom rules after exclusion', () => {
+    const member = {
+      name: '猎蜂',
+      rarity: 'TIER_4',
+      potentialItemId: 'p_char_test',
+      talents: [{ candidates: [{
+        unlockCondition: { phase: 'PHASE_2', level: 1 },
+        blackboard: [
+          { key: 'atk', value: 0.05 },
+          { key: 'max_stack_cnt', value: 5 },
+        ],
+      }] }],
+    };
+    const uniequipData = { charEquip: {} };
+    const battleEquipData = {};
+
+    expect(TalentsCalculatorModel.memberTalent(
+      '精二滿級', member, uniequipData, battleEquipData, 'atk'
+    )).toBe(0);
+    expect(TalentsCalculatorModel.memberTalentRaw(
+      '精二滿級', member, uniequipData, battleEquipData, 'atk'
+    )).toBe(0.05);
+
+    const rule = TalentsCustomCalculatorModel.createTalentEffectRule({
+      type: '精二滿級',
+      memberRow: member,
+      uniequipJsonData: uniequipData,
+      battleEquipJsonData: battleEquipData,
+      conditionEffectsEnabled: true,
+    });
+    expect(rule.effects.attack).toBe(0.25);
+  });
+
+  test('stacking attack talents use their maximum stack count', () => {
+    const characterData = require('../../../public/json/character_table.json');
+    const uniequipData = require('../../../public/json/uniequip_table.json');
+    const battleEquipData = require('../../../public/json/battle_equip_table.json');
+    const names = [
+      '猎蜂',
+      '莱恩哈特',
+      '莱伊',
+      '夕',
+      '妮芙',
+      '令',
+      '琳琅诗怀雅',
+      '多萝西',
+      '塞雷娅',
+    ];
+
+    for (const name of names) {
+      const member = Object.values(characterData).find(item => item.name === name);
+      const rawAttack = TalentsCalculatorModel.memberTalentRaw(
+        '精二滿級', member, uniequipData, battleEquipData, 'atk'
+      );
+      const maxStacks = TalentsCalculatorModel.memberTalentRaw(
+        '精二滿級', member, uniequipData, battleEquipData, 'max_stack_cnt'
+      );
+      const rule = TalentsCustomCalculatorModel.createTalentEffectRule({
+        type: '精二滿級',
+        memberRow: member,
+        uniequipJsonData: uniequipData,
+        battleEquipJsonData: battleEquipData,
+        conditionEffectsEnabled: true,
+      });
+
+      expect(TalentsCalculatorModel.memberTalent(
+        '精二滿級', member, uniequipData, battleEquipData, 'atk'
+      )).toBe(0);
+      expect(rule.effects.attack).toBeCloseTo(rawAttack * maxStacks);
+    }
+  });
+
   test('empty custom rules do not emit multiplier placeholders', () => {
     expect(TalentEffectRulesModel.resolve('卡达', {})).toEqual({});
     expect(TalentEffectRulesModel.resolve('骋风', {})).toEqual({});

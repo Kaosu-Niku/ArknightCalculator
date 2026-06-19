@@ -1,3 +1,9 @@
+import {
+  expectedAdditive,
+  expectedMultiplier,
+  normalizeProbability,
+} from './conditionalEffect';
+
 const baseSubProfessionTraits = {
   atk: {
     '解放者': 2,
@@ -70,6 +76,7 @@ const conditionalModuleTraits = {
     '炮手': { key: 'atk_scale', fallback: 1 },
     '塑靈術師': { key: 'atk_scale', fallback: 1 },
     '撼地者': { key: 'atk_scale_e', fallback: 1 },
+    '陷阱師': { key: 'atk_scale', fallback: 1 },
   },
   damage_scale: {
     '術戰者': { key: 'damage_scale', fallback: 1 },
@@ -100,12 +107,36 @@ const resolveTraitRule = (rule, blackboard) => {
   return rule;
 };
 
+const resolveBlackboardProbability = (blackboard) => {
+  const probabilityKeys = ['prob', 'attack@prob', 'talent@prob', 'buff_prob'];
+  for (const key of probabilityKeys) {
+    const value = blackboard.value(key);
+    if (value !== undefined) {
+      return normalizeProbability(value);
+    }
+  }
+  return 1;
+};
+
+const multiplierTraitKeys = new Set(['atk_scale', 'damage_scale']);
+
 const getStaticModuleTrait = (subProfession, attributeKey, blackboard) => {
   return resolveTraitRule(staticModuleTraits[attributeKey]?.[subProfession], blackboard);
 };
 
 const getConditionalModuleTrait = (subProfession, attributeKey, blackboard) => {
-  return resolveTraitRule(conditionalModuleTraits[attributeKey]?.[subProfession], blackboard);
+  const value = resolveTraitRule(
+    conditionalModuleTraits[attributeKey]?.[subProfession],
+    blackboard
+  );
+  if (value === undefined) {
+    return undefined;
+  }
+
+  const probability = resolveBlackboardProbability(blackboard);
+  return multiplierTraitKeys.has(attributeKey)
+    ? expectedMultiplier(value, probability)
+    : expectedAdditive(value, probability);
 };
 
 const hasConditionalModuleTrait = (subProfession) => {

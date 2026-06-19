@@ -1,94 +1,117 @@
-# Arknight Calculator (明日方舟数据计算器)
+# Arknight Calculator
 
-![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react)
-![Bootstrap](https://img.shields.io/badge/Bootstrap-5.3-7952B3?logo=bootstrap)
+[![React](https://img.shields.io/badge/React-19.x-61DAFB?logo=react)](https://react.dev/)
+[![Deploy GitHub Pages](https://github.com/Kaosu-Niku/ArknightCalculator/actions/workflows/action_deploy.yml/badge.svg)](https://github.com/Kaosu-Niku/ArknightCalculator/actions/workflows/action_deploy.yml)
 
-> **说明**: 本项目是基于 **Kaosu-Niku** 大佬的原作网站进行维护、重构与功能改进的版本。
+明日方舟幹員面板與技能傷害計算器。可依養成階段、敵方數值、模組版本及條件效果，查詢幹員數據、技能 DPS、技能總傷與完整計算明細。
 
-基于 React 构建的明日方舟数值计算器，专为 **四星队** 及 **低配攻略**（精一1级/精一满级）流派设计。支持自定义敌人数据，快速计算我方与敌方的 DPS、生存能力等关键数据，助力关卡攻略。
+線上版本：[https://Kaosu-Niku.github.io/ArknightCalculator](https://Kaosu-Niku.github.io/ArknightCalculator)
 
-## ✨ 功能特性
+## 主要功能
 
-*   **流派针对优化**: 专门针对以下流派的数据模型进行优化：
-    *   精一 1 级四星队
-    *   精一满级四星队
-    *   常规四星队
-*   **自定义战斗模拟**: 支持输入自定义的敌人属性（HP、攻击、防御、法抗等），模拟真实战斗环境。
-*   **多维数据展示**:
-    *   **干员数据**: 包含基础面板属性、天赋加成。
-    *   **技能数据**: 详细的攻击技能与防御技能数值计算。
-    *   **DPS 分析**: 自动计算理论 DPS 及总伤害，支持敌我双方数据对比。
-*   **模组支持**: 完整包含模组（Uniequip）带来的属性提升与特性变化。
-*   **多语言界面**: 内置简体中文与繁体中文，支持一键切换。
-*   **响应式设计**: 完美适配桌面端与移动端访问。
-*   **[NEW] 可视化计算日志**: 
-    *   新增侧边栏日志面板，无需打开控制台即可查看详细计算过程。
-    *   支持**搜索干员**，快速定位目标。
-    *   提供一键清空和实时日志计数功能。
+- 支援精英零、精英一與精英二的初始／滿級養成階段。
+- 依星級篩選幹員與技能資料。
+- 自訂敵方攻擊、防禦、法術抗性、攻擊速度及技能週期。
+- 顯示幹員基礎面板、潛能、信賴、天賦與模組加成。
+- 計算技能生效期間的平均 DPS 與技能總傷。
+- 支援物理、法術、治療、不攻擊及分支傷害類型轉換。
+- 支援彈藥、攻擊段數、額外傷害流、攻擊間隔與多種穿透／減抗效果。
+- 顯示無模組與各模組版本，並計入模組屬性、特性與天賦覆蓋。
+- 條件成立型效果可切換啟用；機率型效果啟用後按期望值計算。
+- 技能表格可自行選擇要顯示的特殊公式欄位。
+- 計算紀錄可搜尋特定幹員，查看面板來源、傷害乘區、敵方結算值、攻擊排程與各傷害流。
+- 作戰參數、篩選條件、表格欄位與語言設定會保存在瀏覽器中。
+- 支援繁體中文與簡體中文切換。
 
-## 🚀 在线预览
+## 計算範圍
 
-访问 GitHub Pages 进行在线体验：
-[https://Light-milk-tea.github.io/ArknightCalculator-Kaosu-Niku/](https://Light-milk-tea.github.io/ArknightCalculator-Kaosu-Niku/)
+計算器以單一目標的理論技能傷害為主，並依遊戲資料中的 blackboard key 與專案 custom 規則解析公式。
 
-> **注意**: 如果页面无法访问，可能是 GitHub Pages 尚未部署完成，请稍候再试。
+由於原始 JSON 對相同 key 沒有完全一致的語意，例如 `atk`、`def` 或 `damage_scale` 可能作用於幹員、敵人、友方或召喚物，因此特殊技能、天賦與模組需要人工規則適配。條件與機率效果只有在已收錄對應規則時才會影響結果。
 
-## 🛠️ 本地运行
+目前不以技能傷害表計算下列內容：
 
-如果你想在本地运行或开发本项目，请按照以下步骤操作：
+- 多目標造成的全場總傷。
+- 缺少動畫時間或觸發頻率的被動傷害。
+- 治療技能的總治療量與 HPS。
+- 尚未建立 custom 規則的特殊召喚物、替身或複合機制。
 
-### 1. 环境准备
-确保你的环境中已安装 [Node.js](https://nodejs.org/) (建议 v16 或更高版本)。
+Custom key、公式乘區與人工適配方式請參考 [Custom Key 對照文件](docs/custom-key-reference/00-閱讀順序與重要原則.txt)。
 
-### 2. 克隆仓库
+## 本地開發
+
+需求：Node.js 20 與 npm。
+
 ```bash
-git clone https://github.com/Light-milk-tea/ArknightCalculator-Kaosu-Niku.git
-cd ArknightCalculator-Kaosu-Niku
-```
-
-### 3. 安装依赖
-```bash
-npm install
-```
-
-### 4. 启动开发服务器
-```bash
+git clone https://github.com/Kaosu-Niku/ArknightCalculator.git
+cd ArknightCalculator
+npm ci
 npm start
 ```
-启动后，浏览器将自动打开 [http://localhost:3000](http://localhost:3000) 访问应用。
 
-### 5. 构建生产版本
+開發伺服器預設位址：
+
+```text
+http://localhost:3000/ArknightCalculator
+```
+
+### 執行測試
+
+```bash
+npm test -- --watchAll=false
+```
+
+### 建置 production 版本
+
 ```bash
 npm run build
 ```
-构建产物将输出到 `build` 目录，可用于部署。
 
-## 📂 项目结构
+建置結果會輸出至 `build/`。
 
+## 自動部署
+
+Push 到 `master` 後，GitHub Actions 會依序執行：
+
+1. `npm ci`
+2. `npm test -- --watchAll=false`
+3. `npm run build`
+4. 部署 `build/` 至 GitHub Pages
+
+也可以在 GitHub Actions 頁面手動執行 workflow。GitHub Repository 的 Pages Source 需設定為 **GitHub Actions**。
+
+## 專案結構
+
+```text
+.github/workflows/       GitHub Pages 測試、建置與部署
+docs/custom-key-reference/
+                         JSON key、公式與 custom 規則文件
+public/json/             幹員、技能、職分與模組資料
+src/component/           畫面、表格與計算紀錄元件
+src/context/             語言狀態
+src/model/               面板、技能、天賦、模組與傷害公式
+src/model/__tests__/     公式與回歸測試
 ```
-src/
-├── component/          # UI 组件
-│   ├── LogPanel.js     # [新增] 日志展示面板
-│   ├── Header.js       # 顶部导航栏
-│   └── ...
-├── context/            # React Context (语言状态管理)
-├── model/              # 核心计算逻辑
-│   ├── LogManager.js   # [新增] 日志管理模块
-│   ├── BasicCalculator.js   # 基础数值
-│   ├── SkillCalculator.js   # 技能计算
-│   ├── TalentsCalculator.js # 天赋计算
-│   └── UniequipCalculator.js # 模组计算
-└── App.js              # 主应用入口
-```
 
-## 🤝 贡献
+核心規則檔案：
 
-欢迎提交 Issue 或 Pull Request 来改进这个计算器！无论是增加新干员数据、修复 Bug 还是优化算法，都非常欢迎。
+- `src/model/skillEffectRules.js`：技能 custom 規則。
+- `src/model/talentEffectRules.js`：天賦 custom 規則。
+- `src/model/uniequipTraitRules.js`：分支與模組特性規則。
+- `src/model/SkillCalculator.js`：技能傷害流與排程。
+- `src/model/DamageFormula.js`：防禦、法抗與單次傷害。
+- `src/model/SkillTotalFormula.js`：技能總傷與 DPS。
 
-## 👤 作者与致谢
+## 貢獻
 
-*   **原作者**: Kaosu-Niku
-*   **维护与改进**: Light-milk-tea
+歡迎透過 Issue 或 Pull Request 回報：
 
----
-*本项目与《明日方舟》官方无关，所有游戏素材版权归鹰角网络所有。*
+- 幹員、技能或模組計算結果差異。
+- JSON key 的特殊語意與 custom 適配案例。
+- UI、效能、測試與文件改善。
+
+提交公式修改時，請附上對應幹員、技能、養成階段、敵方數值與預期結果，並盡可能增加回歸測試。
+
+## 聲明
+
+本專案與《明日方舟》官方無關。遊戲名稱、資料與相關素材之權利歸其權利人所有。

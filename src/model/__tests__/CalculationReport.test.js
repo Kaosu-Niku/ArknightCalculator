@@ -57,7 +57,7 @@ describe('calculation report', () => {
           skillId: skill.skillId,
           ...(skill.equipId ? { equipid: skill.equipId } : {}),
         };
-        const tableTotal = SkillCalculatorModel.skillMemberTotal(
+        const tableMetrics = SkillCalculatorModel.skillMemberMetrics(
           '精二滿級',
           skillRow,
           characterRows,
@@ -68,9 +68,10 @@ describe('calculation report', () => {
           true
         );
 
-        expect(skill.total).toBeCloseTo(tableTotal);
+        expect(skill.dps).toBeCloseTo(tableMetrics.dps);
+        expect(skill.total).toBeCloseTo(tableMetrics.total);
         expect(skill.streams.reduce((total, stream) => total + stream.total, 0))
-          .toBeCloseTo(tableTotal);
+          .toBeCloseTo(tableMetrics.total);
       }
     }
   });

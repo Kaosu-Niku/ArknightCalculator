@@ -417,11 +417,11 @@ function MainContent() {
               <input type="checkbox" checked={candidates} onChange={event => setCandidates(event.target.checked)} />
               <span className="toggle-track" aria-hidden="true"><span /></span>
               <span>
-                <strong>{t('模組條件效果')}</strong>
+                <strong>{t('條件與機率效果')}</strong>
                 <small>{candidates ? t('已啟用') : t('未啟用')}</small>
               </span>
             </label>
-            <HelpButton target="conditionHelp" label={t('模組條件效果說明')} />
+            <HelpButton target="conditionHelp" label={t('條件與機率效果說明')} />
           </div>
         </div>
       </section>
@@ -446,7 +446,7 @@ function MainContent() {
           </div>
           <div className="table-heading-actions">
             <span className={`condition-status ${candidates ? 'is-active' : ''}`}>
-              {candidates ? t('模組條件已計入') : t('未計入模組條件')}
+              {candidates ? t('條件與期望值已計入') : t('未計入條件效果')}
             </span>
             <div className="dropdown column-picker">
               <button
@@ -521,33 +521,35 @@ function MainContent() {
         </p>
       </HelpModal>
 
-      <HelpModal id="conditionHelp" title={t('模組條件效果會改變什麼')} t={t}>
+      <HelpModal id="conditionHelp" title={t('條件與機率效果如何計算')} t={t}>
         <p className="help-intro">
-          {t('啟用後，計算器會把需要特定條件或機率才能生效的模組附加效果視為已觸發。')}
+          {t('此開關統一控制技能、天賦與模組中需要條件或機率才能生效的附加效果。')}
         </p>
         <ul className="help-list">
           <li>{t('可能影響攻擊力、攻擊倍率、傷害倍率與攻擊速度等數值。')}</li>
-          <li>{t('不會計算觸發機率的期望值，而是直接使用效果生效時的數值。')}</li>
+          <li>{t('關閉時，所有已收錄的條件與機率效果都視為未觸發。')}</li>
+          <li>{t('開啟時，只要條件成立就必定生效的效果會完整計入。')}</li>
+          <li>{t('帶有觸發機率的效果會按期望值計算，例如20%機率視為每5次觸發1次。')}</li>
           <li>{t('不會自行判斷血量、阻擋數、敵人狀態或其他戰場條件。')}</li>
-          <li>{t('只有已收錄對應模組條件規則的幹員與模組會產生變化。')}</li>
-          <li>{t('技能表格的模組欄位會以「條件生效」標記目前採用了條件特性的模組；沒有標記的模組不會因這個開關改變。')}</li>
+          <li>{t('只有已建立對應 custom 或條件規則的效果會隨此開關變化。')}</li>
+          <li>{t('技能表格的模組欄位會標記目前已計入該模組的條件或機率期望值。')}</li>
         </ul>
         <div className="help-examples">
           <strong>{t('常見例子')}</strong>
           <ul>
-            <li>{t('模組要求幹員生命高於指定比例時提升攻擊：啟用後會視為生命條件已滿足。')}</li>
-            <li>{t('模組要求攻擊被阻擋、重量較高或處於特定狀態的敵人：啟用後會視為目標條件成立。')}</li>
-            <li>{t('模組效果只有一定機率提升傷害或攻擊速度：啟用後會直接採用成功觸發時的數值，不按機率取平均。')}</li>
+            <li>{t('生命高於指定比例時提升攻擊：開啟後視為生命條件已滿足並完整計入。')}</li>
+            <li>{t('攻擊特定重量或狀態的敵人時增傷：開啟後視為目標條件成立。')}</li>
+            <li>{t('20%機率使攻擊倍率提升至160%：開啟後採用112%的期望倍率。')}</li>
           </ul>
         </div>
         <div className="help-comparison">
           <div>
             <span>{t('未啟用')}</span>
-            <strong>{t('只計入常駐與無條件效果')}</strong>
+            <strong>{t('只計入常駐與必定效果')}</strong>
           </div>
           <div>
             <span>{t('已啟用')}</span>
-            <strong>{t('額外假設模組條件效果已成立')}</strong>
+            <strong>{t('條件成立，機率效果採期望值')}</strong>
           </div>
         </div>
       </HelpModal>

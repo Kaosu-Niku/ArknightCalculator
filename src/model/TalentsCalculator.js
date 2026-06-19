@@ -8,7 +8,65 @@ const isTalentExcluded = (memberName, attribute) => {
   return talentExcludedAttributes[memberName]?.has(attribute) ?? false;
 };
 
+const resolveRawTalent = (
+  type,
+  memberRow,
+  uniequipJsonData,
+  battleEquipJsonData,
+  attribute
+) => {
+  const talentData = TalentDataIndexModel.resolve(type, memberRow);
+  let value = talentData.values.has(attribute)
+    ? talentData.values.get(attribute)
+    : undefined;
+
+  if (talentData.witchPhases === 2) {
+    const uniequipValue = UniequipCalculatorModel.memberEquipTalent(
+      memberRow.equipid,
+      memberRow,
+      uniequipJsonData,
+      battleEquipJsonData,
+      talentData.witchPhases,
+      attribute
+    );
+
+    if (uniequipValue !== undefined) {
+      value = uniequipValue;
+    }
+  }
+
+  return value;
+};
+
 const TalentsCalculatorModel = {
+  memberTalentRawOptional: (
+    type,
+    memberRow,
+    uniequipJsonData,
+    battleEquipJsonData,
+    attribute
+  ) => resolveRawTalent(
+    type,
+    memberRow,
+    uniequipJsonData,
+    battleEquipJsonData,
+    attribute
+  ),
+
+  memberTalentRaw: (
+    type,
+    memberRow,
+    uniequipJsonData,
+    battleEquipJsonData,
+    attribute
+  ) => resolveRawTalent(
+    type,
+    memberRow,
+    uniequipJsonData,
+    battleEquipJsonData,
+    attribute
+  ) ?? 0,
+
   memberTalent: (
     type,
     memberRow,
@@ -22,24 +80,14 @@ const TalentsCalculatorModel = {
       return cachedByMember.get(cacheKey);
     }
 
-    const talentData = TalentDataIndexModel.resolve(type, memberRow);
     const excluded = isTalentExcluded(memberRow.name, attribute);
-    let addTotal = excluded ? 0 : talentData.values.get(attribute) ?? 0;
-
-    if (talentData.witchPhases === 2) {
-      const uniequipValue = UniequipCalculatorModel.memberEquipTalent(
-        memberRow.equipid,
-        memberRow,
-        uniequipJsonData,
-        battleEquipJsonData,
-        talentData.witchPhases,
-        attribute
-      );
-
-      if (uniequipValue !== undefined) {
-        addTotal = excluded ? 0 : uniequipValue;
-      }
-    }
+    const addTotal = excluded ? 0 : (resolveRawTalent(
+      type,
+      memberRow,
+      uniequipJsonData,
+      battleEquipJsonData,
+      attribute
+    ) ?? 0);
 
     if (cachedByMember) {
       cachedByMember.set(cacheKey, addTotal);

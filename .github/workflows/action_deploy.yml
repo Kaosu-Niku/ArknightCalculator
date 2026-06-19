@@ -1,14 +1,8 @@
-name: 部署 React 應用到 GitHub Pages
+name: Test, build and deploy GitHub Pages
 
 on:
   push:
-    branches: ["main"]
-    paths:
-      - "public/**"
-      - "src/**"
-      - ".github/workflows/Pages.yml"
-      - "package-lock.json"
-      - "package.json"
+    branches: ["master"]
   workflow_dispatch:
 
 permissions:
@@ -21,36 +15,37 @@ concurrency:
   cancel-in-progress: true
 
 jobs:
-  # 建置網站
   build:
     runs-on: ubuntu-latest
     steps:
-      - name: 檢出倉庫代碼
+      - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: 設定 Node.js 環境
+      - name: Set up Node.js
         uses: actions/setup-node@v4
         with:
-          node-version: "lts/*"
+          node-version: "20"
           cache: "npm"
 
-      - name: 安裝依賴
+      - name: Install dependencies
         run: npm ci
 
-      - name: 構建 React 應用
-        run: CI=false npm run build
+      - name: Run tests
+        run: npm test -- --watchAll=false
+
+      - name: Build application
+        run: npm run build
         env:
           PUBLIC_URL: /${{ github.event.repository.name }}
 
-      - name: 配置 Pages
+      - name: Configure Pages
         uses: actions/configure-pages@v5
 
-      - name: 上傳 Pages Artifact
+      - name: Upload Pages artifact
         uses: actions/upload-pages-artifact@v3
         with:
           path: "./build"
 
-  # 將建置好的檔案部署到 Pages
   deploy:
     needs: build
     runs-on: ubuntu-latest
@@ -58,6 +53,6 @@ jobs:
       name: github-pages
       url: ${{ steps.deployment.outputs.page_url }}
     steps:
-      - name: 從 Artifact 部署到 GitHub Pages
+      - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4

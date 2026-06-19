@@ -61,10 +61,46 @@ const resolveTotalByStreams = (streams, schedule) => {
   }, 0);
 };
 
+const resolveDamageStreamRate = ({
+  damage,
+  interval,
+  hitMultiplier = 1,
+}, {
+  attackCount,
+  attackInterval,
+}) => {
+  const damagePerAttack = (damage * hitMultiplier) * attackCount;
+  return damagePerAttack / resolveStreamInterval(interval, attackInterval);
+};
+
+const resolveDpsByStreams = (
+  streams,
+  schedule,
+  total = resolveTotalByStreams(streams, schedule)
+) => {
+
+  if(schedule.times > 0){
+    return total;
+  }
+  if(schedule.ammoCount > 0){
+    const activeDuration = schedule.attackInterval * schedule.ammoCount;
+    return activeDuration > 0 ? total / activeDuration : total;
+  }
+  if(schedule.isPermanent){
+    return streams.reduce((sum, stream) => {
+      return sum + resolveDamageStreamRate(stream, schedule);
+    }, 0);
+  }
+
+  return total / schedule.duration;
+};
+
 export {
   resolveAttackInterval,
   resolveAttackCount,
   resolveSkillDuration,
   resolveDamageStreamTotal,
   resolveTotalByStreams,
+  resolveDamageStreamRate,
+  resolveDpsByStreams,
 };

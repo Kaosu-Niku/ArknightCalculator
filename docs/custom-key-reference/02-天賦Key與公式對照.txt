@@ -1,0 +1,117 @@
+天賦 Blackboard Key 與公式對照
+==============================
+
+一、直接進入幹員面板的通用 key
+--------------------------------
+
+max_hp
+  意義：最大生命比例加成。
+  單位：小數比例，0.1 = 最大生命 +10%。
+  公式：(等級基礎 + 潛能 + 信賴 + 模組固定值) * (1 + max_hp)。
+
+atk
+  意義：基礎面板攻擊力比例加成。
+  單位：小數比例，0.1 = 攻擊力 +10%。
+  公式：(等級基礎 + 潛能 + 信賴 + 模組固定值) * (1 + atk)。
+  注意：這與技能 atk 所在層次不同。天賦 atk 先改變面板；技能 atk 在開技公式中再加算。
+
+def
+  意義：基礎面板防禦比例加成。
+  單位：小數比例。
+
+magic_resistance
+  意義：幹員自身法術抗性點數加成。
+  單位：固定點數，直接相加。
+  警告：若某天賦的同名 key 實際是降低敵方法抗，就不能留在面板計算，必須排除並 custom。
+
+base_attack_time
+  意義：幹員基礎攻擊間隔修正。
+  單位：秒，直接相加。
+
+attack_speed
+  意義：幹員攻擊速度加成。
+  單位：攻速點數，直接相加。
+
+
+二、天賦 custom 可輸出的戰鬥公式 key
+------------------------------------
+
+attack
+  意義：技能傷害公式中的額外攻擊力加成比例。
+  公式：加入 (1 + 技能 atk + 天賦 attack + 模組 atk)。
+  用途：原始 atk 不是單純常駐面板加成，例如需要堆疊後才成立。
+  現有例：獵蜂把 atk * max_stack_cnt 映射成 attack。
+
+atk_scale
+  意義：天賦攻擊倍率乘區。
+  預設：1。
+  公式：與技能、模組 atk_scale 相乘。
+
+damage_scale
+  意義：天賦最終傷害倍率。
+  預設：1。
+  公式：與技能、模組 damage_scale 相乘。
+
+attack_speed
+  意義：技能攻擊間隔計算中的額外攻速點數。
+  現有例：宴把原始 min_attack_speed 映射為 attack_speed。
+
+base_attack_time
+  意義：技能攻擊間隔計算中的秒數修正。
+
+def_penetrate_fixed
+  意義：目前在公式中作為敵方防禦降低來源。
+  注意：此欄位走降低值規則，比例／固定降低通常需為負數；若要表達正數固定無視，應檢查是否更適合技能或模組穿透欄位。
+
+magic_resistance
+  意義：custom 層中代表降低敵方法抗，不是提升自身法抗。
+  現有例：夜煙把原始 magic_resistance 轉入敵方法抗降低公式。
+
+ensure_damage
+  意義：最低傷害比例。
+  單位：小數比例。
+  公式：若正常傷害低於「縮放後攻擊力 * ensure_damage」，使用最低傷害。
+  預設：0.05，即 5%。
+  現有例：酸糖使用 atk_scale_2 作為 ensure_damage。
+
+
+三、天賦 ignoredAttributes／排除名單的作用
+------------------------------------------
+若原始天賦 key 名看似通用，但實際語意不是常駐面板加成，必須把該幹員與 key 加入 talentExcludedAttributes。
+
+排除後：
+- 原始值不會加入面板。
+- custom context 的 memberTalent(attribute) 仍會取得 0。
+- custom 可改用 rawTalent(attribute) 讀取排除前的值；精二有模組天賦覆蓋時，rawTalent 會讀取覆蓋值。
+- 若只排除而沒有其他資料來源，該效果不會進入目前傷害公式。
+
+典型情況：
+- atk 是疊層上限值，不應直接常駐加成。
+- atk／def 只影響其他單位或只在特定條件生效。
+- magic_resistance 實際降低敵人法抗，而非增加自身法抗。
+
+目前需特別留意：
+- talentEffectRules 中若使用 memberTalent('某 key')，同時又把該 key 加入 talentExcludedAttributes，
+  memberTalent 讀到的是 0；需要原始值時必須改用 rawTalent。
+
+
+四、常見但目前不可通用處理的天賦 key
+------------------------------------
+
+prob、attack@prob
+  觸發機率。需要決定採「必定觸發」、「期望值」或「不觸發」，目前沒有全域通則。
+
+cnt、max_stack_cnt
+  可能是堆疊數、目標數或觸發次數。通常需與 atk、atk_scale 等另一 key 組合。
+
+duration、interval
+  可能是 buff 持續時間、觸發間隔或冷卻，不一定等於技能持續時間／攻擊間隔。
+
+hp_ratio、min_hp_ratio、max_hp_ratio
+  通常是條件門檻或生命比例，不等於 max_hp 面板加成。
+
+damage_scale
+  名稱雖常見，仍需確認是自身增傷、敵人易傷、特定目標增傷或其他單位效果，再決定是否映射。
+
+def_penetrate、magic_resist_penetrate_fixed
+  可能是比例穿透、固定穿透或只在特定條件成立。現有公式對比例／固定的欄位並未完全共用，需人工確認。

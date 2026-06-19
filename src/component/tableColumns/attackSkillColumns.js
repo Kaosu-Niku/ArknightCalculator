@@ -1,6 +1,7 @@
 import BasicCalculatorModel from '../../model/BasicCalculator';
 import FilterModel from '../../model/Filter';
 import SkillCalculatorModel from '../../model/SkillCalculator';
+import SkillCustomCalculatorModel from '../../model/SkillCustomCalculator';
 import UniequipCalculatorModel from '../../model/UniequipCalculator';
 import { hasConditionalModuleTrait } from '../../model/uniequipTraitRules';
 import { resolveSkillAttackType } from '../../model/subProfessionCombatRules';
@@ -39,6 +40,7 @@ const createAttackSkillColumns = ({
   const memberCache = new WeakMap();
   const skillDataCache = new WeakMap();
   const formulaEffectsCache = new WeakMap();
+  const damageMetricsCache = new WeakMap();
 
   const getMember = (row) => {
     const cached = memberCache.get(row);
@@ -73,7 +75,8 @@ const createAttackSkillColumns = ({
       row,
       getMember(row),
       uniequipJsonData,
-      battleEquipJsonData
+      battleEquipJsonData,
+      candidates
     );
     formulaEffectsCache.set(row, effects);
     return effects;
@@ -82,6 +85,26 @@ const createAttackSkillColumns = ({
   const getFormulaField = (row, fieldName) => {
     const result = getFormulaEffects(row).fieldResult(fieldName);
     return result.found ? result.value : '-';
+  };
+
+  const getDamageMetrics = (row) => {
+    const cached = damageMetricsCache.get(row);
+    if(cached){
+      return cached;
+    }
+
+    const metrics = SkillCalculatorModel.skillMemberMetrics(
+      whichType,
+      row,
+      processedCharacterData,
+      enemyData,
+      subProfessionIdJsonData,
+      uniequipJsonData,
+      battleEquipJsonData,
+      candidates
+    );
+    damageMetricsCache.set(row, metrics);
+    return metrics;
   };
 
   const optionalColumns = {
@@ -135,7 +158,7 @@ const createAttackSkillColumns = ({
             && hasConditionalModuleTrait(subProfession);
 
           if(conditionApplied && type === 'display'){
-            return `<span class="module-name-with-condition"><span>${moduleName}</span><span class="module-condition-badge">${t('條件生效')}</span></span>`;
+            return `<span class="module-name-with-condition"><span>${moduleName}</span><span class="module-condition-badge">${t('模組條件生效')}</span></span>`;
           }
 
           return moduleName;
@@ -145,11 +168,24 @@ const createAttackSkillColumns = ({
         }
       }
     },
-    { title: t("技能名稱"), data: null, render: function (data, type, row) { return t(getSkillData(row).name, 'zh-CN'); } },
+    { title: t("技能名稱"), data: null, render: function (data, type, row) {
+      const member = getMember(row);
+      const skillName = t(getSkillData(row).name, 'zh-CN');
+      const checkName = `${member.name}-${getSkillData(row).name}`;
+      const conditionApplied = candidates
+        && SkillCustomCalculatorModel.hasConditionalEffect(checkName);
+
+      if(conditionApplied && type === 'display'){
+        return `<span class="module-name-with-condition"><span>${skillName}</span><span class="module-condition-badge">${t('技能條件生效')}</span></span>`;
+      }
+
+      return skillName;
+    } },
     { title: t("冷卻時間"), data: null, render: function (data, type, row) { return getSkillData(row).spData.spCost; } },
     { title: t("持續時間"), data: null, render: function (data, type, row) { return getSkillData(row).duration; } },
     ...visibleOptionalColumns.map(columnId => optionalColumns[columnId]).filter(Boolean),
-    { title: t("技能總傷"), data: null, render: function (data, type, row) { return FilterModel.numberFilter(SkillCalculatorModel.skillMemberTotal(whichType, row, processedCharacterData, enemyData, subProfessionIdJsonData, uniequipJsonData, battleEquipJsonData, candidates)); } },
+    { title: t("技能DPS"), data: null, render: function (data, type, row) { return FilterModel.numberFilter(getDamageMetrics(row).dps); } },
+    { title: t("技能總傷"), data: null, render: function (data, type, row) { return FilterModel.numberFilter(getDamageMetrics(row).total); } },
   ];
 };
 

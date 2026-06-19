@@ -1,0 +1,175 @@
+Custom 規則撰寫範本與檢查流程
+=============================
+
+一、技能 custom 基本範本
+------------------------
+
+規則位置：src/model/skillEffectRules.js
+識別格式：幹員名稱-技能名稱
+
+範例：把不規範的原始倍率映射為通用 atk_scale
+
+  '幹員-技能': ({ skillAttribute }) => ({
+    atk_scale: skillAttribute('attack@s2_atk_scale'),
+  }),
+
+範例：技能改造成法術傷害，並且每次攻擊有兩段
+
+  '幹員-技能': ({ skillAttribute }) => ({
+    CHANGE_attackType: '法術',
+    atk_scale: skillAttribute('attack@atk_scale'),
+    ATTACK_COUNT: 2,
+  }),
+
+範例：建立獨立額外法術傷害流
+
+  '幹員-技能': ({ skillAttribute }) => ({
+    CHANGE_OTHER_attackType: '法術',
+    OTHER_atk_scale: skillAttribute('extra_damage.atk_scale'),
+    OTHER_base_attack_time: skillAttribute('extra_damage.interval'),
+  }),
+
+範例：原始 duration 確定代表整個技能持續時間
+
+  '幹員-技能': ({ skillAttribute }) => ({
+    CHANGE_duration: skillAttribute('duration'),
+  }),
+
+範例：技能有 20% 機率使攻擊倍率提升至 160%
+
+  '幹員-技能': ({ conditionalMultiplier }) => ({
+    atk_scale: conditionalMultiplier('atk_scale', 'prob'),
+  }),
+
+並在 SkillCustomCalculator.skillNotListToBasic 排除原始 atk_scale，避免它被當成必定觸發。
+開關關閉時倍率為 1；開啟時為 1 + (1.6 - 1) * 0.2 = 1.12。
+
+
+二、天賦 custom 基本範本
+------------------------
+
+規則位置：src/model/talentEffectRules.js
+識別格式：幹員名稱
+
+若原始 atk 不應直接進面板，先加入排除名單：
+
+  export const talentExcludedAttributes = {
+    '幹員': new Set(['atk']),
+  };
+
+重要限制：memberTalent('atk') 也會套用此排除名單，因此排除後會讀到 0。
+不要直接撰寫下列看似合理、實際會變成 0 的規則：
+
+  '幹員': ({ memberTalent }) => ({
+    attack: memberTalent('atk') * memberTalent('max_stack_cnt'),
+  }),
+
+正確寫法是使用不經排除名單的 rawTalent(attribute)：
+
+  '幹員': ({ rawTalent }) => ({
+    attack: rawTalent('atk') * rawTalent('max_stack_cnt'),
+  }),
+
+rawTalent 仍會採用目前精英階段與模組天賦覆蓋值，只是不套用 talentExcludedAttributes。
+
+條件值為 0 時不輸出效果，可沿用 effectWhenActive：
+
+  '幹員': ({ memberTalent }) => ({
+    ...effectWhenActive('atk_scale', memberTalent('atk_scale')),
+  }),
+
+
+三、模組／分支規則基本範本
+--------------------------
+
+規則位置：src/model/uniequipTraitRules.js
+
+raw value 已是完整倍率：
+
+  atk_scale: {
+    '分支名稱': { key: 'atk_scale', fallback: 1 },
+  },
+
+raw value 是額外增加量，需要轉為完整倍率：
+
+  damage_scale: {
+    '分支名稱': {
+      compute: (blackboard) => 1 + (blackboard.value('damage_scale') ?? 0),
+    },
+  },
+
+conditionalModuleTraits 會自動讀取 prob、attack@prob、talent@prob、buff_prob，
+並依效果類型換算加法期望值或倍率期望值，不要在規則中再次乘機率。
+
+兩個 raw key 需要組合：
+
+  atk: {
+    '分支名稱': {
+      compute: (blackboard) => (
+        (blackboard.value('atk') ?? 0)
+        * (blackboard.value('max_stack_cnt') ?? 0)
+      ),
+    },
+  },
+
+
+四、人工判讀流程
+----------------
+
+1. 確認資料位置
+   - skill_table.levels[].blackboard
+   - character_table.talents[].candidates[].blackboard
+   - battle_equip_table.phases[].attributeBlackboard
+   - overrideTraitDataBundle 或 addOrOverrideTalentDataBundle
+
+2. 對照技能／天賦描述
+   - 效果作用於自己、敵人、召喚物還是友方？
+   - 常駐、技能期間、條件觸發還是機率觸發？
+   - 是單一目標傷害，還是目標數增加？
+
+3. 比較所有技能等級或天賦候選
+   - key 值是否與描述中的百分比同步成長？
+   - 數值是 0.5、1.5、50 還是 -0.5？由此判斷比例、完整倍率或固定值。
+
+4. 選擇標準公式 key
+   - 攻擊力加成比例 -> atk 或天賦 custom 的 attack
+   - 單次攻擊倍率 -> atk_scale
+   - 最終增傷 -> damage_scale
+   - 同時傷害段數 -> ATTACK_COUNT
+   - 全技能固定次數 -> times
+   - 額外獨立傷害 -> OTHER_* 系列
+
+5. 處理錯誤的通用同名 key
+   - 技能：在 src/model/SkillCustomCalculator.js 的 skillNotListToBasic 加入 key，
+     再由 skillAttribute(rawKey) 讀取原值並提供正確標準值。
+   - 天賦：加入 talentExcludedAttributes 後，使用 rawTalent(rawKey) 讀取排除前的值並重新映射；
+     memberTalent() 對被排除 key 仍只會回傳 0。
+
+6. 加入回歸測試
+   - custom 前後應有可解釋的數值差異。
+   - 檢查條件效果開／關。
+   - 檢查無模組與每個模組版本。
+   - 檢查所有可用精英階段。
+   - 確認 DPS、總傷均為有限數值，且不出現 NaN。
+
+
+五、容易寫錯的對照
+--------------------
+
+錯誤：把技能 atk=0.5 寫成 atk_scale=0.5。
+結果：前者應為 +50% 攻擊力；後者會變成只造成 50% 攻擊倍率。
+
+錯誤：把 damage_scale=0.2 直接當成 +20% 最終傷害。
+結果：目前標準 damage_scale 要的是完整倍率，通常應映射為 1.2；但必須先確認 raw key 的資料語意。
+
+錯誤：看到 cnt 就映射成 ATTACK_COUNT。
+結果：cnt 可能只是目標數或堆疊數，會讓單體總傷被錯誤倍增。
+
+錯誤：看到 duration 就覆蓋技能持續時間。
+結果：它可能只是暈眩、減速或 buff 的持續時間。
+
+錯誤：把 max_target 當成攻擊段數。
+結果：多目標不等於同一敵人承受多次傷害；目前表格以單一目標技能傷害為主。
+
+錯誤：忽略 0 值。
+結果：某些幹員刻意用 0 關閉或替換效果，0 必須保留為合法值。

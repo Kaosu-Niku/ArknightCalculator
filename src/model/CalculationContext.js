@@ -12,12 +12,16 @@ const CalculationContextModel = {
     memberData,
     uniequipJsonData,
     battleEquipJsonData,
+    candidates_check = false,
   }, helpers) => {
     const skillData = helpers.skillData(type, skillRow);
     const skillBlackboard = SkillDataIndexModel.blackboard(skillData);
     const checkName = `${memberData.name}-${skillData.name}`;
     const skillAttribute = (attribute) => {
       return skillBlackboard.get(attribute)?.value ?? 0;
+    };
+    const skillAttributeOptional = (attribute) => {
+      return skillBlackboard.get(attribute)?.value;
     };
     const skillEffectRule = SkillCustomCalculatorModel.createSkillEffectRule({
       checkName,
@@ -27,6 +31,8 @@ const CalculationContextModel = {
       uniequipJsonData,
       battleEquipJsonData,
       skillAttribute,
+      skillAttributeOptional,
+      conditionEffectsEnabled: candidates_check,
     });
     const skillEffects = SkillEffectResolverModel.createSkillEffects({
       skillData,
@@ -58,11 +64,16 @@ const CalculationContextModel = {
       memberRow: currentMemberData,
       uniequipJsonData,
       battleEquipJsonData,
+      conditionEffectsEnabled: candidates_check,
+      probabilityOverride: skillBlackboard.get('talent@prob')?.value,
     });
     const memberTalent = talentEffectRule.effects;
     const checkName = `${currentMemberData.name}-${skillData.name}`;
     const skillAttribute = (attribute) => {
       return skillBlackboard.get(attribute)?.value ?? 0;
+    };
+    const skillAttributeOptional = (attribute) => {
+      return skillBlackboard.get(attribute)?.value;
     };
     const skillEffectRule = SkillCustomCalculatorModel.createSkillEffectRule({
       checkName,
@@ -72,6 +83,8 @@ const CalculationContextModel = {
       uniequipJsonData,
       battleEquipJsonData,
       skillAttribute,
+      skillAttributeOptional,
+      conditionEffectsEnabled: candidates_check,
     });
     const skillEffects = SkillEffectResolverModel.createSkillEffects({
       skillData,

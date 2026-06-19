@@ -1,9 +1,18 @@
 import SkillEffectRulesModel from './skillEffectRules';
+import {
+  conditionalAdditive,
+  conditionalMultiplier,
+  normalizeProbability,
+} from './conditionalEffect';
 
 const skillRuleCache = new WeakMap();
 const emptyIgnoredAttributes = new Set();
 
 const SkillCustomCalculatorModel = {
+  hasConditionalEffect: (checkName) => (
+    SkillEffectRulesModel.hasConditionalEffect(checkName)
+  ),
+
   // JSON 中同名 key 的語意不一致時，這裡排除不能直接帶入公式的原始值。
   skillNotListToBasic: {
     '石英-全力相搏': new Set(['damage_scale']),
@@ -12,6 +21,14 @@ const SkillCustomCalculatorModel = {
     '深靛-灯塔守卫者': new Set(['base_attack_time']),
     '深靛-光影迷宫': new Set(['base_attack_time']),
     '深海色-光影之触': new Set(['atk']),
+    '巫恋-诅咒娃娃': new Set(['atk']),
+    '锡人-“老科利”': new Set(['atk']),
+    '引星棘刺-“我的海疆”': new Set(['atk']),
+    '山-横扫架势': new Set(['def']),
+    '银灰-真银斩': new Set(['def']),
+    '初雪-传音回响': new Set(['attack_speed']),
+    '战车-倾泻弹药': new Set(['atk_scale']),
+    '鸿雪-抑扬格': new Set(['atk_scale']),
   },
 
   createSkillEffectRule: ({
@@ -22,8 +39,10 @@ const SkillCustomCalculatorModel = {
     uniequipJsonData,
     battleEquipJsonData,
     skillAttribute,
+    skillAttributeOptional,
+    conditionEffectsEnabled = false,
   }) => {
-    const cacheKey = `${type}::${memberRow?.name ?? ''}::${memberRow?.equipid ?? ''}::${checkName}`;
+    const cacheKey = `${type}::${memberRow?.name ?? ''}::${memberRow?.equipid ?? ''}::${checkName}::${conditionEffectsEnabled}`;
     const cachedBySkill = skillRuleCache.get(skillRow);
     if (cachedBySkill?.has(cacheKey)) {
       return cachedBySkill.get(cacheKey);
@@ -37,6 +56,21 @@ const SkillCustomCalculatorModel = {
         uniequipJsonData,
         battleEquipJsonData,
         skillAttribute,
+        conditionEffectsEnabled,
+        conditionalAdditive: (attribute, probabilityAttribute = 'prob') => (
+          conditionalAdditive(
+            conditionEffectsEnabled,
+            skillAttributeOptional(attribute) ?? 0,
+            normalizeProbability(skillAttributeOptional(probabilityAttribute), 1)
+          )
+        ),
+        conditionalMultiplier: (attribute, probabilityAttribute = 'prob') => (
+          conditionalMultiplier(
+            conditionEffectsEnabled,
+            skillAttributeOptional(attribute) ?? 1,
+            normalizeProbability(skillAttributeOptional(probabilityAttribute), 1)
+          )
+        ),
       }),
       ignoredAttributes: SkillCustomCalculatorModel.skillNotListToBasic[checkName]
         ?? emptyIgnoredAttributes,

@@ -176,7 +176,7 @@ const SkillReport = ({ skillReport, index, t }) => (
       >
         <span>{String(index + 1).padStart(2, '0')}</span>
         <strong>{t(skillReport.skill.name, 'zh-CN')}</strong>
-        <b>{formatNumber(skillReport.total)}</b>
+        <b>{`${formatNumber(skillReport.dps)} DPS · ${formatNumber(skillReport.total)}`}</b>
       </button>
     </h3>
     <div id={`reportSkill${index}`} className="accordion-collapse collapse" aria-labelledby={`reportSkillHeading${index}`}>
@@ -189,7 +189,13 @@ const SkillReport = ({ skillReport, index, t }) => (
             duration: '技能持續時間',
             times: '攻擊段數',
             ammoCount: '彈藥數量',
-          }} values={skillReport.schedule} />
+            averageDps: '技能平均 DPS',
+            totalDamage: '技能總傷',
+          }} values={{
+            ...skillReport.schedule,
+            averageDps: skillReport.dps,
+            totalDamage: skillReport.total,
+          }} />
         </section>
         <section className="report-section">
           <h4>{t('技能特殊參數')}</h4>
@@ -281,7 +287,7 @@ function LogPanel() {
         {!report || !activeVariant ? (
           <div className="log-empty">
             <strong>{t('選擇一名幹員以建立計算報告')}</strong>
-            <span>{t('報告會沿用目前的養成階段、敵方數值與模組條件設定。')}</span>
+            <span>{t('報告會沿用目前的養成階段、敵方數值與條件效果設定。')}</span>
           </div>
         ) : (
           <div className="calculation-report">
@@ -294,7 +300,7 @@ function LogPanel() {
                 <div><dt>{t('階段')}</dt><dd>{t(report.type)}</dd></div>
                 <div><dt>{t('敵方防禦')}</dt><dd>{formatNumber(report.enemy.defense)}</dd></div>
                 <div><dt>{t('敵方法抗')}</dt><dd>{formatNumber(report.enemy.resistance)}</dd></div>
-                <div><dt>{t('模組條件')}</dt><dd>{report.candidates ? t('啟用') : t('停用')}</dd></div>
+                <div><dt>{t('條件／機率效果')}</dt><dd>{report.candidates ? t('條件成立，機率採期望值') : t('全部停用')}</dd></div>
               </dl>
             </header>
 

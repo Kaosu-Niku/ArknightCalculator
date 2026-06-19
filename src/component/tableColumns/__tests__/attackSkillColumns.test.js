@@ -1,6 +1,8 @@
 import createAttackSkillColumns, { optionalAttackSkillColumns } from '../attackSkillColumns';
+import SkillCalculatorModel from '../../../model/SkillCalculator';
+import SkillCustomCalculatorModel from '../../../model/SkillCustomCalculator';
 
-const createColumns = (visibleOptionalColumns = []) => createAttackSkillColumns({
+const createColumns = (visibleOptionalColumns = [], candidates = false) => createAttackSkillColumns({
   t: value => value,
   whichType: '精二滿級',
   processedCharacterData: [],
@@ -9,12 +11,12 @@ const createColumns = (visibleOptionalColumns = []) => createAttackSkillColumns(
   subProfessionIdJsonData: {},
   uniequipJsonData: {},
   battleEquipJsonData: {},
-  candidates: false,
+  candidates,
   visibleOptionalColumns,
 });
 
 describe('attack skill table columns', () => {
-  test('uses a compact core set without DPS', () => {
+  test('places skill DPS immediately before total damage', () => {
     const titles = createColumns().map(column => column.title);
 
     expect(titles).toEqual([
@@ -26,9 +28,9 @@ describe('attack skill table columns', () => {
       '技能名稱',
       '冷卻時間',
       '持續時間',
+      '技能DPS',
       '技能總傷',
     ]);
-    expect(titles).not.toContain('技能期間DPS');
   });
 
   test('adds only selected optional columns', () => {
@@ -61,5 +63,23 @@ describe('attack skill table columns', () => {
       'extraAttackScale',
       'extraAttackInterval',
     ]);
+  });
+
+  test('identifies skills whose damage changes with condition settings', () => {
+    expect(SkillCustomCalculatorModel.hasConditionalEffect('战车-倾泻弹药')).toBe(true);
+    expect(SkillCustomCalculatorModel.hasConditionalEffect('鸿雪-抑扬格')).toBe(true);
+    expect(SkillCustomCalculatorModel.hasConditionalEffect('卡达-同步索敌攻击')).toBe(false);
+  });
+
+  test('marks a conditional skill only in display rendering when enabled', () => {
+    jest.spyOn(SkillCalculatorModel, 'skillFromMember').mockReturnValue({ name: '战车' });
+    jest.spyOn(SkillCalculatorModel, 'skillData').mockReturnValue({ name: '倾泻弹药' });
+    const skillColumn = createColumns([], true)[5];
+    const row = {};
+
+    expect(skillColumn.render(null, 'display', row)).toContain('技能條件生效');
+    expect(skillColumn.render(null, 'sort', row)).toBe('倾泻弹药');
+
+    jest.restoreAllMocks();
   });
 });

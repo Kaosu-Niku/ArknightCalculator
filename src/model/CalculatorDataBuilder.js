@@ -12,6 +12,17 @@ const jsonPaths = {
   skillJsonData: 'skill_table.json',
 };
 
+const uniqueSkillRows = (rows) => {
+  const rowsByIdentity = new Map();
+  rows.forEach(row => {
+    const identity = `${row.memberId}::${row.skillId}::${row.equipid ?? 'base'}`;
+    if (!rowsByIdentity.has(identity)) {
+      rowsByIdentity.set(identity, row);
+    }
+  });
+  return Array.from(rowsByIdentity.values());
+};
+
 const CalculatorDataBuilderModel = {
   loadCalculatorJson: async (publicUrl) => {
     const entries = await Promise.all(
@@ -47,10 +58,23 @@ const CalculatorDataBuilderModel = {
 
   buildSkillRows: ({ type, skillJsonData, characterJsonData, processedCharacterData, checkRarity, uniequipJsonData }) => {
     const witchPhases = BasicCalculatorModel.type(type).witchPhases;
-    const processedSkillData = FilterModel.skillDataFilter(Object.values(skillJsonData), characterJsonData, checkRarity);
+    const filteredMembers = FilterModel.characterDataFilter(
+      Object.values(characterJsonData),
+      checkRarity
+    );
+    const processedSkillData = filteredMembers.flatMap(member => {
+      return (member.skills ?? []).flatMap(({ skillId }) => {
+        const skill = skillJsonData[skillId];
+        return skill ? [{
+          ...skill,
+          skillId,
+          memberId: member.potentialItemId,
+        }] : [];
+      });
+    });
 
     if(witchPhases !== 2){
-      return processedSkillData;
+      return uniqueSkillRows(processedSkillData);
     }
 
     const moduleRows = processedSkillData.flatMap(currentSkill => {
@@ -61,7 +85,7 @@ const CalculatorDataBuilderModel = {
         .map(equipId => ({ ...currentSkill, equipid: equipId }));
     });
 
-    return [...processedSkillData, ...moduleRows];
+    return uniqueSkillRows([...processedSkillData, ...moduleRows]);
   },
 };
 

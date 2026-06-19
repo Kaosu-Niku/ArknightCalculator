@@ -1,0 +1,63 @@
+Arknights Calculator - Custom Key 對照總覽
+============================================
+
+用途
+----
+這組文件用來協助人工撰寫技能、天賦、模組與分支的 custom 規則。
+內容以目前專案實際公式為準，不代表遊戲資料源對所有幹員都遵守相同語意。
+
+建議閱讀順序
+------------
+1. 00-閱讀順序與重要原則.txt
+2. 01-技能Key與公式對照.txt
+3. 02-天賦Key與公式對照.txt
+4. 03-模組與分支Key對照.txt
+5. 04-Custom規則撰寫範本.txt
+
+最重要的原則
+------------
+1. key 大小寫有差異。
+   - 潛能 attributeType 使用大寫 ATK、DEF、MAX_HP 等枚舉。
+   - 技能、天賦、模組 blackboard 通常使用小寫 atk、def、max_hp。
+   - 不要把大寫 ATK 當成天賦 blackboard 的通用 key。
+
+2. 相同 key 在不同資料區可能進入不同公式。
+   - 天賦 atk：提升幹員基礎面板攻擊力。
+   - 技能 atk：技能期間的攻擊力加成比例。
+   - 模組 attributeBlackboard 的 atk：直接加到面板攻擊力。
+   - 模組 trait blackboard 的 atk：依分支規則，可能是技能傷害公式中的攻擊加成比例。
+
+3. custom 的工作是把不規範的原始 key 轉成公式認得的標準 key。
+   例如原始 attack@s2_atk_scale 不會被通用公式自動當成 atk_scale；custom 必須明確映射。
+
+4. 值為 0 仍然是合法資料。
+   原始 key 存在且 value=0，與 key 完全不存在是兩件不同的事。不要用 truthy 判斷取代「是否存在」。
+
+5. 正負號與單位不能只靠 key 名猜測。
+   - 比例通常用小數：0.5 = 50%。
+   - 攻速通常用點數：20 = +20 攻速。
+   - base_attack_time 通常用秒數增減。
+   - def、magic_resistance 的降低值目前要求負數；詳見技能文件。
+
+6. 常見不等於通用。
+   cnt、duration、interval、prob、attack@atk_scale 等 key 在 JSON 中很常見，但語意依技能而異，
+   目前不應直接全域映射。應先閱讀技能描述與同一技能所有等級的數值變化，再寫 custom。
+
+資料處理優先順序
+----------------
+技能效果解析：
+1. 原始 blackboard 中有標準 key，且未列入 ignoredAttributes -> 使用原始值。
+2. 標準 key 被 ignoredAttributes 排除，且 custom 有提供 -> 使用 custom 值。
+3. 原始 blackboard 沒有標準 key，但 custom 有提供 -> 使用 custom 值。
+4. 兩者都沒有 -> 視為缺少，公式使用 0 或該欄位的預設值。
+
+相關程式位置
+------------
+- 技能標準 key：src/model/SkillEffectResolver.js
+- 技能 custom：src/model/skillEffectRules.js
+- 天賦 custom：src/model/talentEffectRules.js
+- 模組／分支規則：src/model/uniequipTraitRules.js
+- 傷害乘區組合：src/model/SkillCalculator.js
+- 防禦、法抗與單次傷害：src/model/DamageFormula.js
+- 總傷與 DPS：src/model/SkillTotalFormula.js
+

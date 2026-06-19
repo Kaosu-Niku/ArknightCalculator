@@ -37,7 +37,12 @@ const createTalentBreakdown = (
 const createSkillRows = (member, skillJsonData) => {
   return (member.skills ?? []).flatMap(skillReference => {
     const skill = skillJsonData[skillReference.skillId];
-    return skill ? [{ ...skill, skillId: skillReference.skillId, equipid: member.equipid }] : [];
+    return skill ? [{
+      ...skill,
+      skillId: skillReference.skillId,
+      memberId: member.potentialItemId,
+      equipid: member.equipid,
+    }] : [];
   });
 };
 
