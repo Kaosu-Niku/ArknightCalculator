@@ -158,6 +158,41 @@ describe('approved calculation baselines', () => {
     expect(new Set(hazeRowIdentities).size).toBe(hazeRows.length);
   });
 
+  test('toggle skills expose initial and active states as separate rows', () => {
+    const checkRarity = { TIER_6: true };
+    const processedCharacterData = CalculatorDataBuilderModel.buildCharacterRows({
+      type: '精二滿級',
+      characterJsonData,
+      checkRarity,
+      uniequipJsonData,
+    });
+    const processedSkillData = CalculatorDataBuilderModel.buildSkillRows({
+      type: '精二滿級',
+      skillJsonData,
+      characterJsonData,
+      processedCharacterData,
+      checkRarity,
+      uniequipJsonData,
+    });
+    const mountainRows = processedSkillData.filter(row => (
+      row.skillId === 'skchr_f12yin_2' && !row.equipid
+    ));
+
+    expect(mountainRows.map(row => row.skillState)).toEqual(['initial', 'active']);
+    const [initial, active] = mountainRows.map(row => (
+      SkillCalculatorModel.skillMemberMetrics(
+        '精二滿級',
+        row,
+        processedCharacterData,
+        enemyData,
+        subProfessionIdJsonData,
+        uniequipJsonData,
+        battleEquipJsonData
+      ).dps
+    ));
+    expect(active).toBeGreaterThan(initial);
+  });
+
   test('卡达 同步索敌攻击 remains non-zero at every calculation phase', () => {
     const results = Object.fromEntries(
       types.map(type => [type, calculate(type, 'skchr_cammou_2')])
@@ -174,13 +209,32 @@ describe('approved calculation baselines', () => {
       '断罪者-断罪': calculate('精二滿級', 'skchr_peacok_1'),
       '深靛-光影迷宫': calculate('精二滿級', 'skchr_indigo_2'),
       '酸糖-扳机时刻': calculate('精二滿級', 'skchr_acdrop_2'),
-      '宴-落地斩·破门': calculate('精二滿級', 'skchr_utage_1'),
+      '宴-分神': calculate('精二滿級', 'skchr_utage_1'),
       '夜烟-赤色之瞳': calculate('精二滿級', 'skchr_nights_2'),
       '云迹-旧日重现': calculate('精二滿級', 'skchr_ctrail_2'),
       '猎蜂-急速拳': calculate('精二滿級', 'skchr_brownb_2'),
     };
 
     expect(cases).toMatchSnapshot();
+  });
+
+  test('audited stop-attack skills keep intentional damage streams only', () => {
+    expect(calculate('精二滿級', 'skchr_utage_1')).toBe(0);
+    expect(calculate('精二滿級', 'skchr_bdhkgt_2')).toBeGreaterThan(0);
+    expect(calculate('精二滿級', 'skchr_judge_2')).toBeGreaterThan(0);
+  });
+
+  test('approved Monster Hunter skills use their full hit sequences', () => {
+    const noirc = report('精二滿級', 'skchr_noirc2_1');
+    const catapult = report('精二滿級', 'skchr_catap2_1');
+
+    expect(noirc.schedule.attackCount).toBe(4);
+    expect(noirc.total).toBeGreaterThan(0);
+    expect(catapult.schedule.attackCount).toBe(7.5);
+    expect(catapult.streams.map(stream => stream.source)).toEqual([
+      'main',
+      'skillExtra',
+    ]);
   });
 
   test('enemy debuffs and self-defense penalties do not enter attacker modifiers', () => {

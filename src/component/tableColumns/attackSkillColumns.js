@@ -170,7 +170,10 @@ const createAttackSkillColumns = ({
     },
     { title: t("技能名稱"), data: null, render: function (data, type, row) {
       const member = getMember(row);
-      const skillName = t(getSkillData(row).name, 'zh-CN');
+      const stateSuffix = row.skillState
+        ? `（${t(row.skillState === 'initial' ? '切換前' : '切換後')}）`
+        : '';
+      const skillName = `${t(getSkillData(row).name, 'zh-CN')}${stateSuffix}`;
       const checkName = `${member.name}-${getSkillData(row).name}`;
       const conditionApplied = candidates
         && SkillCustomCalculatorModel.hasConditionalEffect(checkName);

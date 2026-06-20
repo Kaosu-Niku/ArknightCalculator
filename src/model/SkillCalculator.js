@@ -19,6 +19,7 @@ import {
 import { getExtraAttackHitMultiplier } from './uniequipTraitRules';
 import { resolveSkillAttackType } from './subProfessionCombatRules';
 import { isPermanentSkill } from './skillDurationRules';
+import { resolveSkillStateData } from './skillStateRules';
 
 const resolveDamageDetails = (
   context,
@@ -164,7 +165,7 @@ const createSkillDamageProfile = (context, enemyData) => {
   }
 
   const traitExtraScale = context.memberEquipTrait('other2_attack_scale') ?? 0;
-  if(traitExtraScale !== 0){
+  if(traitExtraScale !== 0 && !context.skillEffects.disableTraitExtra()){
     const enableThirdAttack = context.memberEquipTrait('enable_third_attack') ?? 0;
     const details = resolveDamageDetails(
       context,
@@ -269,7 +270,10 @@ const SkillCalculatorModel = {
         1: maxLevel - 4,
         2: maxLevel - 1,
       };
-      return skillRow.levels[levelIndexByPhase[witchPhases]];
+      return resolveSkillStateData(
+        skillRow,
+        skillRow.levels[levelIndexByPhase[witchPhases]]
+      );
     }
 
     const levelIndexByPhase = {
@@ -277,7 +281,10 @@ const SkillCalculatorModel = {
       1: maxLevel - 1,
       2: maxLevel - 1,
     };
-    return skillRow.levels[levelIndexByPhase[witchPhases]];
+    return resolveSkillStateData(
+      skillRow,
+      skillRow.levels[levelIndexByPhase[witchPhases]]
+    );
   },
 
   skillFormulaEffects: (

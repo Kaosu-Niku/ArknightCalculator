@@ -21,6 +21,7 @@ const formulaFieldKeys = {
   extraAttackInterval: 'OTHER_base_attack_time',
   extraAttackTimes: 'OTHER_times',
   extraDuration: 'OTHER_duration',
+  disableTraitExtra: 'DISABLE_TRAIT_EXTRA',
 };
 
 const getBlackboardAttribute = (skillData, attribute, blackboardIndex) => {
@@ -117,6 +118,7 @@ const SkillEffectResolverModel = {
       extraAttackInterval: () => field('extraAttackInterval'),
       extraAttackTimes: () => field('extraAttackTimes'),
       extraDuration: () => field('extraDuration'),
+      disableTraitExtra: () => field('disableTraitExtra'),
     };
   },
 };

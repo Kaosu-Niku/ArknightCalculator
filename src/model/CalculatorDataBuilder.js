@@ -2,6 +2,7 @@ import BasicCalculatorModel from './BasicCalculator';
 import FilterModel from './Filter';
 import SkillCalculatorModel from './SkillCalculator';
 import UniequipCalculatorModel from './UniequipCalculator';
+import { expandSkillStateRows } from './skillStateRules';
 
 const jsonPaths = {
   professionJsonData: 'profession.json',
@@ -15,7 +16,7 @@ const jsonPaths = {
 const uniqueSkillRows = (rows) => {
   const rowsByIdentity = new Map();
   rows.forEach(row => {
-    const identity = `${row.memberId}::${row.skillId}::${row.equipid ?? 'base'}`;
+    const identity = `${row.memberId}::${row.skillId}::${row.equipid ?? 'base'}::${row.skillState ?? 'default'}`;
     if (!rowsByIdentity.has(identity)) {
       rowsByIdentity.set(identity, row);
     }
@@ -65,11 +66,11 @@ const CalculatorDataBuilderModel = {
     const processedSkillData = filteredMembers.flatMap(member => {
       return (member.skills ?? []).flatMap(({ skillId }) => {
         const skill = skillJsonData[skillId];
-        return skill ? [{
+        return skill ? expandSkillStateRows({
           ...skill,
           skillId,
           memberId: member.potentialItemId,
-        }] : [];
+        }) : [];
       });
     });
 

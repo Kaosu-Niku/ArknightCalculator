@@ -23,6 +23,11 @@
     "test": "react-scripts test",
     "data:check": "node scripts/sync-game-data.mjs --dry-run",
     "data:sync": "node scripts/sync-game-data.mjs",
+    "custom:audit": "node scripts/audit-custom-coverage.mjs",
+    "custom:docs": "node scripts/generate-custom-docs.mjs",
+    "custom:docs:check": "node scripts/generate-custom-docs.mjs --check",
+    "custom:sort": "node scripts/sort-custom-rules.mjs && node scripts/generate-custom-docs.mjs",
+    "custom:sort:check": "node scripts/sort-custom-rules.mjs --check",
     "eject": "react-scripts eject",
     "predeploy": "npm run build",
     "deploy": "gh-pages -d build"

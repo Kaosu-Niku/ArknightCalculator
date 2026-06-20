@@ -13,6 +13,16 @@ Arknights Calculator - Custom Key 對照總覽
 3. 02-天賦Key與公式對照.txt
 4. 03-模組與分支Key對照.txt
 5. 04-Custom規則撰寫範本.txt
+6. 05-Custom適配案例總覽.txt
+7. 06-全量稽核待人工判斷.txt
+
+Custom 案例排序原則
+-------------------
+1. 依 character_table.json 的物件讀取順序排列幹員。
+2. 同一幹員的技能依 character_table.json 中 skills 陣列順序排列。
+3. 上游新增資料會自然排在既有資料後方；找不到現行 JSON 對應的舊名稱才放在末尾。
+4. 技能與天賦 custom registry 也遵守相同順序，不依名稱或規則類型分組。
+5. 新增或移除 custom 後執行 npm run custom:sort，同步排序程式規則與 05 文件。
 
 最重要的原則
 ------------
@@ -60,4 +70,3 @@ Arknights Calculator - Custom Key 對照總覽
 - 傷害乘區組合：src/model/SkillCalculator.js
 - 防禦、法抗與單次傷害：src/model/DamageFormula.js
 - 總傷與 DPS：src/model/SkillTotalFormula.js
-
