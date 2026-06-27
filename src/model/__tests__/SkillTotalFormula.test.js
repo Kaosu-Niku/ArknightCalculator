@@ -88,6 +88,9 @@ describe('skill total formula', () => {
     expect(resolveSkillDuration(0, 0)).toBe(1);
     expect(resolveSkillDuration(-1, null)).toBe(1);
     expect(resolveSkillDuration(20, 5)).toBe(5);
+    expect(resolveSkillDuration(20, 0, -5)).toBe(15);
+    expect(resolveSkillDuration(20, 10, -3)).toBe(7);
+    expect(resolveSkillDuration(3, 0, -5)).toBe(1);
   });
 
   test('resolves total damage for timed and segmented streams', () => {

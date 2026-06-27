@@ -11,6 +11,7 @@ const characterData = JSON.parse(read('public/json/character_table.json'));
 const skillData = JSON.parse(read('public/json/skill_table.json'));
 const skillRulesSource = read('src/model/skillEffectRules.js');
 const skillCustomSource = read('src/model/SkillCustomCalculator.js');
+const healingRulesSource = read('src/model/healingSkillEffectRules.js');
 const talentRulesSource = read('src/model/talentEffectRules.js');
 const overviewPath = 'docs/custom-key-reference/05-Custom適配案例總覽.txt';
 
@@ -67,6 +68,29 @@ skillCases.forEach((caseName) => {
   groupedSkills.get(operator).push(label);
 });
 const skillIndex = [...groupedSkills]
+  .map(([operator, skills]) => `${operator}：${skills.join('、')}`)
+  .join('\n');
+const healingRuleNames = objectKeys(
+  healingRulesSource,
+  'const healingSkillEffectRuleFactories = {',
+  '};\n\nconst HealingSkillEffectRulesModel'
+);
+const healingCases = stableOrder(
+  healingRuleNames,
+  (name) => (
+    (characterRank.get(operatorOf(name)) ?? Number.MAX_SAFE_INTEGER) * 100
+    + (skillRank.get(name) ?? 99)
+  )
+);
+const groupedHealingSkills = new Map();
+healingCases.forEach((caseName) => {
+  const separator = caseName.indexOf('-');
+  const operator = caseName.slice(0, separator);
+  const skill = caseName.slice(separator + 1);
+  if(!groupedHealingSkills.has(operator)) groupedHealingSkills.set(operator, []);
+  groupedHealingSkills.get(operator).push(skill);
+});
+const healingSkillIndex = [...groupedHealingSkills]
   .map(([operator, skills]) => `${operator}：${skills.join('、')}`)
   .join('\n');
 
@@ -128,6 +152,12 @@ overview = replaceSection(
 );
 overview = replaceSection(
   overview,
+  '二、治療 Custom\n---------------\n\n',
+  '治療 custom 目前處理的主要類型：',
+  healingSkillIndex
+);
+overview = replaceSection(
+  overview,
   '有明確效果規則\n----------------\n',
   '固定值特殊規則',
   `\n${orderedTalentRules.join('、')}`
@@ -152,4 +182,4 @@ else{
   console.log(`Updated ${overviewPath}`);
 }
 
-console.log(`Skills: ${skillCases.length}; talent rules: ${orderedTalentRules.length}; talent-only exclusions: ${orderedTalentExclusions.length}`);
+console.log(`Skills: ${skillCases.length}; healing skills: ${healingCases.length}; talent rules: ${orderedTalentRules.length}; talent-only exclusions: ${orderedTalentExclusions.length}`);

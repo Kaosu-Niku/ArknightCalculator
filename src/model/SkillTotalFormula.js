@@ -16,9 +16,11 @@ const resolveAttackInterval = ({
 
 const resolveAttackCount = (attackCount) => attackCount === 0 ? 1 : attackCount;
 
-const resolveSkillDuration = (duration, durationOverride) => {
-  const normalizedDuration = duration < 1 ? 1 : duration;
-  return durationOverride ? durationOverride : normalizedDuration;
+const normalizeDuration = (duration) => duration < 1 ? 1 : duration;
+
+const resolveSkillDuration = (duration, durationOverride, durationAdjustment = 0) => {
+  const baseDuration = durationOverride || duration;
+  return normalizeDuration(baseDuration + durationAdjustment);
 };
 
 const resolveStreamInterval = (streamInterval, attackInterval) => {

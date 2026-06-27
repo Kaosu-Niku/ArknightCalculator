@@ -15,6 +15,7 @@ describe('settings storage', () => {
       enemyDef: '850',
       candidates: true,
       visibleSkillColumns: ['attackScale', 'ammo'],
+      visibleHealingColumns: ['healScale', 'healTimes'],
       enemySkill: [{ damage: 999 }],
     });
     const restored = SettingsStorageModel.getAll();
@@ -22,6 +23,7 @@ describe('settings storage', () => {
     expect(restored.enemyDef).toBe(850);
     expect(restored.candidates).toBe(true);
     expect(restored.visibleSkillColumns).toEqual(['attackScale', 'ammo']);
+    expect(restored.visibleHealingColumns).toEqual(['healScale', 'healTimes']);
     expect(restored).not.toHaveProperty('enemySkill');
   });
 

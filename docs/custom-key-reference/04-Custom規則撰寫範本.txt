@@ -35,6 +35,12 @@ Custom 規則撰寫範本與檢查流程
     CHANGE_duration: skillAttribute('duration'),
   }),
 
+範例：技能前段固定時間不輸出，只扣有效輸出時間
+
+  '幹員-技能': () => ({
+    ADJUST_duration: -5,
+  }),
+
 範例：技能有 20% 機率使攻擊倍率提升至 160%
 
   '幹員-技能': ({ conditionalMultiplier }) => ({
@@ -45,7 +51,39 @@ Custom 規則撰寫範本與檢查流程
 開關關閉時倍率為 1；開啟時為 1 + (1.6 - 1) * 0.2 = 1.12。
 
 
-二、天賦 custom 基本範本
+二、治療 custom 基本範本
+------------------------
+
+規則位置：src/model/healingSkillEffectRules.js
+識別格式：幹員名稱-技能名稱
+
+範例：瞬發治療一次
+
+  '幹員-技能': ({ skillAttribute }) => ({
+    HEAL_heal_scale: skillAttribute('heal_scale'),
+    HEAL_times: 1,
+  }),
+
+範例：每秒持續治療
+
+  '幹員-技能': ({ skillAttribute }) => ({
+    HEAL_heal_scale: skillAttribute('aura.heal_scale'),
+    HEAL_interval: skillAttribute('aura.interval'),
+    HEAL_duration: skillAttribute('aura.duration'),
+  }),
+  '傷害回饋治療技能': ({ skillAttribute }) => ({
+    HEAL_damage_scale: skillAttribute('scale'),
+  }),
+  '最大生命恢復技能': ({ skillAttribute }) => ({
+    HEAL_max_hp_ratio: skillAttribute('hp_recovery_per_sec_by_max_hp_ratio'),
+    HEAL_interval: 1,
+  }),
+
+治療 custom 不應混用傷害的 def、magic_resistance、damage_scale 等欄位；
+若技能同時造成傷害與治療，傷害與治療規則分別寫在各自 registry。
+
+
+三、天賦 custom 基本範本
 ------------------------
 
 規則位置：src/model/talentEffectRules.js

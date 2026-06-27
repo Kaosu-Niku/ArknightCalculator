@@ -1,13 +1,16 @@
 import React, { useEffect, useRef, useState } from 'react';
 import 'datatables.net';
 import 'datatables.net-dt/css/dataTables.dataTables.min.css';
-import SettingsStorageModel from '../model/SettingsStorage';
+import SettingsStorageModel, { defaultSettings } from '../model/SettingsStorage';
 import CalculatorDataBuilderModel from '../model/CalculatorDataBuilder';
 import createMemberColumns from './tableColumns/memberColumns';
 import createAttackSkillColumns, { optionalAttackSkillColumns } from './tableColumns/attackSkillColumns';
+import createHealingSkillColumns, { optionalHealingSkillColumns } from './tableColumns/healingSkillColumns';
 import { destroyDataTable, initializeDataTable } from './tableColumns/dataTableConfig';
 import { useLanguage } from '../context/LanguageContext';
 import CalculationSession from '../model/CalculationSession';
+import HealingSkillCalculatorModel from '../model/HealingSkillCalculator';
+import SkillCalculatorModel from '../model/SkillCalculator';
 
 const phaseOptions = [
   '精零1級',
@@ -29,7 +32,18 @@ const rarityOptions = [
 
 const damageTypes = ['物傷', '法傷', '真傷'];
 
-const NumberField = ({ id, label, value, onChange, min = 0, max, step = 1 }) => (
+const ENEMY_INPUT_REFRESH_DELAY = 400;
+
+const normalizeNumberInput = (value, fallback, min = -Infinity, max = Infinity) => {
+  const number = Number(value);
+  if(!Number.isFinite(number)){
+    return fallback;
+  }
+
+  return Math.min(Math.max(number, min), max);
+};
+
+const NumberField = ({ id, label, value, onChange, onBlur, min = 0, max, step = 1 }) => (
   <label className="number-field" htmlFor={id}>
     <span>{label}</span>
     <input
@@ -37,6 +51,7 @@ const NumberField = ({ id, label, value, onChange, min = 0, max, step = 1 }) => 
       type="number"
       value={value}
       onChange={onChange}
+      onBlur={onBlur}
       min={min}
       max={max}
       step={step}
@@ -121,19 +136,34 @@ function MainContent() {
       .map(column => column.id)
       .filter(id => initialSettings.visibleSkillColumns.includes(id))
   );
+  const [visibleHealingColumns, setVisibleHealingColumns] = useState(
+    optionalHealingSkillColumns
+      .map(column => column.id)
+      .filter(id => initialSettings.visibleHealingColumns.includes(id))
+  );
+
+  const normalizedEnemyValues = {
+    enemyHp: normalizeNumberInput(enemyHp, defaultSettings.enemyHp, 0),
+    enemyAttack: normalizeNumberInput(enemyAttack, defaultSettings.enemyAttack, 0),
+    enemyDef: normalizeNumberInput(enemyDef, defaultSettings.enemyDef, 0),
+    enemyRes: normalizeNumberInput(enemyRes, defaultSettings.enemyRes, 0, 100),
+    enemySpd: normalizeNumberInput(enemySpd, defaultSettings.enemySpd, 0.01),
+  };
 
   const enemyData = {
-    enemyHp,
+    enemyHp: normalizedEnemyValues.enemyHp,
     enemyAttackType,
-    enemyAttack,
-    enemyDef,
-    enemyRes,
-    enemySpd,
+    enemyAttack: normalizedEnemyValues.enemyAttack,
+    enemyDef: normalizedEnemyValues.enemyDef,
+    enemyRes: normalizedEnemyValues.enemyRes,
+    enemySpd: normalizedEnemyValues.enemySpd,
     enemySkill,
   };
 
   const memberTableRef = useRef(null);
   const attackSkillTableRef = useRef(null);
+  const healingSkillTableRef = useRef(null);
+  const didInitializeEnemyRefresh = useRef(false);
 
   useEffect(() => {
     let cancelled = false;
@@ -162,6 +192,7 @@ function MainContent() {
       enemySpd,
       candidates,
       visibleSkillColumns,
+      visibleHealingColumns,
     });
   }, [
     whichType,
@@ -174,6 +205,29 @@ function MainContent() {
     enemySpd,
     candidates,
     visibleSkillColumns,
+    visibleHealingColumns,
+  ]);
+
+  useEffect(() => {
+    if(!didInitializeEnemyRefresh.current){
+      didInitializeEnemyRefresh.current = true;
+      return undefined;
+    }
+
+    const timerId = setTimeout(() => {
+      setRefreshNonce(value => !value);
+    }, ENEMY_INPUT_REFRESH_DELAY);
+
+    return () => {
+      clearTimeout(timerId);
+    };
+  }, [
+    enemyHp,
+    enemyAttackType,
+    enemyAttack,
+    enemyDef,
+    enemyRes,
+    enemySpd,
   ]);
 
   useEffect(() => {
@@ -219,10 +273,38 @@ function MainContent() {
       checkRarity,
       uniequipJsonData,
     });
+    const damageSkillData = processedSkillData.filter(skillRow => {
+      const member = SkillCalculatorModel.skillFromMember(skillRow, processedCharacterData);
+      if(!member){
+        return false;
+      }
+
+      const skillData = SkillCalculatorModel.skillData(whichType, skillRow);
+      const damageMetrics = SkillCalculatorModel.skillMemberMetrics(
+        whichType,
+        skillRow,
+        processedCharacterData,
+        enemyData,
+        subProfessionIdJsonData,
+        uniequipJsonData,
+        battleEquipJsonData,
+        candidates
+      );
+      return HealingSkillCalculatorModel.shouldShowInDamageTable({
+        member,
+        checkName: `${member.name}-${skillData.name}`,
+        damageMetrics,
+      });
+    });
+    const healingSkillData = HealingSkillCalculatorModel.buildHealingRows({
+      skillRows: processedSkillData,
+      processedCharacterData,
+      type: whichType,
+    });
 
     initializeDataTable({
       tableRef: attackSkillTableRef,
-      data: processedSkillData,
+      data: damageSkillData,
       columns: createAttackSkillColumns({
         t,
         whichType,
@@ -239,6 +321,25 @@ function MainContent() {
       t,
     });
 
+    initializeDataTable({
+      tableRef: healingSkillTableRef,
+      data: healingSkillData,
+      columns: createHealingSkillColumns({
+        t,
+        whichType,
+        processedCharacterData,
+        enemyData,
+        professionJsonData,
+        subProfessionIdJsonData,
+        uniequipJsonData,
+        battleEquipJsonData,
+        candidates,
+        visibleOptionalColumns: visibleHealingColumns,
+      }),
+      order: [[0, 'asc'], [4, 'asc']],
+      t,
+    });
+
     CalculationSession.setCalculationContext({
       type: whichType,
       enemyData,
@@ -249,9 +350,10 @@ function MainContent() {
     return () => {
       destroyDataTable(memberTableRef);
       destroyDataTable(attackSkillTableRef);
+      destroyDataTable(healingSkillTableRef);
     };
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, [calculatorData, whichType, checkRarity, refreshNonce, candidates, language, t, visibleSkillColumns]);
+  }, [calculatorData, whichType, checkRarity, refreshNonce, candidates, language, t, visibleSkillColumns, visibleHealingColumns]);
 
   const addEnemySkill = (event) => {
     event.preventDefault();
@@ -266,6 +368,11 @@ function MainContent() {
     form.reset();
   };
 
+  const normalizeEnemyField = (setter, value, fallback, min, max) => {
+    setter(normalizeNumberInput(value, fallback, min, max));
+    setRefreshNonce(current => !current);
+  };
+
   const toggleSkillColumn = (columnId) => {
     setVisibleSkillColumns(columns => {
       const selectedColumns = new Set(columns);
@@ -277,6 +384,22 @@ function MainContent() {
       }
 
       return optionalAttackSkillColumns
+        .map(column => column.id)
+        .filter(id => selectedColumns.has(id));
+    });
+  };
+
+  const toggleHealingColumn = (columnId) => {
+    setVisibleHealingColumns(columns => {
+      const selectedColumns = new Set(columns);
+
+      if (selectedColumns.has(columnId)) {
+        selectedColumns.delete(columnId);
+      } else {
+        selectedColumns.add(columnId);
+      }
+
+      return optionalHealingSkillColumns
         .map(column => column.id)
         .filter(id => selectedColumns.has(id));
     });
@@ -303,11 +426,11 @@ function MainContent() {
               </div>
             </div>
             <div className="field-grid">
-              <NumberField id="enemyHp" label={t('生命')} value={enemyHp} onChange={event => setEnemyHp(event.target.value)} />
-              <NumberField id="enemyAttack" label={t('攻擊')} value={enemyAttack} onChange={event => setEnemyAttack(event.target.value)} />
-              <NumberField id="enemyDef" label={t('防禦')} value={enemyDef} onChange={event => setEnemyDef(event.target.value)} />
-              <NumberField id="enemyRes" label={t('法抗')} value={enemyRes} onChange={event => setEnemyRes(event.target.value)} max={100} />
-              <NumberField id="enemySpd" label={t('攻擊間隔')} value={enemySpd} onChange={event => setEnemySpd(event.target.value)} min={0.01} step={0.01} />
+              <NumberField id="enemyHp" label={t('生命')} value={enemyHp} onChange={event => setEnemyHp(event.target.value)} onBlur={() => normalizeEnemyField(setEnemyHp, enemyHp, defaultSettings.enemyHp, 0)} />
+              <NumberField id="enemyAttack" label={t('攻擊')} value={enemyAttack} onChange={event => setEnemyAttack(event.target.value)} onBlur={() => normalizeEnemyField(setEnemyAttack, enemyAttack, defaultSettings.enemyAttack, 0)} />
+              <NumberField id="enemyDef" label={t('防禦')} value={enemyDef} onChange={event => setEnemyDef(event.target.value)} onBlur={() => normalizeEnemyField(setEnemyDef, enemyDef, defaultSettings.enemyDef, 0)} />
+              <NumberField id="enemyRes" label={t('法抗')} value={enemyRes} onChange={event => setEnemyRes(event.target.value)} onBlur={() => normalizeEnemyField(setEnemyRes, enemyRes, defaultSettings.enemyRes, 0, 100)} max={100} />
+              <NumberField id="enemySpd" label={t('攻擊間隔')} value={enemySpd} onChange={event => setEnemySpd(event.target.value)} onBlur={() => normalizeEnemyField(setEnemySpd, enemySpd, defaultSettings.enemySpd, 0.01)} min={0.01} step={0.01} />
             </div>
             <DamageTypeControl
               name="enemyAttackType"
@@ -442,7 +565,7 @@ function MainContent() {
         <div className="section-heading table-heading">
           <div>
             <span className="section-index">04</span>
-            <h2>{t('技能傷害')}</h2>
+            <h2>{t('傷害技能')}</h2>
           </div>
           <div className="table-heading-actions">
             <span className={`condition-status ${candidates ? 'is-active' : ''}`}>
@@ -491,6 +614,62 @@ function MainContent() {
         </div>
         <div className="table-shell">
           <table ref={attackSkillTableRef} className="display calculator-table" />
+        </div>
+      </section>
+
+      <section className="data-section" id="healingSkill_table">
+        <div className="section-heading table-heading">
+          <div>
+            <span className="section-index">05</span>
+            <h2>{t('治療技能')}</h2>
+          </div>
+          <div className="table-heading-actions">
+            <span className={`condition-status ${candidates ? 'is-active' : ''}`}>
+              {candidates ? t('條件與期望值已計入') : t('未計入條件效果')}
+            </span>
+            <div className="dropdown column-picker">
+              <button
+                className="column-picker-button dropdown-toggle"
+                type="button"
+                data-bs-toggle="dropdown"
+                data-bs-auto-close="outside"
+                aria-expanded="false"
+              >
+                {t('欄位')}
+                <span>{`${visibleHealingColumns.length}/${optionalHealingSkillColumns.length}`}</span>
+              </button>
+              <div className="dropdown-menu dropdown-menu-end column-picker-menu">
+                <div className="column-picker-header">
+                  <strong>{t('顯示特殊欄位')}</strong>
+                  <span>{t('只顯示已勾選項目')}</span>
+                </div>
+                <div className="column-picker-options">
+                  {optionalHealingSkillColumns.map(column => (
+                    <label key={column.id}>
+                      <input
+                        type="checkbox"
+                        checked={visibleHealingColumns.includes(column.id)}
+                        onChange={() => toggleHealingColumn(column.id)}
+                      />
+                      <span>{t(column.label)}</span>
+                    </label>
+                  ))}
+                </div>
+                <div className="column-picker-footer">
+                  <button
+                    type="button"
+                    onClick={() => setVisibleHealingColumns(optionalHealingSkillColumns.map(column => column.id))}
+                  >
+                    {t('全部顯示')}
+                  </button>
+                  <button type="button" onClick={() => setVisibleHealingColumns([])}>{t('全部隱藏')}</button>
+                </div>
+              </div>
+            </div>
+          </div>
+        </div>
+        <div className="table-shell">
+          <table ref={healingSkillTableRef} className="display calculator-table" />
         </div>
       </section>
 

@@ -325,6 +325,9 @@ const skillEffectRuleFactories = {
         : 1,
     };
   },
+  '小满-乡音沉沉': () => ({
+    ADJUST_duration: -5,
+  }),
   '凯瑟琳-战火淬炼': stopAttacking,
   '三角初华-我思念的': () => ({
     CHANGE_attackType: '不攻擊',

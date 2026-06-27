@@ -19,6 +19,7 @@ const defaultSettings = Object.freeze({
   enemySpd: 1,
   candidates: false,
   visibleSkillColumns: [],
+  visibleHealingColumns: [],
   memberName: '',
 });
 
@@ -78,6 +79,9 @@ const normalizeSettings = (settings = {}) => ({
     : defaultSettings.candidates,
   visibleSkillColumns: Array.isArray(settings.visibleSkillColumns)
     ? settings.visibleSkillColumns.filter(value => typeof value === 'string')
+    : [],
+  visibleHealingColumns: Array.isArray(settings.visibleHealingColumns)
+    ? settings.visibleHealingColumns.filter(value => typeof value === 'string')
     : [],
   memberName: typeof settings.memberName === 'string'
     ? settings.memberName

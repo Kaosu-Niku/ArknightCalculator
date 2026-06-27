@@ -21,7 +21,8 @@ function App() {
       <nav className="mobile-dock" aria-label={t('快速導覽')}>
         <a href="#enemy_form"><span>01</span>{t('參數')}</a>
         <a href="#member_table"><span>03</span>{t('幹員')}</a>
-        <a href="#attackSkill_table"><span>04</span>{t('技能')}</a>
+        <a href="#attackSkill_table"><span>04</span>{t('傷害')}</a>
+        <a href="#healingSkill_table"><span>05</span>{t('治療')}</a>
       </nav>
     </div>
   );

@@ -34,7 +34,7 @@ describe('language conversion', () => {
     for(let index = 0; index < 100; index += 1){
       language = language === 'zh-CN' ? 'zh-TW' : 'zh-CN';
       const value = translateText({
-        text: '技能傷害',
+        text: '傷害技能',
         sourceLang: 'zh-TW',
         language,
         converters,

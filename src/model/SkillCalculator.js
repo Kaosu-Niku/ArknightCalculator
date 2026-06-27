@@ -197,7 +197,8 @@ const createSkillDamageProfile = (context, enemyData) => {
     }),
     duration: resolveSkillDuration(
       context.skillData.duration,
-      context.skillEffects.durationOverride()
+      context.skillEffects.durationOverride(),
+      context.skillEffects.durationAdjustment()
     ),
     times: context.skillEffects.attackTimes(),
     ammoCount: context.skillEffects.ammoCount(),

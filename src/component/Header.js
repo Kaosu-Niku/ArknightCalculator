@@ -18,7 +18,8 @@ function Header() {
         <nav className="desktop-nav" aria-label={t('主要導覽')}>
           <a href="#enemy_form">{t('作戰參數')}</a>
           <a href="#member_table">{t('幹員數據')}</a>
-          <a href="#attackSkill_table">{t('技能傷害')}</a>
+          <a href="#attackSkill_table">{t('傷害技能')}</a>
+          <a href="#healingSkill_table">{t('治療技能')}</a>
         </nav>
 
         <div className="header-actions">
