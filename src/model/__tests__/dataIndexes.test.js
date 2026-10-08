@@ -41,6 +41,21 @@ describe('data indexes', () => {
     expect(TalentDataIndexModel.resolve('精二1級', member).values.get('atk')).toBe(0.2);
   });
 
+  test('empty talent candidates do not prevent other talents from resolving', () => {
+    const candidate = {
+      unlockCondition: { phase: 'PHASE_2', level: 1 },
+      blackboard: [{ key: 'atk', value: 0.2 }],
+    };
+    const member = {
+      rarity: 'TIER_6',
+      talents: [{ candidates: null }, {}, { candidates: [] }, { candidates: [candidate] }],
+    };
+    const result = TalentDataIndexModel.resolve('精二滿級', member);
+
+    expect(result.activeCandidates).toEqual([candidate]);
+    expect(result.values.get('atk')).toBe(0.2);
+  });
+
   test('uniequip index uses the highest phase and first blackboard value', () => {
     const member = { potentialItemId: 'p_char_test', equipid: 'uniequip_test' };
     const uniequipData = { charEquip: { char_test: ['uniequip_test'] } };

@@ -47,8 +47,9 @@ const TalentDataIndexModel = {
     const activeCandidates = [];
 
     for (const talent of memberRow.talents ?? []) {
-      for (let index = talent.candidates.length - 1; index >= 0; index--) {
-        const candidate = talent.candidates[index];
+      const candidates = talent.candidates ?? [];
+      for (let index = candidates.length - 1; index >= 0; index--) {
+        const candidate = candidates[index];
         if (!candidateMatches(
           candidate,
           memberRarity,
