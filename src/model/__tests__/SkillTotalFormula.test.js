@@ -7,6 +7,9 @@ import {
   resolveTotalByStreams,
 } from '../SkillTotalFormula';
 import { isPermanentSkill } from '../skillDurationRules';
+import SkillCustomCalculatorModel from '../SkillCustomCalculator';
+import SkillEffectResolverModel from '../SkillEffectResolver';
+import skillTable from '../../../public/json/skill_table.json';
 import {
   getConditionalModuleTrait,
   getExtraAttackHitMultiplier,
@@ -20,6 +23,55 @@ import {
 } from '../conditionalEffect';
 
 describe('skill total formula', () => {
+  const deploymentSkillEffects = (name, skillData) => {
+    const attributes = new Map(skillData.blackboard.map(entry => [entry.key, entry.value]));
+    const rule = SkillCustomCalculatorModel.createSkillEffectRule({
+      checkName: name,
+      skillRow: skillData,
+      skillAttribute: key => attributes.get(key) ?? 0,
+      skillAttributeOptional: key => attributes.get(key),
+    });
+    return SkillEffectResolverModel.createSkillEffects({ skillData, rule });
+  };
+
+  test.each([
+    ['宴-落地斩·破门', 'skchr_utage_2'],
+    ['砾-影袭', 'skchr_gravel_1'],
+    ['砾-鼠群', 'skchr_gravel_2'],
+    ['卡夫卡-怪异魔方', 'skchr_kafka_1'],
+    ['卡夫卡-诡异剪刀', 'skchr_kafka_2'],
+    ['傀影-暗夜魅影', 'skchr_phatom_1'],
+    ['弑君者-硝烟震爆', 'skchr_crosly_2'],
+    ['斯卡蒂-跃浪击', 'skchr_skadi_2'],
+  ])('%s uses its blackboard duration at every skill level', (name, skillId) => {
+    skillTable[skillId].levels.forEach(skillData => {
+      const effects = deploymentSkillEffects(name, skillData);
+      const expected = skillData.blackboard.find(entry => entry.key === 'duration').value;
+      expect(resolveSkillDuration(skillData.duration, effects.durationOverride())).toBe(expected);
+    });
+  });
+
+  test('Utage deals sustained arts damage and Kafka applies her burst scale only once', () => {
+    const utage = deploymentSkillEffects('宴-落地斩·破门', skillTable.skchr_utage_2.levels[6]);
+    const kafka = deploymentSkillEffects('卡夫卡-诡异剪刀', skillTable.skchr_kafka_2.levels[6]);
+    expect(utage.attackTypeOverride()).toBe('法術');
+    expect(utage.durationOverride()).toBe(15);
+    const schedule = {
+      attackCount: 1,
+      attackInterval: 2,
+      duration: kafka.durationOverride(),
+      times: 0,
+      ammoCount: 0,
+    };
+    expect(kafka.attackTypeOverride()).toBe('法術');
+    expect(kafka.attackScale()).toBe(0);
+    expect(kafka.extraAttackTypeOverride()).toBe('法術');
+    expect(resolveTotalByStreams([
+      { damage: 100 },
+      { damage: 100 * kafka.extraAttackScale(), times: kafka.extraAttackTimes() },
+    ], schedule)).toBe(900);
+  });
+
   test('identifies module branches with conditional formula traits', () => {
     expect(hasConditionalModuleTrait('強攻手')).toBe(true);
     expect(hasConditionalModuleTrait('不存在的分支')).toBe(false);

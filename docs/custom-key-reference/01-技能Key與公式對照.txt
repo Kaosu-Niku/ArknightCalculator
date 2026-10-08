@@ -73,6 +73,8 @@ CHANGE_duration
   意義：覆蓋技能持續時間。
   單位：秒。
   公式：非 0 時取代 skillData.duration。
+  部署即生效技能：若頂層 duration 為 -1，文案中的黑板 duration 才是效果時間，
+  需在個別 custom 中映射為 CHANGE_duration；不可全域套用，避免誤把控制或護盾時間當成攻擊時間。
 
 ADJUST_duration
   意義：在技能持續時間上加減秒數。

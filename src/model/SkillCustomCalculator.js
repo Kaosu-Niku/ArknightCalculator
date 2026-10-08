@@ -26,6 +26,7 @@ const SkillCustomCalculatorModel = {
     '炎狱炎熔-狱火之环': new Set(['atk_scale']),
     'Miss.Christine-狂饮之宴': new Set(['atk', 'atk_scale']),
     '卡夫卡-怪异魔方': new Set(['atk_scale']),
+    '卡夫卡-诡异剪刀': new Set(['atk_scale']),
     '裁度-缝线缠身': new Set(['atk_scale']),
     '初雪-传音回响': new Set(['attack_speed']),
     '巫恋-诅咒娃娃': new Set(['atk']),

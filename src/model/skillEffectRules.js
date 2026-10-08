@@ -73,6 +73,10 @@ const skillEffectRuleFactories = {
   '桃金娘-支援号令·β型': stopAttacking,
   '桃金娘-治愈之翼': stopAttacking,
   '宴-分神': stopAttacking,
+  '宴-落地斩·破门': ({ skillAttribute }) => ({
+    CHANGE_duration: skillAttribute('duration'),
+    CHANGE_attackType: '法術',
+  }),
   '芳汀-小玩笑': ({ skillAttribute }) => ({
     atk_scale: skillAttribute('attack@atk_scale'),
     ATTACK_COUNT: 2,
@@ -95,6 +99,12 @@ const skillEffectRuleFactories = {
     atk_scale: context.skillAttribute('attack@atk_scale'),
     CHANGE_OTHER_attackType: '物理',
     OTHER_atk_scale: memberTalent(context, 'atk_scale'),
+  }),
+  '砾-影袭': ({ skillAttribute }) => ({
+    CHANGE_duration: skillAttribute('duration'),
+  }),
+  '砾-鼠群': ({ skillAttribute }) => ({
+    CHANGE_duration: skillAttribute('duration'),
   }),
   '孑-断螯': () => ({
     CHANGE_duration: 2,
@@ -279,6 +289,13 @@ const skillEffectRuleFactories = {
   '卡夫卡-怪异魔方': ({ skillAttribute }) => ({
     ...stopAttacking(),
     CHANGE_duration: skillAttribute('duration'),
+    CHANGE_OTHER_attackType: '法術',
+    OTHER_atk_scale: skillAttribute('atk_scale'),
+    OTHER_times: 1,
+  }),
+  '卡夫卡-诡异剪刀': ({ skillAttribute }) => ({
+    CHANGE_duration: skillAttribute('duration'),
+    CHANGE_attackType: '法術',
     CHANGE_OTHER_attackType: '法術',
     OTHER_atk_scale: skillAttribute('atk_scale'),
     OTHER_times: 1,
@@ -483,6 +500,9 @@ const skillEffectRuleFactories = {
     CHANGE_attackType: '不攻擊',
   }),
   '塑心-“自由的探戈”': stopAttacking,
+  '傀影-暗夜魅影': ({ skillAttribute }) => ({
+    CHANGE_duration: skillAttribute('duration'),
+  }),
   '麒麟R夜刀-鬼人化': () => ({ ATTACK_COUNT: 10 / 3 }),
   '弑君者-硝烟震爆': ({ skillAttribute }) => ({
     ...stopAttacking(),
@@ -701,6 +721,9 @@ const skillEffectRuleFactories = {
   }),
   '杰克-全神贯注！': () => ({
     CHANGE_attackType: '不攻擊',
+  }),
+  '斯卡蒂-跃浪击': ({ skillAttribute }) => ({
+    CHANGE_duration: skillAttribute('duration'),
   }),
   '可露希尔-Q.E.D.': ({ skillAttribute }) => ({
     atk_scale: skillAttribute('attack@atk_scale'),
