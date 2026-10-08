@@ -233,6 +233,11 @@
     "attackType": "物理",
     "position": "地面"
   },
+  "supportiveranger": {
+    "chineseName": "游擊手",
+    "attackType": "物理",
+    "position": "高台"
+  },
   
   "pusher": {
     "chineseName": "推擊手",
